@@ -1,0 +1,177 @@
+broad_sample	gene	pert_type	control_type
+ccsbBroad304_00900	KCNN1	trt	
+ccsbBroad304_07795	SLCO2B1	trt	
+ccsbBroad304_02826	SLC7A11	trt	
+ccsbBroad304_01492	SCNN1G	trt	
+ccsbBroad304_00691	GRIN2A	trt	
+ccsbBroad304_00902	KCNN4	trt	
+ccsbBroad304_02705	SIRT2	trt	
+ccsbBroad304_01122	OPRM1	trt	
+ccsbBroad304_00305	CHRM3	trt	
+ccsbBroad304_06365	HIF1A	trt	
+ccsbBroad304_02831	SGK3	control	negcon
+ccsbBroad304_02201	CLOCK	control	negcon
+ccsbBroad304_06071	CYP2A6	trt	
+ccsbBroad304_05926	CACNG1	trt	
+ccsbBroad304_06272	GHSR	trt	
+ccsbBroad304_00202	CACNB4	trt	
+ccsbBroad304_14724	DDR2	trt	
+ccsbBroad304_14684	KDR	trt	
+ccsbBroad304_04505	KCNH7	trt	
+ccsbBroad304_01121	OPRL1	trt	
+ccsbBroad304_06088	AKR1C1	trt	
+ccsbBroad304_08873	P2RY12	trt	
+ccsbBroad304_05921	CA5A	trt	
+ccsbBroad304_00304	CHRM2	trt	
+ccsbBroad304_00376	CSK	trt	
+ccsbBroad304_00477	LPAR1	trt	
+ccsbBroad304_02129	S1PR2	trt	
+ccsbBroad304_07061	TGM2	trt	
+ccsbBroad304_01768	VEGFA	trt	
+ccsbBroad304_06018	COMT	trt	
+ccsbBroad304_00155	CCND1	trt	
+ccsbBroad304_06464	ITGB2	trt	
+ccsbBroad304_02258	ZBTB24	control	negcon
+ccsbBroad304_00681	FFAR2	trt	
+ccsbBroad304_00799	HSP90AB1	trt	
+ccsbBroad304_11023	PDE4D	trt	
+ccsbBroad304_14688	LCK	trt	
+ccsbBroad304_00277	CDK4	trt	
+ccsbBroad304_14525	ABL1	trt	
+ccsbBroad304_06403	HSD11B1	trt	
+ccsbBroad304_14696	MET	control	poscon_cp
+ccsbBroad304_10688	ATM	trt	
+ccsbBroad304_16175	BRAF	control	poscon_orf
+ccsbBroad304_00607	GABRB2	control	poscon_diverse
+ccsbBroad304_06811	PTGIR	trt	
+ccsbBroad304_06188	F10	trt	
+ccsbBroad304_06353	HBB	trt	
+ccsbBroad304_01289	MAPK13	control	negcon
+ccsbBroad304_01684	TNF	trt	
+ccsbBroad304_06412	HSP90AA1	control	poscon_diverse
+ccsbBroad304_01607	STAT1	control	negcon
+ccsbBroad304_05439	FFAR4	trt	
+ccsbBroad304_00954	LYN	trt	
+ccsbBroad304_00129	ATP5F1D	trt	
+ccsbBroad304_06483	KCNK1	trt	
+ccsbBroad304_14720	NTRK1	trt	
+ccsbBroad304_01602	SSTR2	trt	
+ccsbBroad304_00526	EZH2	control	poscon_cp
+ccsbBroad304_06085	DCK	trt	
+ccsbBroad304_14741	PDPK1	trt	
+ccsbBroad304_00142	AVPR1A	trt	
+ccsbBroad304_00326	CLK1	control	poscon_cp
+ccsbBroad304_01396	RGS4	trt	
+ccsbBroad304_01216	PLD1	trt	
+ccsbBroad304_02218	IKBKE	control	negcon
+ccsbBroad304_02030	CFLAR	control	negcon
+ccsbBroad304_07557	NAMPT	control	poscon_diverse
+ccsbBroad304_14597	CSF1R	trt	
+ccsbBroad304_09091	SLIRP	control	negcon
+ccsbBroad304_03625	HIF1AN	control	negcon
+ccsbBroad304_16173	KRAS	control	poscon_diverse
+ccsbBroad304_14679	JAK1	control	poscon_cp
+ccsbBroad304_00494	ELANE	trt	
+ccsbBroad304_06221	FPR1	trt	
+ccsbBroad304_03976	PORCN	trt	
+ccsbBroad304_05821	ANXA1	trt	
+ccsbBroad304_05555	CATSPER4	trt	
+			
+ccsbBroad304_14827	RET	control	poscon_diverse
+ccsbBroad304_02416	TUBB4B	trt	
+ccsbBroad304_07194	GLRA3	trt	
+ccsbBroad304_01213	PLA2G1B	trt	
+ccsbBroad304_03155	DHH	trt	
+ccsbBroad304_00156	BCL2L1	control	negcon
+ccsbBroad304_01760	USP1	control	poscon_cp
+ccsbBroad304_14644	FLT3	control	poscon_cp
+ccsbBroad304_00843	IL1B	trt	
+ccsbBroad304_01278	PRKACB	control	negcon
+ccsbBroad304_05206	TUBB	control	poscon_diverse
+ccsbBroad304_11445	HDAC6	trt	
+ccsbBroad304_14631	ERBB2	control	poscon_cp
+ccsbBroad304_00894	KCNJ1	trt	
+ccsbBroad304_03441	UGT1A9	trt	
+ccsbBroad304_00555	FGF1	trt	
+ccsbBroad304_00454	DNMT3A	control	poscon_diverse
+ccsbBroad304_06343	GUCY1B1	trt	
+ccsbBroad304_06588	MMP2	trt	
+ccsbBroad304_14989	CHEK2	control	poscon_diverse
+ccsbBroad304_06846	RB1	control	negcon
+ccsbBroad304_14804	MAPK9	control	negcon
+ccsbBroad304_06755	PPAT	trt	
+ccsbBroad304_00008	ASIC1	trt	
+ccsbBroad304_02128	GPR55	trt	
+ccsbBroad304_11738	BRD4	control	poscon_cp
+ccsbBroad304_14538	AKT1	control	poscon_diverse
+ccsbBroad304_01334	PTGIS	trt	
+ccsbBroad304_01398	RHEB	control	negcon
+ccsbBroad304_00396	CTSG	trt	
+ccsbBroad304_01161	PDE7A	trt	
+ccsbBroad304_00407	CYP1A2	trt	
+ccsbBroad304_03934	P3H1	trt	
+ccsbBroad304_00331	CCR1	trt	
+ccsbBroad304_10934	KCNMA1	trt	
+ccsbBroad304_02415	TUBB3	trt	
+ccsbBroad304_01690	TNNC1	trt	
+ccsbBroad304_06874	RPL3	trt	
+ccsbBroad304_02392	PAK4	control	poscon_diverse
+ccsbBroad304_00150	BAX	trt	
+ccsbBroad304_14931	DYRK1B	control	poscon_cp
+ccsbBroad304_00371	MAPK14	control	poscon_orf
+ccsbBroad304_06884	RPL23A	trt	
+ccsbBroad304_01404	RNASE1	trt	
+ccsbBroad304_14762	PIK3CG	control	poscon_diverse
+ccsbBroad304_00805	HTR2C	trt	
+ccsbBroad304_02173	ATG5	control	negcon
+ccsbBroad304_14671	IGF1R	control	poscon_cp
+ccsbBroad304_00037	AGER	trt	
+ccsbBroad304_14932	AURKB	control	poscon_cp
+ccsbBroad304_14579	CDK9	trt	
+ccsbBroad304_14540	ALK	trt	
+ccsbBroad304_07535	PARP3	trt	
+ccsbBroad304_04829	GJB4	trt	
+ccsbBroad304_10895	HTR3A	trt	
+ccsbBroad304_01340	PTPN2	trt	
+ccsbBroad304_00811	ICAM1	trt	
+ccsbBroad304_06908	S100B	trt	
+ccsbBroad304_01020	MME	trt	
+ccsbBroad304_06754	PPARD	trt	
+ccsbBroad304_01287	MAPK8	trt	
+ccsbBroad304_00272	CDC25A	trt	
+ccsbBroad304_01666	TGFBR1	trt	
+ccsbBroad304_00576	FOXM1	trt	
+ccsbBroad304_05785	ADRA2B	trt	
+ccsbBroad304_14572	CDK2	control	poscon_orf
+ccsbBroad304_01230	PNLIP	trt	
+ccsbBroad304_00221	CASP3	trt	
+ccsbBroad304_02813	CA14	trt	
+ccsbBroad304_14635	PTK2B	trt	
+ccsbBroad304_01283	PRKCE	trt	
+ccsbBroad304_01649	TBXAS1	trt	
+ccsbBroad304_00904	KCNQ2	trt	
+ccsbBroad304_00280	CDK7	control	poscon_diverse
+ccsbBroad304_00411	CYP3A4	trt	
+ccsbBroad304_06138	EDNRB	trt	
+ccsbBroad304_01282	PRKCB	trt	
+ccsbBroad304_01991	S1PR4	trt	
+ccsbBroad304_03827	KCTD16	trt	
+ccsbBroad304_00476	S1PR1	trt	
+ccsbBroad304_08590	CACNA2D3	trt	
+ccsbBroad304_01144	PAK1	control	poscon_cp
+ccsbBroad304_00055	AKR1B1	trt	
+ccsbBroad304_14770	PLK1	control	poscon_diverse
+ccsbBroad304_06451	IMPDH1	control	poscon_diverse
+ccsbBroad304_00504	SLC29A1	trt	
+ccsbBroad304_05777	ADH1C	trt	
+ccsbBroad304_14554	BTK	trt	
+ccsbBroad304_04933	GPR119	trt	
+ccsbBroad304_06237	GAA	trt	
+ccsbBroad304_07311	HDAC3	control	poscon_cp
+ccsbBroad304_00733	HCK	trt	
+ccsbBroad304_03876	HRH4	trt	
+ccsbBroad304_05782	ADORA2A	trt	
+ccsbBroad304_06701	PDE3A	trt	
+ccsbBroad304_03026	HPGDS	trt	
+ccsbBroad304_00023	ADA	trt	
+ccsbBroad304_00049	ALDH2	trt	

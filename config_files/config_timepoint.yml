@@ -1,0 +1,119 @@
+---
+pipeline: 2019_07_11_JUMP-CP
+output_dir: profiles
+platemap_well_column: Metadata_well_position
+compartments: cells,cytoplasm,nuclei
+annotate:
+  perform: true
+  well_column: Metadata_Well
+  external : JUMP-Target-1_orf_metadata.tsv
+normalize:
+  perform: true
+  method: mad_robustize
+  features: infer
+normalize_negcon:
+  perform: true
+  method: mad_robustize
+  features: infer
+feature_select:
+  perform: true
+  features: infer
+  level: plate
+  operations:
+    - variance_threshold
+    - correlation_threshold
+    - drop_na_columns
+    - blocklist
+feature_select_negcon:
+  perform: true
+  features: infer
+  level: plate
+  operations:
+    - variance_threshold
+    - correlation_threshold
+    - drop_na_columns
+    - blocklist
+options:
+  compression: gzip
+  float_format: "%.5g"
+  samples: all
+---
+batch: 2020_11_18_CPJUMP1_TimepointDay1
+plates:
+  - name: BR00117006
+    process: true
+  - name: BR00118050
+    process: true
+  - name: BR00118039
+    process: true
+  - name: BR00118040
+    process: true
+  - name: BR00117020
+    process: true
+  - name: BR00117021
+    process: true
+  - name: BR00117022
+    process: true
+  - name: BR00117023
+    process: true
+process: true
+---
+batch: 2020_11_19_TimepointDay4
+plates:
+  - name: BR00117006
+    process: true
+  - name: BR00118050
+    process: true
+  - name: BR00118039
+    process: true
+  - name: BR00118040
+    process: true
+  - name: BR00117020
+    process: true
+  - name: BR00117021
+    process: true
+  - name: BR00117022
+    process: true
+  - name: BR00117023
+    process: true
+process: true
+---
+batch: 2020_12_02_CPJUMP1_2WeeksTimePoint
+plates:
+  - name: BR00117006
+    process: true
+  - name: BR00118050
+    process: true
+  - name: BR00118039
+    process: true
+  - name: BR00118040
+    process: true
+  - name: BR00117020
+    process: true
+  - name: BR00117021
+    process: true
+  - name: BR00117022
+    process: true
+  - name: BR00117023
+    process: true
+process: true
+---
+batch: 2020_12_07_CPJUMP1_4WeeksTimePoint
+plates:
+  - name: BR00117006
+    process: true
+  - name: BR00118050
+    process: true
+  - name: BR00118039
+    process: true
+  - name: BR00118040
+    process: true
+  - name: BR00117020
+    process: true
+  - name: BR00117021
+    process: true
+  - name: BR00117022
+    process: true
+  - name: BR00117023
+    process: true
+process: true

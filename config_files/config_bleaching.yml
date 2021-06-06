@@ -1,0 +1,91 @@
+---
+pipeline: 2019_07_11_JUMP-CP
+output_dir: profiles
+platemap_well_column: Metadata_well_position
+compartments: cells,cytoplasm,nuclei
+annotate:
+  perform: true
+  well_column: Metadata_Well
+  external : JUMP-Target-1_compound_metadata.tsv
+normalize:
+  perform: true
+  method: mad_robustize
+  features: infer
+normalize_negcon:
+  perform: true
+  method: mad_robustize
+  features: infer
+feature_select:
+  perform: true
+  features: infer
+  level: plate
+  operations:
+    - variance_threshold
+    - correlation_threshold
+    - drop_na_columns
+    - blocklist
+feature_select_negcon:
+  perform: true
+  features: infer
+  level: plate
+  operations:
+    - variance_threshold
+    - correlation_threshold
+    - drop_na_columns
+    - blocklist
+options:
+  compression: gzip
+  float_format: "%.5g"
+  samples: all
+---
+batch: 2020_12_08_CPJUMP1_Bleaching
+plates:
+  - name: BR00116991A
+    process: true
+  - name: BR00116991B
+    process: true
+  - name: BR00116991C
+    process: true
+  - name: BR00116991D
+    process: true
+  - name: BR00116991E
+    process: true
+  - name: BR00116991F
+    process: true
+  - name: BR00116992A
+    process: true
+  - name: BR00116992B
+    process: true
+  - name: BR00116992C
+    process: true
+  - name: BR00116992D
+    process: true
+  - name: BR00116992E
+    process: true
+  - name: BR00116992F
+    process: true
+  - name: BR00116993A
+    process: true
+  - name: BR00116993B
+    process: true
+  - name: BR00116993C
+    process: true
+  - name: BR00116993D
+    process: true
+  - name: BR00116993E
+    process: true
+  - name: BR00116993F
+    process: true
+  - name: BR00116994A
+    process: true
+  - name: BR00116994B
+    process: true
+  - name: BR00116994C
+    process: true
+  - name: BR00116994D
+    process: true
+  - name: BR00116994E
+    process: true
+  - name: BR00116994F
+    process: true
+process: true
