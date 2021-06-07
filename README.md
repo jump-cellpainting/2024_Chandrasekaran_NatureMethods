@@ -40,4 +40,4 @@ conda env create --force --file analysis/environment.yml
 conda activate analysis
 ```
 
-Then run the jupyter notebook (analysis/0.percent_matching.ipynb) to create the figures in `analysis/figues/`.
+Then run the jupyter notebook (`analysis/0.percent_matching.ipynb`) to create the figures in `analysis/figues/`.
