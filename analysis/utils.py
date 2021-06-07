@@ -81,6 +81,56 @@ def percent_score(null_dist, corr_dist, how):
         return np.mean(above_threshold.astype(float)) + np.mean(below_threshold.astype(float)), perc_95, perc_5
 
 
+def corr_between_replicates(df, group_by_feature):
+    """
+        Correlation between replicates
+        Parameters:
+        -----------
+        df: pd.DataFrame
+        group_by_feature: Feature name to group the data frame by
+        Returns:
+        --------
+        list-like of correlation values
+     """
+    replicate_corr = []
+    replicate_grouped = df.groupby(group_by_feature)
+    for name, group in replicate_grouped:
+        group_features = get_featuredata(group)
+        corr = np.corrcoef(group_features)
+        if len(group_features) == 1:  # If there is only one replicate on a plate
+            replicate_corr.append(np.nan)
+        else:
+            np.fill_diagonal(corr, np.nan)
+            replicate_corr.append(np.nanmedian(corr))  # median replicate correlation
+    return replicate_corr
+
+
+def corr_between_non_replicates(df, n_samples, n_replicates, metadata_compound_name):
+    """
+        Null distribution between random "replicates".
+        Parameters:
+        ------------
+        df: pandas.DataFrame
+        n_samples: int
+        n_replicates: int
+        metadata_compound_name: Compound name feature
+        Returns:
+        --------
+        list-like of correlation values, with a  length of `n_samples`
+    """
+    df.reset_index(drop=True, inplace=True)
+    null_corr = []
+    while len(null_corr) < n_samples:
+        compounds = random.choices([_ for _ in range(len(df))], k=n_replicates)
+        sample = df.loc[compounds].copy()
+        if len(sample[metadata_compound_name].unique()) == n_replicates:
+            sample_features = get_featuredata(sample)
+            corr = np.corrcoef(sample_features)
+            np.fill_diagonal(corr, np.nan)
+            null_corr.append(np.nanmedian(corr))  # median replicate correlation
+    return null_corr
+
+
 def correlation_between_modalities(modality_1_df, modality_2_df, modality_1, modality_2, metadata_common, metadata_perturbation):
     """
     Compute the correlation between two different modalities.
