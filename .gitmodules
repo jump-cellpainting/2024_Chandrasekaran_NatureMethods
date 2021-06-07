@@ -1,0 +1,3 @@
+[submodule "profiling-recipe"]
+	path = profiling-recipe
+	url = https://github.com/jump-cellpainting/profiling-recipe.git
