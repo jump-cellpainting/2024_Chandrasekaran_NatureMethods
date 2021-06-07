@@ -1,6 +1,9 @@
 # Cell images
 Cell images are available on a S3 bucket (link).
 
+# Plate map and Metadata
+Plate map and Metadata are available from the `metadata/' folder and also from https://github.com/jump-cellpainting/JUMP-Target.
+
 # CellProfiler feature extraction
 Use the CellProfiler pipelines in `pipelines/2020_11_04_CPJUMP1` and follow the instructions in the [profiling handbook](https://cytomining.github.io/profiling-handbook/) up until chapter 6.2 to generate the well level aggregated profiles from the cell images.
 
