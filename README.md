@@ -44,3 +44,8 @@ conda activate analysis
 ```
 
 Then run the jupyter notebook (`analysis/0.percent_matching.ipynb`) to create the figures in `analysis/figues/`.
+
+# License
+
+We use a dual license in this repository.
+We license the source code as [BSD 3-Clause](LICENSE_BSD3.md), and license the data, results, and figures as [CC0 1.0](LICENSE_CC0.md).
