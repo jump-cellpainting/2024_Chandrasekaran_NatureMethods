@@ -1,0 +1,1 @@
+These folders contain images from all the channels (including 3 z planes for brightfield) for one field for some of the compounds on the plates `BR00117010`, `BR00117011`, `BR00117012` and `BR00117013`.
