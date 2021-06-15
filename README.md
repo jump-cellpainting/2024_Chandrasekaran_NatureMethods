@@ -9,6 +9,8 @@ aws s3 cp \
 
 See this [wiki](https://github.com/carpenterlab/2016_bray_natprot/wiki/What-do-Cell-Painting-features-mean%3F) for sample Cell Painting images and the meaning of ([CellProfiler](https://cellprofiler.org/)-derived) Cell Painting features. 
 
+The `--request-payer` option means that your AWS account will be charged for downloading the image data; read more [here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html). We plan to make the dataset available on [IDR](https://idr.openmicroscopy.org/) at which point it can be accessed and downloaded for free. Note that the image-based profiles are available in this repository (see below) and can be freely downloaded. 
+
 ## Image metadata
 The folder for each 384-well plate typically contains images from nine sites for each well (for some wells 7,8 or 16 sites were imaged). 
 The (x,y) coordinates of sites are available in the `Metadata_PositionX` and `Metadata_PositionY` columns of the `load_data.csv.gz` files in the `load_data_csv` folder. 
