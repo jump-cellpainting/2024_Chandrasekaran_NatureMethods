@@ -27,7 +27,7 @@ The names of the image files follow the naming convention - `rXXcXXfXXp01-chXXsk
 Pipelines for cell segmentation and profile extraction is available is the folder `pipelines`.
 
 # Plate map and Metadata
-Plate map and Metadata are available from the `metadata/' folder and also from https://github.com/jump-cellpainting/JUMP-Target.
+Plate map and Metadata are available from the `metadata/` folder and also from https://github.com/jump-cellpainting/JUMP-Target.
 
 # Batch and plate metadata 
 There are six batches of data - `2020_11_04_CPJUMP1`, `2020_11_18_CPJUMP1_TimepointDay1`, `2020_11_19_TimepointDay4`, `2020_12_02_CPJUMP1_2WeeksTimePoint`, `2020_12_07_CPJUMP1_4WeeksTimePoint` and `2020_12_08_CPJUMP1_Bleaching`.
