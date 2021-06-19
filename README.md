@@ -236,6 +236,9 @@ conda activate analysis
 
 Then run the jupyter notebook (`analysis/0.percent_matching.ipynb`) to create the figures in `analysis/figues/`.
 
+# Compute resources
+For segmentation and feature extraction, each plate of images took on average 30 minutes to process, using a fleet of 200 m4.xlarge spot instances (800 vCPUs), which cost approximately $10 per plate.  Aggregation into mean profiles takes 12-18 hours, though can be parallelized onto a single large machine, at the total cost of <$1 per plate. For profile processing with pycytominer, each plate took under two minutes, using a local machine (Intel Core i9 with 16 GB memory)
+
 # License
 
 We use a dual license in this repository.
