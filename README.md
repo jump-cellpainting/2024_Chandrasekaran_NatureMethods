@@ -199,11 +199,12 @@ Four compound plates imaged and additional six times (`A`, `B`, `C`, `D`, `E` an
 Use the CellProfiler pipelines in `pipelines/2020_11_04_CPJUMP1` and follow the instructions in the [profiling handbook](https://cytomining.github.io/profiling-handbook/) up until chapter 6.2 to generate the well level aggregated profiles from the cell images.
 
 # Profile processing with pycytominer
-Clone this repo and activate the conda environment, after installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html), with the commands
+Clone this repo, download the files and activate the conda environment, after installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html), with the commands
 
 ```bash
 git clone https://github.com/jump-cellpainting/neurips-cpjump1
 cd neurips-cpjump1
+git lfs pull
 git submodule update --init --recursive
 conda env create --force --file environment.yml
 conda activate profiling
