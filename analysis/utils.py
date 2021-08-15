@@ -68,17 +68,17 @@ def percent_score(null_dist, corr_dist, how):
     if how == 'right':
         perc_95 = np.nanpercentile(null_dist, 95)
         above_threshold = corr_dist > perc_95
-        return np.mean(above_threshold.astype(float)), perc_95
+        return np.mean(above_threshold.astype(float))*100, perc_95
     if how == 'left':
         perc_5 = np.nanpercentile(null_dist, 5)
         below_threshold = corr_dist < perc_5
-        return np.mean(below_threshold.astype(float)), perc_5
+        return np.mean(below_threshold.astype(float))*100, perc_5
     if how == 'both':
         perc_95 = np.nanpercentile(null_dist, 95)
         above_threshold = corr_dist > perc_95
         perc_5 = np.nanpercentile(null_dist, 5)
         below_threshold = corr_dist < perc_5
-        return np.mean(above_threshold.astype(float)) + np.mean(below_threshold.astype(float)), perc_95, perc_5
+        return (np.mean(above_threshold.astype(float)) + np.mean(below_threshold.astype(float)))*100, perc_95, perc_5
 
 
 def corr_between_replicates(df, group_by_feature):
