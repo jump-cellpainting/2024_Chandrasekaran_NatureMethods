@@ -1,4 +1,4 @@
-Features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and the single cell profiles were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/neurips-cpjump1/tree/main/analysis). Steps for reproducing the data in this repository are outlined below.
+Features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and the single cell profiles were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/neurips-cpjump1/tree/main/benchmark). Steps for reproducing the data in this repository are outlined below.
 
 # Step 1: Download cell images
 
@@ -249,15 +249,17 @@ This creates the profiles in the `profiles/` folder for all the plates in each b
 | `<plate_ID>_normalized_feature_select_plate.csv.gz`        | Feature selected normalized to whole plate profiles      |
 | `<plate_ID>_normalized_feature_select_negcon_plate.csv.gz` | Feature selected normalized to negative control profiles |
 
-# Step 4: Run the analysis script
-The analysis scripts compute `Percent Replicating` which is a measure of signature strength, `Percent Matching across modalities` which is a measure of how well the chemical and genetic perturbation profiles match. To run the analysis script activate the conda environment in `analysis/`
+# Step 4: Run the benchmark script
+The benchmark scripts compute `Percent Replicating` which is a measure of signature strength, `Percent Matching across modalities` which is a measure of how well the chemical and genetic perturbation profiles match. These metrics are calculated using the `Feature selected normalized to negative control profiles` (well-level profiles).
+
+To run the benchmark script activate the conda environment in `benchmark/`
 
 ```bash
-conda env create --force --file analysis/environment.yml
-conda activate analysis
+conda env create --force --file benchmark/environment.yml
+conda activate benchmark
 ```
 
-Then run the jupyter notebooks (`analysis/0.percent_matching.ipynb` and `analysis/1.percent_matching_across_modalities.ipynb`) to create the figures in `analysis/figues/` and the tables in `analysis/README.md`.
+Then run the jupyter notebooks (`benchmark/0.percent_matching.ipynb` and `benchmark/1.percent_matching_across_modalities.ipynb`) to create the figures in `benchmark/figues/` and the tables in `benchmark/README.md`.
 
 # Compute resources
 For segmentation and feature extraction, each plate of images took on average 30 minutes to process, using a fleet of 200 m4.xlarge spot instances (800 vCPUs), which cost approximately $10 per plate.  Aggregation into mean profiles takes 12-18 hours, though can be parallelized onto a single large machine, at the total cost of <$1 per plate. For profile processing with pycytominer, each plate took under two minutes, using a local machine (Intel Core i9 with 16 GB memory)
