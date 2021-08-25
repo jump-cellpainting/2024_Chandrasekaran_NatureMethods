@@ -1,17 +1,200 @@
-# Cell images
+Features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and the single cell profiles were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/neurips-cpjump1/tree/main/analysis). Steps for reproducing the data in this repository are outlined below.
+
+# Step 1: Download cell images
+
 Cell images are available on a S3 bucket. The images can be downloaded using the command
 
 ```bash
 aws s3 cp \
   --recursive \
-  s3://jump-cellpainting-public/projects/2019_07_11_JUMP-CP-pilots/ . --request-payer 
+  s3://cell-painting-gallery/jump-pilots/source_4/2019_07_11_JUMP-CP-pilots/images . 
 ```
 
-See this [wiki](https://github.com/carpenterlab/2016_bray_natprot/wiki/What-do-Cell-Painting-features-mean%3F) for sample Cell Painting images and the meaning of ([CellProfiler](https://cellprofiler.org/)-derived) Cell Painting features. 
+See this [wiki](https://github.com/carpenterlab/2016_bray_natprot/wiki/What-do-Cell-Painting-features-mean%3F) for sample Cell Painting images and the meaning of (CellProfiler-derived) Cell Painting features. 
 
-The `--request-payer` option means that your AWS account will be charged for downloading the image data; read more [here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html). We plan to make the dataset available on [IDR](https://idr.openmicroscopy.org/) at which point it can be accessed and downloaded for free. Note that the image-based profiles are available in this repository (see below) and can be freely downloaded. 
+## Batch and Plate metadata
+There are six batches of data - `2020_11_04_CPJUMP1`, `2020_11_18_CPJUMP1_TimepointDay1`, `2020_11_19_TimepointDay4`, `2020_12_02_CPJUMP1_2WeeksTimePoint`, `2020_12_07_CPJUMP1_4WeeksTimePoint` and `2020_12_08_CPJUMP1_Bleaching`.
+
+### 2020_11_04_CPJUMP1
+
+51 384-well plates of cells from two cell lines treated with different types of perturbations at different time points.
+
+<details>
+<summary>Click to expand</summary>
+
+| Barcode    | Description                                     | Number_of_images |
+| ---------- | ----------------------------------------------- | ---------------- |
+| BR00118049 | A549 96-hour ORF w/ Blasticidin Plate 1         | 27648            |
+| BR00118050 | A549 96-hour ORF Plate 1                        | 27648            | 
+| BR00117006 | A549 96-hour ORF Plate 2                        | 27648            |
+| BR00118039 | U2OS 96-hour ORF Plate 1                        | 27648            |
+| BR00118040 | U2OS 96-hour ORF Plate 2                        | 27648            |
+| BR00117020 | A549 48-hour ORF Plate 1                        | 27648            |
+| BR00117021 | A549 48-hour ORF Plate 2                        | 27648            |
+| BR00117022 | U2OS 48-hour ORF Plate 1                        | 27648            |
+| BR00117023 | U2OS 48-hour ORF Plate 2                        | 27648            |
+| BR00118041 | A549 96-hour CRISPR Plate 1                     | 27560            |
+| BR00118042 | A549 96-hour CRISPR Plate 2                     | 27648            |
+| BR00118043 | A549 96-hour CRISPR Plate 3                     | 27648            |
+| BR00118044 | A549 96-hour CRISPR Plate 4                     | 27648            |
+| BR00118045 | U2OS 96-hour CRISPR Plate 1                     | 27648            |
+| BR00118046 | U2OS 96-hour CRISPR Plate 2                     | 27640            |
+| BR00118047 | U2OS 96-hour CRISPR Plate 3                     | 27648            |
+| BR00118048 | U2OS 96-hour CRISPR Plate 4                     | 27648            |
+| BR00117003 | A549 144-hour CRISPR Plate 1                    | 27632            |
+| BR00117004 | A549 144-hour CRISPR Plate 2                    | 27648            |
+| BR00117005 | A549 144-hour CRISPR Plate 3                    | 27568            |
+| BR00117000 | A549 144-hour CRISPR Plate 4                    | 27640            |
+| BR00117002 | A549 144-hour CRISPR w/ Puromycin Plate 1       | 27648            |
+| BR00117001 | A549 144-hour CRISPR w/ Puromycin Plate 2       | 27648            |
+| BR00116997 | U2OS 144-hour CRISPR Plate 1                    | 27648            |
+| BR00116998 | U2OS 144-hour CRISPR Plate 2                    | 27648            |
+| BR00116999 | U2OS 144-hour CRISPR Plate 3                    | 27648            |
+| BR00116996 | U2OS 144-hour CRISPR Plate 4                    | 27648            |
+| BR00116991 | A549 24-hour Compound Plate 1                   | 27648            |
+| BR00116992 | A549 24-hour Compound Plate 2                   | 27640            |
+| BR00116993 | A549 24-hour Compound Plate 3                   | 27352            |
+| BR00116994 | A549 24-hour Compound Plate 4                   | 27576            |
+| BR00116995 | U2OS 24-hour Compound Plate 1                   | 27648            |
+| BR00117024 | U2OS 24-hour Compound Plate 2                   | 27648            |
+| BR00117025 | U2OS 24-hour Compound Plate 3                   | 27648            |
+| BR00117026 | U2OS 24-hour Compound Plate 4                   | 27648            |
+| BR00117017 | A549 48-hour Compound Plate 1                   | 49144            |
+| BR00117019 | A549 48-hour Compound Plate 2                   | 49152            |
+| BR00117015 | A549 48-hour Compound Plate 3                   | 49144            |
+| BR00117016 | A549 48-hour Compound Plate 4                   | 49152            |
+| BR00117012 | U2OS 48-hour Compound Plate 1                   | 27648            |
+| BR00117013 | U2OS 48-hour Compound Plate 2                   | 27648            |
+| BR00117010 | U2OS 48-hour Compound Plate 3                   | 27648            |
+| BR00117011 | U2OS 48-hour Compound Plate 4                   | 27648            |
+| BR00117054 | A549 48-hour +20% Seed Density Compound Plate 1 | 27648            |
+| BR00117055 | A549 48-hour +20% Seed Density Compound Plate 2 | 27648            |
+| BR00117008 | A549 48-hour -20% Seed Density Compound Plate 1 | 27648            |
+| BR00117009 | A549 48-hour -20% Seed Density Compound Plate 2 | 27648            |
+| BR00117052 | A549 Cas9 48-hour Compound Plate 1              | 27648            |
+| BR00117053 | A549 Cas9 48-hour Compound Plate 2              | 27648            |
+| BR00117050 | A549 Cas9 48-hour Compound Plate 3              | 27648            |
+| BR00117051 | A549 Cas9 48-hour Compound Plate 4              | 27648            |
+</details>
+
+### 2020_11_18_CPJUMP1_TimepointDay1
+
+Eight ORF plates imaged one day after staining.
+
+<details>
+<summary>Click to expand</summary>
+
+| Barcode    | Description              | Number_of_images |
+| ---------- | ------------------------ | ---------------- |
+| BR00118050 | A549 96-hour ORF Plate 1 | 12280            |
+| BR00117006 | A549 96-hour ORF Plate 2 | 12272            |
+| BR00118039 | U2OS 96-hour ORF Plate 1 | 12288            |
+| BR00118040 | U2OS 96-hour ORF Plate 2 | 12280            | 
+| BR00117020 | A549 48-hour ORF Plate 1 | 12288            |
+| BR00117021 | A549 48-hour ORF Plate 2 | 12288            |
+| BR00117022 | U2OS 48-hour ORF Plate 1 | 12288            |
+| BR00117023 | U2OS 48-hour ORF Plate 2 | 12288            |
+
+</details>
+
+### 2020_11_19_TimepointDay4
+
+Eight ORF plates imaged four days after staining.
+
+<details>
+<summary>Click to expand</summary>
+
+| Barcode    | Description              | Number_of_images |
+| ---------- | ------------------------ | ---------------- |
+| BR00118050 | A549 96-hour ORF Plate 1 | 12288            | 
+| BR00117006 | A549 96-hour ORF Plate 2 | 12288            |
+| BR00118039 | U2OS 96-hour ORF Plate 1 | 12288            |
+| BR00118040 | U2OS 96-hour ORF Plate 2 | 12288            |
+| BR00117020 | A549 48-hour ORF Plate 1 | 12288            |
+| BR00117021 | A549 48-hour ORF Plate 2 | 12288            |
+| BR00117022 | U2OS 48-hour ORF Plate 1 | 12208            |
+| BR00117023 | U2OS 48-hour ORF Plate 2 | 12280            |
+
+</details>
+
+### 2020_12_02_CPJUMP1_2WeeksTimePoint
+
+Eight ORF plates imaged 14 days after staining.
+
+<details>
+<summary>Click to expand</summary>
+
+| Barcode    | Description              | Number_of_images |
+| ---------- | ------------------------ | ---------------- |
+| BR00118050 | A549 96-hour ORF Plate 1 | 27648            | 
+| BR00117006 | A549 96-hour ORF Plate 2 | 27648            |
+| BR00118039 | U2OS 96-hour ORF Plate 1 | 27648            |
+| BR00118040 | U2OS 96-hour ORF Plate 2 | 27648            |
+| BR00117020 | A549 48-hour ORF Plate 1 | 27320            |
+| BR00117021 | A549 48-hour ORF Plate 2 | 27632            |
+| BR00117022 | U2OS 48-hour ORF Plate 1 | 27648            |
+| BR00117023 | U2OS 48-hour ORF Plate 2 | 27648            |
+
+</details>
+
+### 2020_12_07_CPJUMP1_4WeeksTimePoint
+
+Eight ORF plates imaged 28 days after staining.
+
+<details>
+<summary>Click to expand</summary>
+
+| Barcode    | Description              | Number_of_images |
+| ---------- | ------------------------ | ---------------- |
+| BR00118050 | A549 96-hour ORF Plate 1 | 27648            | 
+| BR00117006 | A549 96-hour ORF Plate 2 | 27648            |
+| BR00118039 | U2OS 96-hour ORF Plate 1 | 27648            |
+| BR00118040 | U2OS 96-hour ORF Plate 2 | 27648            |
+| BR00117020 | A549 48-hour ORF Plate 1 | 27648            |
+| BR00117021 | A549 48-hour ORF Plate 2 | 27640            |
+| BR00117022 | U2OS 48-hour ORF Plate 1 | 27648            |
+| BR00117023 | U2OS 48-hour ORF Plate 2 | 27648            |
+
+</details>
+
+### 2020_12_08_CPJUMP1_Bleaching
+
+Four compound plates imaged and additional six times (`A`, `B`, `C`, `D`, `E` and `F`).
+
+<details>
+<summary>Click to expand</summary>
+
+| Barcode     | Description                   | Number_of_images |
+| ----------- | ----------------------------- | ---------------- |
+| BR00116991A | A549 24-hour Compound Plate 1 | 21504            |
+| BR00116992A | A549 24-hour Compound Plate 2 | 21504            |
+| BR00116993A | A549 24-hour Compound Plate 3 | 27648            |
+| BR00116994A | A549 24-hour Compound Plate 4 | 27648            |
+| BR00116991B | A549 24-hour Compound Plate 1 | 21504            |
+| BR00116992B | A549 24-hour Compound Plate 2 | 21504            |
+| BR00116993B | A549 24-hour Compound Plate 3 | 27648            |
+| BR00116994B | A549 24-hour Compound Plate 4 | 27648            |
+| BR00116991C | A549 24-hour Compound Plate 1 | 21504            |
+| BR00116992C | A549 24-hour Compound Plate 2 | 21504            |
+| BR00116993C | A549 24-hour Compound Plate 3 | 27648            |
+| BR00116994C | A549 24-hour Compound Plate 4 | 27648            |
+| BR00116991D | A549 24-hour Compound Plate 1 | 21504            |
+| BR00116992D | A549 24-hour Compound Plate 2 | 21504            |
+| BR00116993D | A549 24-hour Compound Plate 3 | 27648            |
+| BR00116994D | A549 24-hour Compound Plate 4 | 27648            |
+| BR00116991E | A549 24-hour Compound Plate 1 | 21504            |
+| BR00116992E | A549 24-hour Compound Plate 2 | 21504            |
+| BR00116993E | A549 24-hour Compound Plate 3 | 27648            |
+| BR00116994E | A549 24-hour Compound Plate 4 | 27648            |
+| BR00116991F | A549 24-hour Compound Plate 1 | 21504            |
+| BR00116992F | A549 24-hour Compound Plate 2 | 21504            |
+| BR00116993F | A549 24-hour Compound Plate 3 | 27648            |
+| BR00116994F | A549 24-hour Compound Plate 4 | 27648            | 
+
+</details>
 
 ## Image metadata
+
 The folder for each 384-well plate typically contains images from nine sites for each well (for some wells 7,8 or 16 sites were imaged). 
 The (x,y) coordinates of sites are available in the `Metadata_PositionX` and `Metadata_PositionY` columns of the `load_data.csv.gz` files in the `load_data_csv` folder. 
 There are eight images per site (five from the fluorescent channels and three brightfield images). 
@@ -27,179 +210,18 @@ The names of the image files follow the naming convention - `rXXcXXfXXp01-chXXsk
     - `ch05` - Hoechst 33342
     - `ch06-8` - three brighfield z planes.
 
-# CellProfiler pipeline
-Pipelines for cell segmentation and profile extraction is available is the folder `pipelines`.
+Cell bounding boxes and segmentation masks have not been provided. 
 
-# Plate map and Metadata
-Plate map and Metadata are available from the `metadata/` folder and also from https://github.com/jump-cellpainting/JUMP-Target.
+## Plate map and Perturbation Metadata
+Plate map and Metadata are available in the `metadata/` folder and also from https://github.com/jump-cellpainting/JUMP-Target.
 
-# Batch and plate metadata 
-There are six batches of data - `2020_11_04_CPJUMP1`, `2020_11_18_CPJUMP1_TimepointDay1`, `2020_11_19_TimepointDay4`, `2020_12_02_CPJUMP1_2WeeksTimePoint`, `2020_12_07_CPJUMP1_4WeeksTimePoint` and `2020_12_08_CPJUMP1_Bleaching`.
+# Step 2: Extract features using CellProfiler
+Use the CellProfiler pipelines in `pipelines/2020_11_04_CPJUMP1` and follow the instructions in the [profiling handbook](https://cytomining.github.io/profiling-handbook/) up until chapter 5.3 to generate the well-level aggregated profiles from the cell images. 
 
-## 2020_11_04_CPJUMP1
+# Step 3: Process the profiles using pycytominer
+Pycytominer adds metadata from `metadata/moa` to the well-level aggregated profiles, normalizes the profiles to the whole plate and to the negative controls, separately and filters out invariant and redundant features. 
 
-51 384-well plates of cells from two cell lines treated with different types of perturbations at different time points.
-
-<details>
-<summary>Click to expand</summary>
-
-| Barcode    | Description                                     |
-| ---------- | ----------------------------------------------- |
-| BR00118049 | A549 96-hour ORF w/ Blasticidin Plate 1         |
-| BR00118050 | A549 96-hour ORF Plate 1                        |
-| BR00117006 | A549 96-hour ORF Plate 2                        |
-| BR00118039 | U2OS 96-hour ORF Plate 1                        |
-| BR00118040 | U2OS 96-hour ORF Plate 2                        |
-| BR00117020 | A549 48-hour ORF Plate 1                        |
-| BR00117021 | A549 48-hour ORF Plate 2                        |
-| BR00117022 | U2OS 48-hour ORF Plate 1                        |
-| BR00117023 | U2OS 48-hour ORF Plate 2                        |
-| BR00118041 | A549 96-hour CRISPR Plate 1                     |
-| BR00118042 | A549 96-hour CRISPR Plate 2                     |
-| BR00118043 | A549 96-hour CRISPR Plate 3                     |
-| BR00118044 | A549 96-hour CRISPR Plate 4                     |
-| BR00118045 | U2OS 96-hour CRISPR Plate 1                     |
-| BR00118046 | U2OS 96-hour CRISPR Plate 2                     |
-| BR00118047 | U2OS 96-hour CRISPR Plate 3                     |
-| BR00118048 | U2OS 96-hour CRISPR Plate 4                     |
-| BR00117003 | A549 144-hour CRISPR Plate 1                    |
-| BR00117004 | A549 144-hour CRISPR Plate 2                    |
-| BR00117005 | A549 144-hour CRISPR Plate 3                    |
-| BR00117000 | A549 144-hour CRISPR Plate 4                    |
-| BR00117002 | A549 144-hour CRISPR w/ Puromycin Plate 1       |
-| BR00117001 | A549 144-hour CRISPR w/ Puromycin Plate 2       |
-| BR00116997 | U2OS 144-hour CRISPR Plate 1                    |
-| BR00116998 | U2OS 144-hour CRISPR Plate 2                    |
-| BR00116999 | U2OS 144-hour CRISPR Plate 3                    |
-| BR00116996 | U2OS 144-hour CRISPR Plate 4                    |
-| BR00116991 | A549 24-hour Compound Plate 1                   |
-| BR00116992 | A549 24-hour Compound Plate 2                   |
-| BR00116993 | A549 24-hour Compound Plate 3                   |
-| BR00116994 | A549 24-hour Compound Plate 4                   |
-| BR00116995 | U2OS 24-hour Compound Plate 1                   |
-| BR00117024 | U2OS 24-hour Compound Plate 2                   |
-| BR00117025 | U2OS 24-hour Compound Plate 3                   |
-| BR00117026 | U2OS 24-hour Compound Plate 4                   |
-| BR00117017 | A549 48-hour Compound Plate 1                   |
-| BR00117019 | A549 48-hour Compound Plate 2                   |
-| BR00117015 | A549 48-hour Compound Plate 3                   |
-| BR00117016 | A549 48-hour Compound Plate 4                   |
-| BR00117012 | U2OS 48-hour Compound Plate 1                   |
-| BR00117013 | U2OS 48-hour Compound Plate 2                   |
-| BR00117010 | U2OS 48-hour Compound Plate 3                   |
-| BR00117011 | U2OS 48-hour Compound Plate 4                   |
-| BR00117054 | A549 48-hour +20% Seed Density Compound Plate 1 |
-| BR00117055 | A549 48-hour +20% Seed Density Compound Plate 2 |
-| BR00117008 | A549 48-hour -20% Seed Density Compound Plate 1 |
-| BR00117009 | A549 48-hour -20% Seed Density Compound Plate 2 |
-| BR00117052 | A549 Cas9 48-hour Compound Plate 1              |
-| BR00117053 | A549 Cas9 48-hour Compound Plate 2              |
-| BR00117050 | A549 Cas9 48-hour Compound Plate 3              |
-| BR00117051 | A549 Cas9 48-hour Compound Plate 4              |
-
-</details>
-
-## 2020_11_18_CPJUMP1_TimepointDay1
-
-Eight ORF plates imaged one day after staining.
-
-<details>
-<summary>Click to expand</summary>
-
-| Barcode    | Description                                     |
-| ---------- | ----------------------------------------------- |
-| BR00118050 | A549 96-hour ORF Plate 1                        |
-| BR00117006 | A549 96-hour ORF Plate 2                        |
-| BR00118039 | U2OS 96-hour ORF Plate 1                        |
-| BR00118040 | U2OS 96-hour ORF Plate 2                        |
-| BR00117020 | A549 48-hour ORF Plate 1                        |
-| BR00117021 | A549 48-hour ORF Plate 2                        |
-| BR00117022 | U2OS 48-hour ORF Plate 1                        |
-| BR00117023 | U2OS 48-hour ORF Plate 2                        |
-
-</details>
-
-## 2020_11_19_TimepointDay4
-
-Eight ORF plates imaged four days after staining.
-
-<details>
-<summary>Click to expand</summary>
-
-| Barcode    | Description                                     |
-| ---------- | ----------------------------------------------- |
-| BR00118050 | A549 96-hour ORF Plate 1                        |
-| BR00117006 | A549 96-hour ORF Plate 2                        |
-| BR00118039 | U2OS 96-hour ORF Plate 1                        |
-| BR00118040 | U2OS 96-hour ORF Plate 2                        |
-| BR00117020 | A549 48-hour ORF Plate 1                        |
-| BR00117021 | A549 48-hour ORF Plate 2                        |
-| BR00117022 | U2OS 48-hour ORF Plate 1                        |
-| BR00117023 | U2OS 48-hour ORF Plate 2                        |
-
-</details>
-
-## 2020_12_02_CPJUMP1_2WeeksTimePoint
-
-Eight ORF plates imaged 14 days after staining.
-
-<details>
-<summary>Click to expand</summary>
-
-| Barcode    | Description                                     |
-| ---------- | ----------------------------------------------- |
-| BR00118050 | A549 96-hour ORF Plate 1                        |
-| BR00117006 | A549 96-hour ORF Plate 2                        |
-| BR00118039 | U2OS 96-hour ORF Plate 1                        |
-| BR00118040 | U2OS 96-hour ORF Plate 2                        |
-| BR00117020 | A549 48-hour ORF Plate 1                        |
-| BR00117021 | A549 48-hour ORF Plate 2                        |
-| BR00117022 | U2OS 48-hour ORF Plate 1                        |
-| BR00117023 | U2OS 48-hour ORF Plate 2                        |
-
-</details>
-
-## 2020_12_07_CPJUMP1_4WeeksTimePoint
-
-Eight ORF plates imaged 28 days after staining.
-
-<details>
-<summary>Click to expand</summary>
-
-| Barcode    | Description                                     |
-| ---------- | ----------------------------------------------- |
-| BR00118050 | A549 96-hour ORF Plate 1                        |
-| BR00117006 | A549 96-hour ORF Plate 2                        |
-| BR00118039 | U2OS 96-hour ORF Plate 1                        |
-| BR00118040 | U2OS 96-hour ORF Plate 2                        |
-| BR00117020 | A549 48-hour ORF Plate 1                        |
-| BR00117021 | A549 48-hour ORF Plate 2                        |
-| BR00117022 | U2OS 48-hour ORF Plate 1                        |
-| BR00117023 | U2OS 48-hour ORF Plate 2                        |
-
-</details>
-
-## 2020_12_08_CPJUMP1_Bleaching
-
-Four compound plates imaged and additional six times (`A`, `B`, `C`, `D`, `E` and `F`).
-
-<details>
-<summary>Click to expand</summary>
-
-| Barcode    | Description                                     |
-| ---------- | ----------------------------------------------- |
-| BR00116991 | A549 24-hour Compound Plate 1                   |
-| BR00116992 | A549 24-hour Compound Plate 2                   |
-| BR00116993 | A549 24-hour Compound Plate 3                   |
-| BR00116994 | A549 24-hour Compound Plate 4                   |
-
-</details>
-
-# CellProfiler feature extraction
-Use the CellProfiler pipelines in `pipelines/2020_11_04_CPJUMP1` and follow the instructions in the [profiling handbook](https://cytomining.github.io/profiling-handbook/) up until chapter 6.2 to generate the well level aggregated profiles from the cell images.
-
-# Profile processing with pycytominer
-Clone this repo, download the files and activate the conda environment, after installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html), with the commands
+To reproduce the profiles, clone this repo, download the files and activate the conda environment, after installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html), with the commands
 
 ```bash
 git clone https://github.com/jump-cellpainting/neurips-cpjump1
@@ -227,15 +249,15 @@ This creates the profiles in the `profiles/` folder for all the plates in each b
 | `<plate_ID>_normalized_feature_select_plate.csv.gz`        | Feature selected normalized to whole plate profiles      |
 | `<plate_ID>_normalized_feature_select_negcon_plate.csv.gz` | Feature selected normalized to negative control profiles |
 
-# Running the analysis script
-To run the analysis script activate the conda environment in `analysis/`
+# Step 4: Run the analysis script
+The analysis scripts compute `Percent Replicating` which is a measure of signature strength, `Percent Matching across modalities` which is a measure of how well the chemical and genetic perturbation profiles match. To run the analysis script activate the conda environment in `analysis/`
 
 ```bash
 conda env create --force --file analysis/environment.yml
 conda activate analysis
 ```
 
-Then run the jupyter notebook (`analysis/0.percent_matching.ipynb`) to create the figures in `analysis/figues/`.
+Then run the jupyter notebooks (`analysis/0.percent_matching.ipynb` and `analysis/1.percent_matching_across_modalities.ipynb`) to create the figures in `analysis/figues/` and the tables in `analysis/README.md`.
 
 # Compute resources
 For segmentation and feature extraction, each plate of images took on average 30 minutes to process, using a fleet of 200 m4.xlarge spot instances (800 vCPUs), which cost approximately $10 per plate.  Aggregation into mean profiles takes 12-18 hours, though can be parallelized onto a single large machine, at the total cost of <$1 per plate. For profile processing with pycytominer, each plate took under two minutes, using a local machine (Intel Core i9 with 16 GB memory)
