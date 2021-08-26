@@ -1,4 +1,24 @@
 Features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and the single cell profiles were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/neurips-cpjump1/tree/main/benchmark). Steps for reproducing the data in this repository are outlined below.
+=======
+- [Step 1: Download cell images](#step-1--download-cell-images)
+  * [Batch and Plate metadata](#batch-and-plate-metadata)
+    + [2020_11_04_CPJUMP1](#2020-11-04-cpjump1)
+    + [2020_11_18_CPJUMP1_TimepointDay1](#2020-11-18-cpjump1-timepointday1)
+    + [2020_11_19_TimepointDay4](#2020-11-19-timepointday4)
+    + [2020_12_02_CPJUMP1_2WeeksTimePoint](#2020-12-02-cpjump1-2weekstimepoint)
+    + [2020_12_07_CPJUMP1_4WeeksTimePoint](#2020-12-07-cpjump1-4weekstimepoint)
+    + [2020_12_08_CPJUMP1_Bleaching](#2020-12-08-cpjump1-bleaching)
+  * [Image metadata](#image-metadata)
+  * [Plate map and Perturbation Metadata](#plate-map-and-perturbation-metadata)
+- [Step 2: Extract features using CellProfiler](#step-2--extract-features-using-cellprofiler)
+- [Step 3: Process the profiles using pycytominer](#step-3--process-the-profiles-using-pycytominer)
+- [Step 4: Run the analysis script](#step-4--run-the-analysis-script)
+- [Compute resources](#compute-resources)
+- [License](#license)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+Features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and the single cell profiles were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/neurips-cpjump1/tree/main/analysis). Steps for reproducing the data in this repository are outlined below.
 
 # Step 1: Download cell images
 
