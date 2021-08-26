@@ -1,6 +1,3 @@
-Features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and the single cell profiles were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/neurips-cpjump1/tree/main/benchmark). Steps for reproducing the data in this repository are outlined below.
-
-=======
 - [Step 1: Download cell images](#step-1--download-cell-images)
   * [Batch and Plate metadata](#batch-and-plate-metadata)
     + [2020_11_04_CPJUMP1](#2020-11-04-cpjump1)
