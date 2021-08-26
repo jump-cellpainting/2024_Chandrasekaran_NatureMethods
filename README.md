@@ -281,6 +281,20 @@ conda activate benchmark
 
 Then run the jupyter notebooks (`benchmark/0.percent_matching.ipynb` and `benchmark/1.percent_matching_across_modalities.ipynb`) to create the figures in `benchmark/figues/` and the tables in `benchmark/README.md`.
 
+# Data Organization
+The following is the description of contents of the relevant folders in this repo.
+
+- `benchmark` - contains the notebooks for reproducing the benchmark scores and figures
+- `config_files` - contains the config files required for processing the profiles with pycytominer
+- `example_images` - contains single-site, all channel images from ten example wells
+- `load_data_csv` - contains file location and other image metadata for each plate in all batches
+- `metadata` - contains the perturbation metadata and  plate maps
+- `pipelines` - contains the CellProfiler pipelines for cell segmentation and feature extraction
+- `profiling-recipe` - contains the scripts that for running the pycytominer pipeline for processing profiles
+- `visualization` - contains notebooks for generating plate map and clinical phase status visualization figures
+- `environment.yml` - conda environment for running pycytominer pipeline
+- `run.sh` - runs the pycytominer pipeline for processing profiles
+
 # Compute resources
 For segmentation and feature extraction, each plate of images took on average 30 minutes to process, using a fleet of 200 m4.xlarge spot instances (800 vCPUs), which cost approximately $10 per plate.  Aggregation into mean profiles takes 12-18 hours, though can be parallelized onto a single large machine, at the total cost of <$1 per plate. For profile processing with pycytominer, each plate took under two minutes, using a local machine (Intel Core i9 with 16 GB memory)
 
