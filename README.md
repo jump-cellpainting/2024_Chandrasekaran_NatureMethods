@@ -301,4 +301,4 @@ For segmentation and feature extraction, each plate of images took on average 30
 # License
 
 We use a dual license in this repository.
-We license the source code as [BSD 3-Clause](LICENSE), and license the data, results, and figures as [CC0 1.0](LICENSE_CC0.md).
+We license the source code as [BSD 3-Clause](LICENSE_BSD.md), and license the data, results, and figures as [CC0 1.0](LICENSE_CC0.md).
