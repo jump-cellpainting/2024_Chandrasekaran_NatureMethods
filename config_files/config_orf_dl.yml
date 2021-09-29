@@ -1,0 +1,47 @@
+---
+pipeline: 2019_07_11_JUMP-CP
+output_dir: profiles
+platemap_well_column: Metadata_well_position
+compartments: cells,cytoplasm,nuclei
+annotate:
+  perform: true
+  well_column: Metadata_Well
+  external : JUMP-Target-1_orf_metadata.tsv
+normalize:
+  perform: false
+  method: mad_robustize
+  features: infer
+normalize_negcon:
+  perform: false
+  method: mad_robustize
+  features: infer
+feature_select:
+  perform: false
+  features: infer
+  level: plate
+  operations:
+    - variance_threshold
+    - correlation_threshold
+    - drop_na_columns
+    - blocklist
+feature_select_negcon:
+  perform: false
+  features: infer
+  level: plate
+  operations:
+    - variance_threshold
+    - correlation_threshold
+    - drop_na_columns
+    - blocklist
+options:
+  compression: gzip
+  float_format: "%.5g"
+  samples: all
+---
+batch: 2020_11_04_CPJUMP1_DL
+plates:
+  - name: BR00118039
+    process: true
+  - name: BR00118040
+    process: true
+process: true

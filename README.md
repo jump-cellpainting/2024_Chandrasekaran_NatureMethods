@@ -8,7 +8,7 @@
     + [2020_12_08_CPJUMP1_Bleaching](#2020-12-08-cpjump1-bleaching)
   * [Image metadata](#image-metadata)
   * [Plate map and Perturbation Metadata](#plate-map-and-perturbation-metadata)
-- [Step 2: Extract features using CellProfiler](#step-2--extract-features-using-cellprofiler)
+- [Step 2: Extract features using CellProfiler and DeepProfiler](#step-2--extract-features-using-cellprofiler-and-deepprofiler)
 - [Step 3: Process the profiles using pycytominer](#step-3--process-the-profiles-using-pycytominer)
 - [Step 4: Run the analysis script](#step-4--run-the-analysis-script)
 - [Compute resources](#compute-resources)
@@ -16,7 +16,7 @@
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-Features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and the single cell profiles were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/neurips-cpjump1/tree/main/benchmark). Steps for reproducing the data in this repository are outlined below.
+Features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and the single cell profiles were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). Features were also extracted using [DeepProfiler](https://github.com/cytomining/DeepProfiler) which were annotated and spherized. The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/neurips-cpjump1/tree/main/benchmark). Steps for reproducing the data in this repository are outlined below.
 
 # Step 1: Download cell images
 
@@ -235,8 +235,10 @@ Cell bounding boxes and segmentation masks have not been provided.
 ## Plate map and Perturbation Metadata
 Plate map and Metadata are available in the `metadata/` folder and also from https://github.com/jump-cellpainting/JUMP-Target.
 
-# Step 2: Extract features using CellProfiler
+# Step 2: Extract features using CellProfiler and DeepProfiler
 Use the CellProfiler pipelines in `pipelines/2020_11_04_CPJUMP1` and follow the instructions in the [profiling handbook](https://cytomining.github.io/profiling-handbook/) up until chapter 5.3 to generate the well-level aggregated profiles from the cell images. 
+
+**DeepProfiler instructions will go here**
 
 # Step 3: Process the profiles using pycytominer
 Pycytominer adds metadata from `metadata/moa` to the well-level aggregated profiles, normalizes the profiles to the whole plate and to the negative controls, separately and filters out invariant and redundant features. 
@@ -272,6 +274,8 @@ This creates the profiles in the `profiles/` folder for all the plates in each b
 # Step 4: Run the benchmark script
 The benchmark scripts compute `Percent Replicating` which is a measure of signature strength, `Percent Matching across modalities` which is a measure of how well the chemical and genetic perturbation profiles match. These metrics are calculated using the `Feature selected normalized to negative control profiles` (well-level profiles).
 
+In the case of features extracted using DeepProfiler, the annotated features are spherized and `Percent Replicating` is calculated on these profiles.
+
 To run the benchmark script activate the conda environment in `benchmark/`
 
 ```bash
@@ -297,6 +301,8 @@ The following is the description of contents of the relevant folders in this rep
 
 # Compute resources
 For segmentation and feature extraction, each plate of images took on average 30 minutes to process, using a fleet of 200 m4.xlarge spot instances (800 vCPUs), which cost approximately $10 per plate.  Aggregation into mean profiles takes 12-18 hours, though can be parallelized onto a single large machine, at the total cost of <$1 per plate. For profile processing with pycytominer, each plate took under two minutes, using a local machine (Intel Core i9 with 16 GB memory)
+
+**DeepProfiler statistics will go here**
 
 # License
 
