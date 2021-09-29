@@ -35,3 +35,11 @@
 | Compound_U2OS_48        | ORF_U2OS_96            |                9.8 |
 | Compound_U2OS_48        | CRISPR_U2OS_96         |                9.8 |
 | Compound_U2OS_48        | CRISPR_U2OS_144        |                7.2 |
+
+# Percent Replicating DL features
+
+| Description      | Perturbation   | time   | Cell   |   Percent_Replicating |
+|:-----------------|:---------------|:-------|:-------|----------------------:|
+| ORF_U2OS_96      | ORF            | long   | U2OS   |                  41.9 |
+| CRISPR_U2OS_144  | CRISPR         | long   | U2OS   |                  30.8 |
+| Compound_U2OS_48 | Compound       | long   | U2OS   |                  59.5 |
