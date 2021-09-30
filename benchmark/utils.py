@@ -289,6 +289,6 @@ def sphere_plate_zca_corr(plate):
         sphered_vals, columns=get_featurecols(plate), index=plate.index
     )
     metadata = get_metadata(plate)
-    combined = pd.concat([feature_df, metadata], axis=1)
+    combined = pd.concat([metadata, feature_df], axis=1)
     assert combined.shape == plate.shape
     return combined
