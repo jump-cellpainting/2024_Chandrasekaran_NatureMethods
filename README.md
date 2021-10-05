@@ -237,12 +237,12 @@ Cell bounding boxes and segmentation masks have not been provided.
 Plate map and Metadata are available in the `metadata/` folder and also from https://github.com/jump-cellpainting/JUMP-Target.
 
 # Step 2: Extract features using CellProfiler and DeepProfiler
-Use the CellProfiler pipelines in `pipelines/2020_11_04_CPJUMP1` and follow the instructions in the [profiling handbook](https://cytomining.github.io/profiling-handbook/) up until chapter 5.3 to generate the well-level aggregated profiles from the cell images. 
+Use the CellProfiler pipelines in `pipelines/2020_11_04_CPJUMP1` and follow the instructions in the [profiling handbook](https://cytomining.github.io/profiling-handbook/) up until chapter 5.3 to generate the well-level aggregated CellProfiler profiles from the cell images. 
 
 **DeepProfiler instructions will go here**
 
 # Step 3: Process the profiles using pycytominer
-Pycytominer adds metadata from `metadata/moa` to the well-level aggregated profiles, normalizes the profiles to the whole plate and to the negative controls, separately and filters out invariant and redundant features. 
+Pycytominer adds metadata from `metadata/moa` to the well-level aggregated profiles, normalizes the profiles to the whole plate and to the negative controls, separately and filters out invariant and redundant features.
 
 To reproduce the profiles, clone this repo, download the files and activate the conda environment, after installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html), with the commands
 
@@ -293,12 +293,15 @@ The following is the description of contents of the relevant folders in this rep
 - `config_files` - contains the config files required for processing the profiles with pycytominer
 - `example_images` - contains single-site, all channel images from ten example wells
 - `load_data_csv` - contains file location and other image metadata for each plate in all batches
-- `metadata` - contains the perturbation metadata and  plate maps
+- `metadata` - contains the perturbation metadata and plate maps
 - `pipelines` - contains the CellProfiler pipelines for cell segmentation and feature extraction
 - `profiling-recipe` - contains the scripts that for running the pycytominer pipeline for processing profiles
 - `visualization` - contains notebooks for generating plate map and clinical phase status visualization figures
 - `environment.yml` - conda environment for running pycytominer pipeline
 - `run.sh` - runs the pycytominer pipeline for processing profiles
+
+# Datasheet
+We have also provided a [DataSheet](DATASHEET.md) with additional details about this dataset.
 
 # Compute resources
 For segmentation and feature extraction, each plate of images took on average 30 minutes to process, using a fleet of 200 m4.xlarge spot instances (800 vCPUs), which cost approximately $10 per plate.  Aggregation into mean profiles takes 12-18 hours, though can be parallelized onto a single large machine, at the total cost of <$1 per plate. For profile processing with pycytominer, each plate took under two minutes, using a local machine (Intel Core i9 with 16 GB memory)
@@ -306,6 +309,5 @@ For segmentation and feature extraction, each plate of images took on average 30
 **DeepProfiler statistics will go here**
 
 # License
-
 We use a dual license in this repository.
 We license the source code as [BSD 3-Clause](LICENSE_BSD3.md), and license the data, results, and figures as [CC0 1.0](LICENSE_CC0.md).
