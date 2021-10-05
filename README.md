@@ -29,7 +29,7 @@ aws s3 cp \
   s3://cell-painting-gallery/jump-pilots/source_4/images . 
 ```
 
-(We are in the process of moving the images to the `cell-painting-gallery` bucket. The images will be available for download shortly)
+(We are in the process of moving the images to the `cellpainting-gallery` bucket. The images will be available for download shortly)
 
 See this [wiki](https://github.com/carpenterlab/2016_bray_natprot/wiki/What-do-Cell-Painting-features-mean%3F) for sample Cell Painting images and the meaning of (CellProfiler-derived) Cell Painting features. 
 
