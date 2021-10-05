@@ -26,7 +26,7 @@ Cell images are available on a S3 bucket. The images can be downloaded using the
 ```bash
 aws s3 cp \
   --recursive \
-  s3://cell-painting-gallery/jump-pilots/source_4/2019_07_11_JUMP-CP-pilots/images . 
+  s3://cell-painting-gallery/jump-pilots/source_4/images . 
 ```
 
 (We are in the process of moving the images to the `cell-painting-gallery` bucket. The images will be available for download shortly)
