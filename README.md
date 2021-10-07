@@ -301,14 +301,18 @@ The following is the description of contents of the relevant folders in this rep
 
 - `benchmark` - contains the notebooks for reproducing the benchmark scores and figures
 - `config_files` - contains the config files required for processing the profiles with pycytominer
+- `datasplit` - contains the recommended data splits
+- `deep_profiles` - contains the config files, functions and instructions for extracting DeepProfiler features
 - `example_images` - contains single-site, all channel images from ten example wells
 - `load_data_csv` - contains file location and other image metadata for each plate in all batches
 - `metadata` - contains the perturbation metadata and plate maps
 - `pipelines` - contains the CellProfiler pipelines for cell segmentation and feature extraction
+- `profiles` - contains both CellProfiler and DeepProfiler extracted features for all batches
 - `profiling-recipe` - contains the scripts that for running the pycytominer pipeline for processing profiles
 - `visualization` - contains notebooks for generating plate map and clinical phase status visualization figures
 - `environment.yml` - conda environment for running pycytominer pipeline
 - `run.sh` - runs the pycytominer pipeline for processing profiles
+- `maintenace_plan.md` - contains our maintenance plan for this dataset
 
 # Maintenance plan
 We have provided our maintenance plan in [maintenance_plan.md](maintenance_plan.md).
