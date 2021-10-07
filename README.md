@@ -26,10 +26,18 @@ Cell images are available on a S3 bucket. The images can be downloaded using the
 ```bash
 aws s3 cp \
   --recursive \
-  s3://cell-painting-gallery/jump-pilots/source_4/images . 
+  s3://cellpainting-gallery/jump-pilots/source_4/images/ . 
 ```
 
-(We are in the process of moving the images to the `cellpainting-gallery` bucket. The images will be available for download shortly)
+You can test out download for a single file using:
+
+```
+suffix=images/2020_11_04_CPJUMP1/images/BR00117010__2020-11-08T18_18_00-Measurement1/Images/r01c01f01p01-ch1sk1fk1fl1.tiff
+
+aws s3 cp \
+  s3://cellpainting-gallery/jump-pilot/source_4/${suffix} \
+  .
+```
 
 See this [wiki](https://github.com/carpenterlab/2016_bray_natprot/wiki/What-do-Cell-Painting-features-mean%3F) for sample Cell Painting images and the meaning of (CellProfiler-derived) Cell Painting features. 
 
