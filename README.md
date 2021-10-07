@@ -248,7 +248,8 @@ Plate map and Metadata are available in the `metadata/` folder and also from htt
 # Step 2: Extract features using CellProfiler and DeepProfiler
 Use the CellProfiler pipelines in `pipelines/2020_11_04_CPJUMP1` and follow the instructions in the [profiling handbook](https://cytomining.github.io/profiling-handbook/) up until chapter 5.3 to generate the well-level aggregated CellProfiler profiles from the cell images. 
 
-**DeepProfiler instructions will go here**
+Follow the [README.md](deep_profiles/README.md) to extract features from a
+pretrained neural network using [DeepProfiler](https://github.com/cytomining/DeepProfiler)
 
 # Step 3: Process the profiles using pycytominer
 Pycytominer adds metadata from `metadata/moa` to the well-level aggregated profiles, normalizes the profiles to the whole plate and to the negative controls, separately and filters out invariant and redundant features.
@@ -315,7 +316,9 @@ We have provided our maintenance plan in [maintenance_plan.md](maintenance_plan.
 # Compute resources
 For segmentation and feature extraction, each plate of images took on average 30 minutes to process, using a fleet of 200 m4.xlarge spot instances (800 vCPUs), which cost approximately $10 per plate.  Aggregation into mean profiles takes 12-18 hours, though can be parallelized onto a single large machine, at the total cost of <$1 per plate. For profile processing with pycytominer, each plate took under two minutes, using a local machine (Intel Core i9 with 16 GB memory)
 
-**DeepProfiler statistics will go here**
+DeepProfiler took around 8 hours to extract features from ~280.000 images in a
+p3.2xlarge with a single Tesla V100-SXM2 GPU. Note that cells location were
+previously precomputed with the CellProfiler segmentation pipeline.
 
 # License
 We use a dual license in this repository.
