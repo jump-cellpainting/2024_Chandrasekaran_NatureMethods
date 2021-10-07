@@ -12,6 +12,7 @@
 - [Step 3: Process the profiles using pycytominer](#step-3-process-the-profiles-using-pycytominer)
 - [Step 4: Run the analysis script](#step-4-run-the-analysis-script)
 - [Data Organization](#data-organization)
+- [Maintenance plan](#maintenance-plan)
 - [Compute resources](#compute-resources)
 - [License](#license)
 
@@ -308,8 +309,8 @@ The following is the description of contents of the relevant folders in this rep
 - `environment.yml` - conda environment for running pycytominer pipeline
 - `run.sh` - runs the pycytominer pipeline for processing profiles
 
-# Datasheet
-We have also provided a [DataSheet](DATASHEET.md) with additional details about this dataset.
+# Maintenance plan
+We have provided our maintenance plan in [maintenance_plan.md](maintenance_plan.md).
 
 # Compute resources
 For segmentation and feature extraction, each plate of images took on average 30 minutes to process, using a fleet of 200 m4.xlarge spot instances (800 vCPUs), which cost approximately $10 per plate.  Aggregation into mean profiles takes 12-18 hours, though can be parallelized onto a single large machine, at the total cost of <$1 per plate. For profile processing with pycytominer, each plate took under two minutes, using a local machine (Intel Core i9 with 16 GB memory)
