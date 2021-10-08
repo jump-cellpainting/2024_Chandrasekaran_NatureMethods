@@ -1,0 +1,87 @@
+{
+    "dataset": {
+        "images": {
+            "bits": 16,
+            "channels": [
+                "DNA",
+                "ER",
+                "RNA",
+                "AGP",
+                "Mito"
+            ],
+            "file_format": "tif",
+            "height": 1080,
+            "width": 1080
+        },
+        "locations": {
+            "area_coverage": 0.75,
+            "box_size": 96,
+            "mask_objects": false,
+            "mode": "single_cells"
+        },
+        "metadata": {
+            "control_value": "DMSO_0.0",
+            "label_field": "Metadata_Plate"
+        }
+    },
+    "prepare": {
+        "compression": {
+            "implement": false,
+            "scaling_factor": 1.0
+        },
+        "illumination_correction": {
+            "down_scale_factor": 4,
+            "median_filter_size": 24
+        }
+    },
+    "profile": {
+        "batch_size": 1024,
+        "checkpoint": "efficientnetb0_notop.h5",
+        "feature_layer": "avg_pool",
+        "use_pretrained_input_size": 224
+    },
+    "train": {
+        "model": {
+            "crop_generator": "repeat_channel_crop_generator",
+            "epochs": 100,
+            "initialization": "ImageNet",
+            "lr_schedule": "cosine",
+            "metrics": [
+                "accuracy",
+                "top_k"
+            ],
+            "name": "efficientnet",
+            "params": {
+                "batch_size": 64,
+                "conv_blocks": 0,
+                "feature_dim": 256,
+                "learning_rate": 0.005,
+                "pooling": "avg"
+            }
+        },
+        "partition": {
+            "split_field": "Allele_Replicate",
+            "targets": [
+                "Metadata_Plate"
+            ],
+            "training_values": [
+                0
+            ],
+            "validation_values": [
+                1
+            ]
+        },
+        "sampling": {
+            "cache_size": 15000,
+            "factor": 1,
+            "workers": 4
+        },
+        "validation": {
+            "batch_size": 32,
+            "frame": "val",
+            "frequency": 2,
+            "sample_first_crops": true,
+            "top_k": 5
+        }
+    }
+}
