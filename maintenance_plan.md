@@ -12,7 +12,7 @@ Organization: Broad Institute of MIT and Harvard
 
 1. **Who is supporting/hosting/maintaining the dataset?**
 
-	*The image data will be hosted on AWS Open Data (s3://cellpainting-gallery/jump-pilot/source_4) while the well-level aggregated profiles are on the GitHub repo (see https://github.com/jump-cellpainting/neurips-cpjump1#data-organization). We will continue to maintain the repo and respond to queries via GitHub issues (https://github.com/jump-cellpainting/neurips-cpjump1/issues).*
+	*The image data is hosted on AWS Open Data (s3://cellpainting-gallery/jump-pilot/source_4) while the well-level aggregated profiles are on the GitHub repo (see https://github.com/jump-cellpainting/neurips-cpjump1#data-organization). We will continue to maintain the repo and respond to queries via GitHub issues (https://github.com/jump-cellpainting/neurips-cpjump1/issues).*
 
 2. **How can the owner/curator/manager of the dataset be contacted (e.g. email address)?**
 
