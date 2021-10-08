@@ -1,5 +1,5 @@
 ---
-title: "Create data splits"
+title: "Create recommended data splits"
 output: html_notebook
 ---
 
@@ -7,7 +7,222 @@ output: html_notebook
 library(tidyverse)
 ```
 
-```{r}
+# Load metadata
 
+Create metadata file for this repo (do not run)
+
+```{r eval=TRUE}
+cpjump1 <- 
+  arrow::read_parquet("../../pilot-cpjump1-data/collated/2020_11_04_CPJUMP1/2020_11_04_CPJUMP1_all_normalized_feature_select_outlier_trimmed.parquet", col_select = matches("Metadata")) %>% 
+  filter(Metadata_experiment_condition == "Standard") %>%
+  mutate(Metadata_timepoint = as.integer(Metadata_timepoint))
+
+timepoint_code <- 
+  cpjump1 %>%
+  distinct(Metadata_experiment_type, Metadata_timepoint) %>%
+  arrange(Metadata_experiment_type, Metadata_timepoint) %>%
+  group_by(Metadata_experiment_type) %>%
+  mutate(Metadata_timepoint_code = rank(Metadata_timepoint)) %>%
+  mutate(Metadata_timepoint_code = factor(Metadata_timepoint_code, labels = c("low", "high")))
+  
+set.seed(42)
+
+gene_target_random_code <- 
+  cpjump1 %>%
+  distinct(Metadata_target) %>%
+  slice_sample(prop = 1) %>%
+  mutate(Metadata_target_radix = seq_along(Metadata_target))
+
+target_across <-
+  cpjump1 %>%
+  distinct(Metadata_experiment_type, Metadata_target) %>%
+  count(Metadata_target) %>% 
+  mutate(Metadata_target_is_across = n==3) 
+
+cpjump1 <-
+  cpjump1 %>% 
+  inner_join(timepoint_code) %>%
+  inner_join(gene_target_random_code) %>%
+  inner_join(target_across)
+
+cpjump1 %>%
+  write_csv("cpjump1_metadata.csv")
 ```
+
+Load metadata file for CPJUMP1
+
+```{r}
+cpjump1 <- vroom::vroom("cpjump1_metadata.csv", show_col_types = FALSE)
+```
+
+# Inspect data
+
+Number of wells
+
+```{r}
+cpjump1 %>%
+  count()
+```
+
+Number of plates
+
+```{r}
+cpjump1 %>%
+  distinct(Metadata_Plate) %>%
+  count()
+```
+Plates per experimental configuration
+
+```{r rows.print=20}
+cpjump1 %>%
+  distinct(Metadata_cell_line, Metadata_experiment_type, Metadata_timepoint_code, Metadata_timepoint, Metadata_Plate) %>%
+  count(Metadata_cell_line, Metadata_experiment_type, Metadata_timepoint, Metadata_timepoint_code)
+```
+Unique perturbations per experimental configuration
+
+```{r rows.print=20}
+cpjump1 %>%
+  distinct(Metadata_cell_line, Metadata_experiment_type, Metadata_timepoint_code, Metadata_timepoint, Metadata_broad_sample) %>%
+  count(Metadata_cell_line, Metadata_experiment_type, Metadata_timepoint, Metadata_timepoint_code)
+```
+Unique perturbations x experimental configuration
+
+```{r rows.print=20}
+cpjump1 %>%
+  distinct(Metadata_cell_line, Metadata_experiment_type, Metadata_timepoint_code, Metadata_timepoint, Metadata_broad_sample) %>%
+  count()
+```
+
+Genes represented in each perturbation type
+
+`n_gene`s have `n_pert`s targeting/overexpressing them, in that `Metadata_experiment_type`.
+
+```{r}
+cpjump1 %>%
+  distinct(Metadata_experiment_type, Metadata_broad_sample, Metadata_target) %>%
+  count(Metadata_experiment_type, Metadata_target, name = "n_pert") %>%
+  count(Metadata_experiment_type, n_pert, name = "n_gene") %>%
+  select(Metadata_experiment_type, n_gene, n_pert)
+```
+
+Count genes that are represented across all 3 perturbations (`Metadata_target_is_across` is `TRUE`)
+
+```{r}
+cpjump1 %>%
+  distinct(Metadata_experiment_type, Metadata_target, Metadata_target_is_across) %>%
+  count(Metadata_experiment_type, Metadata_target_is_across)
+```
+
+```{r}
+cpjump1_samples <- 
+  cpjump1 %>%
+  distinct(Metadata_cell_line, 
+           Metadata_experiment_type, 
+           Metadata_timepoint_code, 
+           Metadata_timepoint, 
+           Metadata_target, 
+           Metadata_target_is_across,
+           Metadata_target_radix,
+           Metadata_broad_sample)
+```
+
+# Define splits
+
+## Representation learning
+
+Strategy: Per cell line, train on CRISPRs and ORFs, validate on Compounds (one time point), and test on Compounds (the other time point).
+
+Splits are saved at [`representation_learning_split_example_1.csv`](representation_learning_split_example_1.csv); each row corresponds to a unique perturbation/cell line/time point. 
+There are 3276 rows in total.
+
+```{r}
+split_sets <- 
+  cpjump1_samples %>%
+  group_by(Metadata_cell_line) %>%
+  mutate(Metadata_split = 
+           case_when(
+             Metadata_experiment_type %in% c("CRISPR", "ORF") ~ "train",
+             Metadata_experiment_type == "Compound" & Metadata_timepoint_code == "low" ~ "validate",
+             Metadata_experiment_type == "Compound" & Metadata_timepoint_code == "high" ~ "test"
+           )) %>%
+  mutate(Metadata_split = as.factor(Metadata_split)) %>%
+  mutate(Metadata_split = fct_relevel(Metadata_split, c("train", "validate", "test")))
+```
+
+
+```{r}
+split_sets %>%
+  count(Metadata_cell_line, Metadata_split) %>%
+  group_by(Metadata_cell_line) %>%
+  mutate(frac = round(n/sum(n), 2))
+```
+
+
+```{r}
+split_sets %>% 
+  select(Metadata_split, everything()) %>%
+  write_csv("representation_learning_split_example_1.csv")
+```
+
+## Gene-compound matching
+
+Strategy: Per cell line and time-point level (i.e. low or high), split by gene target into 60-20-20 for train-validate-test.
+
+Splits are saved at [`gene_compound_split_example_1.csv`](gene_compound_split_example_1.csv); each row corresponds to a CRISPR-ORF-Compounds triplet.
+There are 320 rows in total.
+
+```{r}
+gene_target_split_sets <- 
+  cpjump1_samples %>%
+  distinct(Metadata_target, Metadata_target_radix, Metadata_target_is_across) %>%
+  filter(Metadata_target_is_across)
+  
+n_genes <- nrow(gene_target_split_sets)
+n_train  <- floor(n_genes * .60)
+n_validate <- ceiling(n_genes * .20)
+n_test <- n_genes - n_train - n_validate
+
+gene_target_split_sets <-
+  gene_target_split_sets %>%
+  mutate(Metadata_split =
+           c(
+             rep("train", n_train),
+             rep("validate", n_validate),
+             rep("test", n_test)
+           )) %>%
+  mutate(Metadata_split = as.factor(Metadata_split)) %>%
+  mutate(Metadata_split = fct_relevel(Metadata_split, c("train", "validate", "test")))
+
+gene_target_split_sets %>%
+  count(Metadata_split) %>%
+  mutate(frac = round(n/sum(n), 2))
+```
+
+
+```{r}
+split_sets <- 
+  cpjump1_samples %>%
+  inner_join(gene_target_split_sets) %>% 
+  filter(Metadata_target_is_across) %>% 
+  distinct(Metadata_broad_sample, 
+           Metadata_experiment_type, 
+           Metadata_target,
+           Metadata_split) %>% 
+  pivot_wider(values_from = "Metadata_broad_sample", 
+              names_from = "Metadata_experiment_type", 
+              values_fn = list) %>% 
+  unnest(c(ORF, CRISPR, Compound))
+
+split_sets %>%
+  count(Metadata_split) %>%
+  mutate(frac = round(n/sum(n), 2))
+```
+
+
+```{r}
+split_sets %>% 
+  select(Metadata_split, everything()) %>%
+  write_csv("gene_compound_split_example_1.csv")
+```
+
 
