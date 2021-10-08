@@ -318,10 +318,10 @@ The following is the description of contents of the relevant folders in this rep
 We have provided our maintenance plan in [maintenance_plan.md](maintenance_plan.md).
 
 # Compute resources
-For segmentation and feature extraction, each plate of images took on average 30 minutes to process, using a fleet of 200 m4.xlarge spot instances (800 vCPUs), which cost approximately $10 per plate.  Aggregation into mean profiles takes 12-18 hours, though can be parallelized onto a single large machine, at the total cost of <$1 per plate. For profile processing with pycytominer, each plate took under two minutes, using a local machine (Intel Core i9 with 16 GB memory)
+For segmentation and feature extraction by CellProfiler, each plate of images took on average 30 minutes to process, using a fleet of 200 m4.xlarge spot instances (800 vCPUs), which cost approximately $10 per plate.  Aggregation into mean profiles takes 12-18 hours, though can be parallelized onto a single large machine, at the total cost of <$1 per plate. For profile processing with pycytominer, each plate took under two minutes, using a local machine (Intel Core i9 with 16 GB memory)
 
 DeepProfiler took around 8 hours to extract features from ~280.000 images in a
-p3.2xlarge with a single Tesla V100-SXM2 GPU. Note that cells location were
+p3.2xlarge with a single Tesla V100-SXM2 GPU. Note that cell locations were
 previously precomputed with the CellProfiler segmentation pipeline.
 
 # License
