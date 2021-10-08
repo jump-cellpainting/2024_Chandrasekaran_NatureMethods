@@ -85,6 +85,13 @@ cpjump1 %>%
   distinct(Metadata_cell_line, Metadata_experiment_type, Metadata_timepoint_code, Metadata_timepoint, Metadata_broad_sample) %>%
   count(Metadata_cell_line, Metadata_experiment_type, Metadata_timepoint, Metadata_timepoint_code)
 ```
+Unique perturbations x experimental configuration
+
+```{r rows.print=20}
+cpjump1 %>%
+  distinct(Metadata_cell_line, Metadata_experiment_type, Metadata_timepoint_code, Metadata_timepoint, Metadata_broad_sample) %>%
+  count()
+```
 
 Genes represented in each perturbation type
 
@@ -125,7 +132,8 @@ cpjump1_samples <-
 
 Strategy: Per cell line, train on CRISPRs and ORFs, validate on Compounds (one time point), and test on Compounds (the other time point).
 
-Splits are saved at [`representation_learning_split_example_1.csv`](representation_learning_split_example_1.csv).
+Splits are saved at [`representation_learning_split_example_1.csv`](representation_learning_split_example_1.csv); each row corresponds to a unique perturbation/cell line/time point. 
+There are 3276 rows in total.
 
 ```{r}
 split_sets <- 
@@ -160,7 +168,8 @@ split_sets %>%
 
 Strategy: Per cell line and time-point level (i.e. low or high), split by gene target into 60-20-20 for train-validate-test.
 
-Splits are saved at [`gene_compound_split_example_1.csv`](gene_compound_split_example_1.csv).
+Splits are saved at [`gene_compound_split_example_1.csv`](gene_compound_split_example_1.csv); each row corresponds to a CRISPR-ORF-Compounds triplet.
+There are 320 rows in total.
 
 ```{r}
 gene_target_split_sets <- 
