@@ -1,0 +1,16 @@
+Description,Perturbation,time,Cell,Percent_Replicating,feature_set
+ORF_A549_48,ORF,short,A549,33.8,CellProfiler
+ORF_A549_96,ORF,long,A549,31.9,CellProfiler
+ORF_U2OS_48,ORF,short,U2OS,51.2,CellProfiler
+ORF_U2OS_96,ORF,long,U2OS,45.6,CellProfiler
+CRISPR_A549_96,CRISPR,short,A549,43.6,CellProfiler
+CRISPR_A549_144,CRISPR,long,A549,44.9,CellProfiler
+CRISPR_U2OS_96,CRISPR,short,U2OS,69.2,CellProfiler
+CRISPR_U2OS_144,CRISPR,long,U2OS,49.5,CellProfiler
+Compound_A549_24,Compound,short,A549,84,CellProfiler
+Compound_A549_48,Compound,long,A549,97.1,CellProfiler
+Compound_U2OS_24,Compound,short,U2OS,77.8,CellProfiler
+Compound_U2OS_48,Compound,long,U2OS,79.1,CellProfiler
+ORF_U2OS_96,ORF,long,U2OS,41.9,DeepProfiler
+CRISPR_U2OS_144,CRISPR,long,U2OS,30.8,DeepProfiler
+Compound_U2OS_48,Compound,long,U2OS,59.5,DeepProfiler
