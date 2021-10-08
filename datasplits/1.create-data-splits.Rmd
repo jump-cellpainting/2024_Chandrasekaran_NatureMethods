@@ -152,6 +152,7 @@ split_sets %>%
 
 ```{r}
 split_sets %>% 
+  select(Metadata_split, everything()) %>%
   write_csv("representation_learning_split_example_1.csv")
 ```
 
@@ -211,6 +212,7 @@ split_sets %>%
 
 ```{r}
 split_sets %>% 
+  select(Metadata_split, everything()) %>%
   write_csv("gene_compound_split_example_1.csv")
 ```
 
