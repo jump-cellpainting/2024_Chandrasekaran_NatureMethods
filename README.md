@@ -312,7 +312,7 @@ The following is the description of contents of the relevant folders in this rep
 - `visualization` - contains notebooks for generating plate map and clinical phase status visualization figures
 - `environment.yml` - conda environment for running pycytominer pipeline
 - `run.sh` - runs the pycytominer pipeline for processing profiles
-- `maintenace_plan.md` - contains our maintenance plan for this dataset
+- `maintenance_plan.md` - contains our maintenance plan for this dataset
 
 # Maintenance plan
 We have provided our maintenance plan in [maintenance_plan.md](maintenance_plan.md).
