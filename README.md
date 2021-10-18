@@ -27,8 +27,9 @@ Cell images are available on a S3 bucket. The images can be downloaded using the
 ```bash
 aws s3 cp \
   --recursive \
-  s3://cellpainting-gallery/jump-pilots/source_4/images/ . 
+  s3://cellpainting-gallery/jump-pilot/source_4/images/ . 
 ```
+You can use ```--no-sign-request``` to download data from S3 bucket without sign-in.
 
 You can test out download for a single file using:
 
