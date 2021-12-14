@@ -57,7 +57,7 @@ feature_select_negcon:
     - drop_na_columns
     - blocklist
 quality_control:
-  perform: true
+  perform: false
   summary:
     perform: true
     row: Metadata_Row
