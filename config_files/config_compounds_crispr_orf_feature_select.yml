@@ -16,20 +16,20 @@ aggregate:
     - Count
     - Intensity
 annotate:
-  perform: true
+  perform: false
   well_column: Metadata_Well
   external:
     perform: true
     file: JUMP-Target-1_compound_metadata.tsv
     merge_column: broad_sample
 normalize:
-  perform: true
+  perform: false
   method: mad_robustize
   features: infer
   mad_robustize_fudge_factor: 0
   image_features: false
 normalize_negcon:
-  perform: true
+  perform: false
   method: mad_robustize
   features: infer
   mad_robustize_fudge_factor: 0
@@ -69,54 +69,108 @@ options:
   float_format: "%.5g"
   samples: all
 ---
-batch: 2020_12_08_CPJUMP1_Bleaching
+batch: 2020_11_04_CPJUMP1
 plates:
-  - name: BR00116991A
+  - name: BR00116991
     process: true
-  - name: BR00116991B
+  - name: BR00116992
     process: true
-  - name: BR00116991C
+  - name: BR00116993
     process: true
-  - name: BR00116991D
+  - name: BR00116994
     process: true
-  - name: BR00116991E
+  - name: BR00116995
     process: true
-  - name: BR00116991F
+  - name: BR00117024
     process: true
-  - name: BR00116992A
+  - name: BR00117025
     process: true
-  - name: BR00116992B
+  - name: BR00117026
     process: true
-  - name: BR00116992C
+  - name: BR00117017
     process: true
-  - name: BR00116992D
+  - name: BR00117019
     process: true
-  - name: BR00116992E
+  - name: BR00117015
     process: true
-  - name: BR00116992F
+  - name: BR00117016
     process: true
-  - name: BR00116993A
+  - name: BR00117012
     process: true
-  - name: BR00116993B
+  - name: BR00117013
     process: true
-  - name: BR00116993C
+  - name: BR00117010
     process: true
-  - name: BR00116993D
+  - name: BR00117011
     process: true
-  - name: BR00116993E
+  - name: BR00117054
     process: true
-  - name: BR00116993F
+  - name: BR00117055
     process: true
-  - name: BR00116994A
+  - name: BR00117008
     process: true
-  - name: BR00116994B
+  - name: BR00117009
     process: true
-  - name: BR00116994C
+  - name: BR00117052
     process: true
-  - name: BR00116994D
+  - name: BR00117053
     process: true
-  - name: BR00116994E
+  - name: BR00117050
     process: true
-  - name: BR00116994F
+  - name: BR00117051
+    process: true
+  - name: BR00118041
+    process: true
+  - name: BR00118042
+    process: true
+  - name: BR00118043
+    process: true
+  - name: BR00118044
+    process: true
+  - name: BR00118045
+    process: true
+  - name: BR00118046
+    process: true
+  - name: BR00118047
+    process: true
+  - name: BR00118048
+    process: true
+  - name: BR00117003
+    process: true
+  - name: BR00117004
+    process: true
+  - name: BR00117005
+    process: true
+  - name: BR00117000
+    process: true
+  - name: BR00117002
+    process: true
+  - name: BR00117001
+    process: true
+  - name: BR00116997
+    process: true
+  - name: BR00116998
+    process: true
+  - name: BR00116999
+    process: true
+  - name: BR00116996
+    process: true
+  - name: BR00117006
+    process: true
+  - name: BR00118049
+    process: true
+  - name: BR00118050
+    process: true
+  - name: BR00118039
+    process: true
+  - name: BR00118040
+    process: true
+  - name: BR00117020
+    process: true
+  - name: BR00117021
+    process: true
+  - name: BR00117022
+    process: true
+  - name: BR00117023
     process: true
 process: true
