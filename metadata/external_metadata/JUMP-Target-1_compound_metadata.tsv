@@ -1,4 +1,4 @@
-broad_sample	InChIKey	pert_iname	pubchem_cid	target	pert_type	control_type	smiles
+broad_sample	InChIKey	pert_iname	pubchem_cid	gene	pert_type	control_type	smiles
 BRD-A86665761-001-01-1	TZDUHAJSIBHXDL-UHFFFAOYSA-N	gabapentin-enacarbil	9883933	CACNB4	trt		CC(C)C(=O)OC(C)OC(=O)NCC1(CC(O)=O)CCCCC1
 BRD-A22032524-074-09-9	HTIQEAQVCYTUBX-UHFFFAOYSA-N	amlodipine	2162	CACNA2D3	trt		CCOC(=O)C1=C(COCCN)NC(C)=C(C1c1ccccc1Cl)C(=O)OC
 BRD-A01078468-001-14-8	PBBGSZCBWVPOOL-UHFFFAOYSA-N	hexestrol	3606	AKR1C1	trt		CCC(C(CC)c1ccc(O)cc1)c1ccc(O)cc1
