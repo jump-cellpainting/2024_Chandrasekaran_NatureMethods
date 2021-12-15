@@ -19,22 +19,22 @@
 
 | Chemical_Perturbation   | Genetic_Perturbation   |   Percent_Matching |
 |:------------------------|:-----------------------|-------------------:|
-| Compound_A549_24        | ORF_A549_48            |                7.8 |
-| Compound_A549_24        | ORF_A549_96            |                9.5 |
-| Compound_A549_24        | CRISPR_A549_96         |                6.4 |
-| Compound_A549_24        | CRISPR_A549_144        |                7.7 |
-| Compound_A549_48        | ORF_A549_48            |                6.2 |
-| Compound_A549_48        | ORF_A549_96            |                9.5 |
-| Compound_A549_48        | CRISPR_A549_96         |               11.3 |
-| Compound_A549_48        | CRISPR_A549_144        |                9.5 |
-| Compound_U2OS_24        | ORF_U2OS_48            |               10.8 |
-| Compound_U2OS_24        | ORF_U2OS_96            |                7.5 |
-| Compound_U2OS_24        | CRISPR_U2OS_96         |                7.7 |
-| Compound_U2OS_24        | CRISPR_U2OS_144        |               10.5 |
-| Compound_U2OS_48        | ORF_U2OS_48            |                9.8 |
-| Compound_U2OS_48        | ORF_U2OS_96            |                9.8 |
-| Compound_U2OS_48        | CRISPR_U2OS_96         |                9.8 |
-| Compound_U2OS_48        | CRISPR_U2OS_144        |                7.2 |
+| compound_A549_24        | crispr_A549_144        |                6.7 |
+| compound_A549_24        | crispr_A549_96         |                7   |
+| compound_A549_24        | orf_A549_96            |               11.1 |
+| compound_A549_24        | orf_A549_48            |                8.2 |
+| compound_A549_48        | crispr_A549_144        |                7.4 |
+| compound_A549_48        | crispr_A549_96         |                8.1 |
+| compound_A549_48        | orf_A549_96            |                9.5 |
+| compound_A549_48        | orf_A549_48            |                8.2 |
+| compound_U2OS_24        | crispr_U2OS_144        |               12.2 |
+| compound_U2OS_24        | crispr_U2OS_96         |                7.4 |
+| compound_U2OS_24        | orf_U2OS_48            |               10.1 |
+| compound_U2OS_24        | orf_U2OS_96            |                8.5 |
+| compound_U2OS_48        | crispr_U2OS_144        |                8.9 |
+| compound_U2OS_48        | crispr_U2OS_96         |                8.2 |
+| compound_U2OS_48        | orf_U2OS_48            |               11.1 |
+| compound_U2OS_48        | orf_U2OS_96            |                7.8 |
 
 # Percent Replicating DL features
 
