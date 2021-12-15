@@ -40,9 +40,9 @@
 
 | Description      | Perturbation   | time   | Cell   |   Percent_Replicating |
 |:-----------------|:---------------|:-------|:-------|----------------------:|
-| ORF_U2OS_96      | ORF            | long   | U2OS   |                  41.9 |
-| CRISPR_U2OS_144  | CRISPR         | long   | U2OS   |                  30.8 |
-| Compound_U2OS_48 | Compound       | long   | U2OS   |                  59.5 |
+| compound_U2OS_48 | compound       | long   | U2OS   |                  65.7 |
+| crispr_U2OS_144  | crispr         | long   | U2OS   |                  39.3 |
+| orf_U2OS_96      | orf            | long   | U2OS   |                  51.2 |
 
 # Percent Replicating for DMSO wells in the same well position across plates
 
