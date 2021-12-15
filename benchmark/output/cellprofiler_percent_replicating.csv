@@ -1,13 +1,13 @@
 Cell,Description,Perturbation,Percent_Replicating,time,feature_set
 A549,compound_A549_24,compound,87.6,short,CellProfiler
-A549,compound_A549_48,compound,85.0,long,CellProfiler
+A549,compound_A549_48,compound,95.1,long,CellProfiler
 U2OS,compound_U2OS_24,compound,80.1,short,CellProfiler
 U2OS,compound_U2OS_48,compound,74.5,long,CellProfiler
 U2OS,crispr_U2OS_144,crispr,62.3,long,CellProfiler
 U2OS,crispr_U2OS_96,crispr,72.8,short,CellProfiler
-A549,crispr_A549_144,crispr,43.0,long,CellProfiler
+A549,crispr_A549_144,crispr,41.0,long,CellProfiler
 A549,crispr_A549_96,crispr,42.0,short,CellProfiler
-A549,orf_A549_96,orf,26.2,long,CellProfiler
+A549,orf_A549_96,orf,28.7,long,CellProfiler
 A549,orf_A549_48,orf,35.6,short,CellProfiler
 U2OS,orf_U2OS_48,orf,52.5,short,CellProfiler
 U2OS,orf_U2OS_96,orf,42.5,long,CellProfiler
