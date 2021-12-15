@@ -8,6 +8,8 @@ from sklearn.utils import check_array, as_float_array
 from sklearn.base import TransformerMixin, BaseEstimator
 import kneed
 import scipy
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 def load_data(exp, plate, filetype):
@@ -292,3 +294,45 @@ def sphere_plate_zca_corr(plate):
     combined = pd.concat([metadata, feature_df], axis=1)
     assert combined.shape == plate.shape
     return combined
+
+
+def distribution_plot(df, output_file, metric):
+
+    if metric == 'Percent Replicating':
+        metric_col = 'Percent_Replicating'
+        null = 'Null_Replicating'
+        null_label = 'non-replicates'
+        signal = 'Replicating'
+        signal_label = 'replicates'
+        x_label = 'Replicate correlation'
+    elif metric == 'Percent Matching':
+        metric_col = 'Percent_Matching'
+        null = 'Null_Matching'
+        null_label = 'non-matching perturbations'
+        signal = 'Matching'
+        signal_label = 'matching perturbations'
+        x_label = 'Correlation between perturbations targeting the same gene'
+
+    n_experiments = len(df)
+
+    plt.rcParams['figure.facecolor'] = 'white'  # Enabling this makes the figure axes and labels visible in PyCharm Dracula theme
+    plt.figure(figsize=[12, n_experiments * 6])
+
+    for i in range(n_experiments):
+        plt.subplot(n_experiments, 1, i + 1)
+        plt.hist(df.loc[i, f'{null}'], label=f'{null_label}', density=True, bins=20, alpha=0.5)
+        plt.hist(df.loc[i, f'{signal}'], label=f'{signal_label}', density=True, bins=20, alpha=0.5)
+        plt.axvline(df.loc[i, 'Value_95'], label='95% threshold')
+        plt.legend(fontsize=20)
+        plt.title(
+            f"{df.loc[i, 'Description']}\n" +
+            f"{metric} = {df.loc[i, f'{metric_col}']}",
+            fontsize=25
+        )
+        plt.ylabel("density", fontsize=25)
+        plt.xlabel(f"{x_label}", fontsize=25)
+        plt.xticks(fontsize=20)
+        plt.yticks(fontsize=20)
+        sns.despine()
+    plt.tight_layout()
+    plt.savefig(f'figures/{output_file}')
