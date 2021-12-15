@@ -56,6 +56,6 @@
 
 | Description             | Perturbation   | time   | Cell   |   Percent_Replicating |
 |:------------------------|:---------------|:-------|:-------|----------------------:|
-| CellProfiler_normalized | Compound       | long   | U2OS   |                  93.8 |
-| CellProfiler_spherized  | Compound       | long   | U2OS   |                  61.9 |
-| DeepProfiler_spherized  | Compound       | long   | U2OS   |                  62.2 |
+| CellProfiler_normalized | compound       | long   | U2OS   |                  80   |
+| CellProfiler_spherized  | compound       | long   | U2OS   |                  73.1 |
+| DeepProfiler_spherized  | compound       | long   | U2OS   |                  68.1 |
