@@ -48,9 +48,9 @@
 
 | Description             | Perturbation   | time   | Cell   |   Percent_Replicating |
 |:------------------------|:---------------|:-------|:-------|----------------------:|
-| CellProfiler_normalized | Compound       | long   | U2OS   |                  53.1 |
-| CellProfiler_spherized  | Compound       | long   | U2OS   |                  17.2 |
-| DeepProfiler_spherized  | Compound       | long   | U2OS   |                  15.6 |
+| CellProfiler_normalized | compound       | long   | U2OS   |                  40.6 |
+| CellProfiler_spherized  | compound       | long   | U2OS   |                  26.6 |
+| DeepProfiler_spherized  | compound       | long   | U2OS   |                  32.8 |
 
 # Percent Replicating for compounds in the same well positon across plates
 
