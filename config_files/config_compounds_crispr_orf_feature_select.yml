@@ -1,0 +1,176 @@
+---
+pipeline: 2019_07_11_JUMP-CP
+output_dir: profiles
+platemap_well_column: Metadata_well_position
+compartments:
+  - cells
+  - cytoplasm
+  - nuclei
+aggregate:
+  perform: false
+  plate_column: Metadata_Plate
+  well_column: Metadata_Well
+  method: median
+  fields: all
+  image_feature_categories:
+    - Count
+    - Intensity
+annotate:
+  perform: false
+  well_column: Metadata_Well
+  external:
+    perform: true
+    file: JUMP-Target-1_compound_metadata.tsv
+    merge_column: broad_sample
+normalize:
+  perform: false
+  method: mad_robustize
+  features: infer
+  mad_robustize_fudge_factor: 0
+  image_features: false
+normalize_negcon:
+  perform: false
+  method: mad_robustize
+  features: infer
+  mad_robustize_fudge_factor: 0
+  image_features: false
+feature_select:
+  perform: true
+  features: infer
+  level: batch
+  gct: false
+  image_features: false
+  operations:
+    - variance_threshold
+    - correlation_threshold
+    - drop_na_columns
+    - blocklist
+feature_select_negcon:
+  perform: true
+  features: infer
+  level: batch
+  gct: false
+  image_features: false
+  operations:
+    - variance_threshold
+    - correlation_threshold
+    - drop_na_columns
+    - blocklist
+quality_control:
+  perform: false
+  summary:
+    perform: true
+    row: Metadata_Row
+    column: Metadata_Col
+  heatmap:
+    perform : true
+options:
+  compression: gzip
+  float_format: "%.5g"
+  samples: all
+---
+batch: 2020_11_04_CPJUMP1
+plates:
+  - name: BR00116991
+    process: true
+  - name: BR00116992
+    process: true
+  - name: BR00116993
+    process: true
+  - name: BR00116994
+    process: true
+  - name: BR00116995
+    process: true
+  - name: BR00117024
+    process: true
+  - name: BR00117025
+    process: true
+  - name: BR00117026
+    process: true
+  - name: BR00117017
+    process: true
+  - name: BR00117019
+    process: true
+  - name: BR00117015
+    process: true
+  - name: BR00117016
+    process: true
+  - name: BR00117012
+    process: true
+  - name: BR00117013
+    process: true
+  - name: BR00117010
+    process: true
+  - name: BR00117011
+    process: true
+  - name: BR00117054
+    process: true
+  - name: BR00117055
+    process: true
+  - name: BR00117008
+    process: true
+  - name: BR00117009
+    process: true
+  - name: BR00117052
+    process: true
+  - name: BR00117053
+    process: true
+  - name: BR00117050
+    process: true
+  - name: BR00117051
+    process: true
+  - name: BR00118041
+    process: true
+  - name: BR00118042
+    process: true
+  - name: BR00118043
+    process: true
+  - name: BR00118044
+    process: true
+  - name: BR00118045
+    process: true
+  - name: BR00118046
+    process: true
+  - name: BR00118047
+    process: true
+  - name: BR00118048
+    process: true
+  - name: BR00117003
+    process: true
+  - name: BR00117004
+    process: true
+  - name: BR00117005
+    process: true
+  - name: BR00117000
+    process: true
+  - name: BR00117002
+    process: true
+  - name: BR00117001
+    process: true
+  - name: BR00116997
+    process: true
+  - name: BR00116998
+    process: true
+  - name: BR00116999
+    process: true
+  - name: BR00116996
+    process: true
+  - name: BR00117006
+    process: true
+  - name: BR00118049
+    process: true
+  - name: BR00118050
+    process: true
+  - name: BR00118039
+    process: true
+  - name: BR00118040
+    process: true
+  - name: BR00117020
+    process: true
+  - name: BR00117021
+    process: true
+  - name: BR00117022
+    process: true
+  - name: BR00117023
+    process: true
+process: true
