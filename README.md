@@ -20,10 +20,10 @@ Cell images are available on a S3 bucket. The images can be downloaded using the
 
 ```bash
 aws s3 cp \
+  --no-sign-request \
   --recursive \
   s3://cellpainting-gallery/jump-pilot/source_4/images/ . 
 ```
-You can use ```--no-sign-request``` to download data from S3 bucket without sign-in.
 
 You can test out download for a single file using:
 
@@ -31,6 +31,7 @@ You can test out download for a single file using:
 suffix=images/2020_11_04_CPJUMP1/images/BR00117010__2020-11-08T18_18_00-Measurement1/Images/r01c01f01p01-ch1sk1fk1fl1.tiff
 
 aws s3 cp \
+  --no-sign-request \
   s3://cellpainting-gallery/jump-pilot/source_4/${suffix} \
   .
 ```
