@@ -9,6 +9,7 @@
 - [Maintenance plan](#maintenance-plan)
 - [Compute resources](#compute-resources)
 - [License](#license)
+- [Manuscript](#manuscript)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -156,3 +157,6 @@ previously precomputed with the CellProfiler segmentation pipeline.
 # License
 We use a dual license in this repository.
 We license the source code as [BSD 3-Clause](LICENSE_BSD3.md), and license the data, results, and figures as [CC0 1.0](LICENSE_CC0.md).
+
+# Manuscript
+A manuscript describing the contents of this repository is on [biorxiv](https://www.biorxiv.org/content/10.1101/2022.01.05.475090v1).
