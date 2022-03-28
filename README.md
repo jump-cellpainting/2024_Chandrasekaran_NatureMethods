@@ -20,11 +20,14 @@ Features from the cell images were extracted using [CellProfiler](https://cellpr
 Cell images are available on a S3 bucket. The images can be downloaded using the command
 
 ```bash
+batch = <BATCH NAME>
 aws s3 cp \
   --no-sign-request \
   --recursive \
-  s3://cellpainting-gallery/jump-pilot/source_4/images/ . 
+  s3://cellpainting-gallery/jump-pilot/source_4/images/${batch}/ . 
 ```
+
+The `<BATCH NAME>` is one of the six batches [mentioned below](#batch-and-plate-metadata).
 
 You can test out download for a single file using:
 
@@ -69,14 +72,17 @@ Plate map and Metadata are available in the `metadata/` folder and also from htt
 # Step 2: Extract features using CellProfiler and DeepProfiler
 Use the CellProfiler pipelines in `pipelines/2020_11_04_CPJUMP1` and follow the instructions in the [profiling handbook](https://cytomining.github.io/profiling-handbook/) up until chapter 5.3 to generate the well-level aggregated CellProfiler profiles from the cell images. 
 
-The single cell CellProfiler features can be downloaded from the S3 bucket
+Instead of regenerating the single cell CellProfiler features, they can also be downloaded from the S3 bucket
 
 ```bash
+batch = <BATCH NAME>
 aws s3 cp \
   --no-sign-request \
   --recursive \
-  s3://cellpainting-gallery/jump-pilot/source_4/workspace/backend/ . 
+  s3://cellpainting-gallery/jump-pilot/source_4/workspace/backend/${batch}/ . 
 ```
+
+where `<BATCH NAME>` is one of the six batches [mentioned above](#batch-and-plate-metadata).
 
 Follow the [README.md](deep_profiles/README.md) to extract features from a
 pretrained neural network using [DeepProfiler](https://github.com/cytomining/DeepProfiler)
