@@ -143,9 +143,9 @@ def correlation_between_modalities(modality_1_df, modality_2_df, modality_1, mod
     Compute the correlation between two different modalities.
     :param modality_1_df: Profiles of the first modality
     :param modality_2_df: Profiles of the second modality
-    :param modality_1: feature that identifies perturbation pairs
-    :param modality_2: perturbation name feature
-    :param metadata_common: perturbation name feature
+    :param modality_1: "Compound", "ORF" or "CRISPR"
+    :param modality_2: "Compound", "ORF" or "CRISPR"
+    :param metadata_common: feature that identifies perturbation pairs
     :param metadata_perturbation: perturbation name feature
     :return: list-like of correlation values
     """
@@ -198,9 +198,7 @@ def null_correlation_between_modalities(modality_1_df, modality_2_df, modality_1
 
     null_modalities = []
 
-    count = 0
-
-    while count < n_samples:
+    while len(null_modalities) < n_samples:
         perturbations = random.choices(list_common_perturbation_groups, k=2)
         modality_1_perturbation_df = modality_1_df.loc[modality_1_df[metadata_common] == perturbations[0]]
         modality_2_perturbation_df = modality_2_df.loc[modality_2_df[metadata_common] == perturbations[1]]
@@ -216,7 +214,60 @@ def null_correlation_between_modalities(modality_1_df, modality_2_df, modality_1
                 corr = np.corrcoef(modality_1_perturbation_profiles, modality_2_perturbation_profiles)
                 corr = corr[0:len(modality_1_perturbation_profiles), len(modality_1_perturbation_profiles):]
                 null_modalities.append(np.nanmedian(corr))  # median replicate correlation
-        count += 1
+
+    return null_modalities
+
+
+def null_correlation_between_modalities_list(modality_1_df, modality_2_df, modality_1, modality_2, metadata_common, metadata_perturbation, n_samples):
+    """
+    Compute the correlation between two different modalities.
+    :param modality_1_df: Profiles of the first modality
+    :param modality_2_df: Profiles of the second modality
+    :param modality_1: "Compound", "ORF" or "CRISPR"
+    :param modality_2: "Compound", "ORF" or "CRISPR"
+    :param metadata_common: feature that identifies perturbation pairs
+    :param metadata_perturbation: perturbation name feature
+    :param n_samples: int
+    :return:
+    """
+    list_common_perturbation_groups = list(np.intersect1d(list(modality_1_df[metadata_common]), list(modality_2_df[metadata_common])))
+
+    metadata_common_list = f'{metadata_common}_list'
+
+    merged_df = pd.concat([modality_1_df, modality_2_df], ignore_index=False, join='inner')
+
+    modality_1_df = merged_df.query('Metadata_modality==@modality_1')
+    modality_2_df = merged_df.query('Metadata_modality==@modality_2')
+
+    null_modalities = []
+
+    while len(null_modalities) < n_samples:
+        overlap = True
+        perturbations = random.choices(list_common_perturbation_groups, k=2)
+        modality_1_perturbation_df = modality_1_df.loc[modality_1_df[metadata_common] == perturbations[0]]
+        modality_2_perturbation_df = modality_2_df.loc[modality_2_df[metadata_common] == perturbations[1]]
+
+        if modality_1 == "compound":
+            modality_1_perturbation_list = np.unique(modality_1_perturbation_df.Metadata_gene_list.sum())
+            if not perturbations[1] in modality_1_perturbation_list:
+                overlap = False
+        elif modality_1 == "compound":
+            modality_2_perturbation_list = np.unique(modality_2_perturbation_df.Metadata_gene_list.sum())
+            if not perturbations[0] in modality_2_perturbation_list:
+                overlap = False
+
+        if not overlap:
+            for sample_1 in modality_1_perturbation_df[metadata_perturbation].unique():
+                for sample_2 in modality_2_perturbation_df[metadata_perturbation].unique():
+                    modality_1_perturbation_sample_df = modality_1_perturbation_df.loc[modality_1_perturbation_df[metadata_perturbation] == sample_1]
+                    modality_2_perturbation_sample_df = modality_2_perturbation_df.loc[modality_2_perturbation_df[metadata_perturbation] == sample_2]
+
+                    modality_1_perturbation_profiles = get_featuredata(modality_1_perturbation_sample_df)
+                    modality_2_perturbation_profiles = get_featuredata(modality_2_perturbation_sample_df)
+
+                    corr = np.corrcoef(modality_1_perturbation_profiles, modality_2_perturbation_profiles)
+                    corr = corr[0:len(modality_1_perturbation_profiles), len(modality_1_perturbation_profiles):]
+                    null_modalities.append(np.nanmedian(corr))  # median replicate correlation
 
     return null_modalities
 
