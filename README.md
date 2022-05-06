@@ -20,7 +20,7 @@ Features from the cell images were extracted using [CellProfiler](https://cellpr
 Cell images are available on a S3 bucket. The images can be downloaded using the command
 
 ```bash
-batch = <BATCH NAME>
+batch=<BATCH NAME>
 aws s3 cp \
   --no-sign-request \
   --recursive \
@@ -41,6 +41,8 @@ aws s3 cp \
 ```
 
 See this [wiki](https://github.com/carpenterlab/2016_bray_natprot/wiki/What-do-Cell-Painting-features-mean%3F) for sample Cell Painting images and the meaning of (CellProfiler-derived) Cell Painting features. 
+
+Note: If you'd like to just browse the data, it's a lot easier [to do so using a storage browser](https://stackoverflow.com/a/72143198/1094109). 
 
 ## Batch and Plate metadata
 There are six batches of data - `2020_11_04_CPJUMP1`, `2020_11_18_CPJUMP1_TimepointDay1`, `2020_11_19_TimepointDay4`, `2020_12_02_CPJUMP1_2WeeksTimePoint`, `2020_12_07_CPJUMP1_4WeeksTimePoint` and `2020_12_08_CPJUMP1_Bleaching`.
