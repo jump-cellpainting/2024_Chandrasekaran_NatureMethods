@@ -21,9 +21,8 @@ Cell images are available on a S3 bucket. The images can be downloaded using the
 
 ```bash
 batch=<BATCH NAME>
-aws s3 cp \
+aws s3 sync \
   --no-sign-request \
-  --recursive \
   s3://cellpainting-gallery/jump-pilot/source_4/images/${batch}/ . 
 ```
 
