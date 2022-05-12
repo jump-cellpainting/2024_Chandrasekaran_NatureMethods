@@ -10,6 +10,7 @@ import kneed
 import scipy
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.metrics import average_precision_score
 
 
 def load_data(exp, plate, filetype):
@@ -387,3 +388,93 @@ def distribution_plot(df, output_file, metric):
         sns.despine()
     plt.tight_layout()
     plt.savefig(f'figures/{output_file}')
+
+
+def consensus(profiles_df, group_by_feature):
+    metadata_df = (
+        get_metadata(profiles_df)
+            .drop_duplicates(subset=[group_by_feature])
+    )
+
+    feature_cols = [group_by_feature] + get_featurecols(profiles_df)
+    profiles_df = profiles_df[feature_cols].groupby([group_by_feature]).median().reset_index()
+
+    profiles_df = (
+        metadata_df.merge(profiles_df, on=group_by_feature)
+    )
+
+    return profiles_df
+
+
+class MeanAveragePrecision(object):
+    def __init__(self, profile1, profile2, group_by_feature):
+        self.sample_feature = 'Metadata_sample_id'
+        self.feature = group_by_feature
+        self.profile1 = self.process_profiles(profile1)
+        self.profile2 = self.process_profiles(profile2)
+
+        self.map1 = self.profile1[[self.feature, self.sample_feature]].copy()
+        self.map2 = self.profile2[[self.feature, self.sample_feature]].copy()
+
+        self.corr = self.compute_correlation()
+        self.truth_matrix = self.create_truth_matrix()
+
+        self.ap_sample = self.calculate_average_precision_per_sample()
+        self.ap_group = self.calculate_average_precision_per_group()
+        self.map = self.calculate_mean_average_precision()
+
+    def process_profiles(self, _profile):
+        _feature_df = get_featuredata(_profile)
+        _metadata_df = _profile[self.feature]
+        width = int(np.log10(len(_profile)))+1
+        _perturbation_id_df = pd.DataFrame({self.sample_feature : [f'sample_{i:0{width}}' for i in range(len(_metadata_df))]})
+        _metadata_df = pd.concat([_metadata_df, _perturbation_id_df], axis=1)
+        _profile = pd.concat([_metadata_df, _feature_df], axis=1)
+        return _profile
+
+    def compute_correlation(self):
+        _profile1 = get_featuredata(self.profile1)
+        _profile2 = get_featuredata(self.profile2)
+        _sample_names_1 = list(self.profile1[self.sample_feature])
+        _sample_names_2 = list(self.profile2[self.sample_feature])
+        _corr = np.corrcoef(_profile1, _profile2)
+        _corr = _corr[0:len(_sample_names_1), len(_sample_names_1):]
+        _corr_df = pd.DataFrame(_corr, columns=_sample_names_2, index=_sample_names_1)
+        return _corr_df
+
+    def create_truth_matrix(self):
+        _truth_matrix = self.corr.unstack().reset_index()
+        _truth_matrix = _truth_matrix.merge(self.map2, left_on='level_0', right_on=self.sample_feature, how='left').drop([self.sample_feature,0], axis=1)
+        _truth_matrix = _truth_matrix.merge(self.map1, left_on='level_1', right_on=self.sample_feature, how='left').drop([self.sample_feature], axis=1)
+        _truth_matrix['value'] = np.where(_truth_matrix[f'{self.feature}_x']==_truth_matrix[f'{self.feature}_y'], 1, 0)
+        _truth_matrix = _truth_matrix.pivot('level_1','level_0','value').reset_index().set_index('level_1')
+        _truth_matrix.index.name = None
+        _truth_matrix = _truth_matrix.rename_axis(None, axis=1)
+        return _truth_matrix
+
+    def calculate_average_precision_per_sample(self):
+        _score = []
+        for _sample in self.corr.index:
+            _score.append(average_precision_score(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values))
+
+        _ap_sample_df = self.map1.copy()
+        _ap_sample_df['ap'] = _score
+        return _ap_sample_df
+
+    def calculate_average_precision_per_group(self):
+        _ap_group_df = self.ap_sample.groupby(self.feature).ap.apply(lambda x: np.mean(x)).reset_index()
+        return _ap_group_df
+
+    def calculate_mean_average_precision(self):
+        return self.ap_group.mean().values[0]
+
+
+def shuffle_profiles(profiles):
+    feature_cols = get_featurecols(profiles)
+    metadata_df = get_metadata(profiles)
+    feature_df = get_featuredata(profiles)
+
+    feature_df = feature_df.sample(frac=1, axis=1).sample(frac=1).reset_index(drop=True)
+    feature_df.columns = feature_cols
+    profiles = pd.concat([metadata_df, feature_df], axis=1)
+    return profiles
