@@ -349,6 +349,20 @@ def sphere_plate_zca_corr(plate):
 
 
 def distribution_plot(df, output_file, metric):
+    """
+    Generates the correlation distribution plots
+    Parameters:
+    -----------
+    df: pandas.DataFrame
+        dataframe containing the data points of replicate and null correlation distributions, description, Percent score and threshold values.
+    output_file: str
+        name of the output file. The file will be output to the figures/ folder.
+    metric: str
+        Percent Replicating or Percent Matching
+    Returns:
+    -------
+    None
+    """
 
     if metric == 'Percent Replicating':
         metric_col = 'Percent_Replicating'
@@ -391,6 +405,19 @@ def distribution_plot(df, output_file, metric):
 
 
 def consensus(profiles_df, group_by_feature):
+    """
+    Computes the median consensus profiles.
+    Parameters:
+    -----------
+    profiles_df: pandas.DataFrame
+        dataframe of profiles
+    group_by_feature: str
+        Name of the column
+    Returns:
+    -------
+    pandas.DataFrame of the same shape as `plate`
+    """
+
     metadata_df = (
         get_metadata(profiles_df)
             .drop_duplicates(subset=[group_by_feature])
@@ -407,7 +434,20 @@ def consensus(profiles_df, group_by_feature):
 
 
 class MeanAveragePrecision(object):
+    """
+    Calculate the mean average precision for information retrieval.
+    """
     def __init__(self, profile1, profile2, group_by_feature):
+        """
+        Parameters:
+        -----------
+        profile1: pandas.DataFrame
+            dataframe of profiles
+        profile2: pandas.DataFrame
+            dataframe of profiles
+        group_by_feature: str
+            Name of the column
+        """
         self.sample_feature = 'Metadata_sample_id'
         self.feature = group_by_feature
         self.profile1 = self.process_profiles(profile1)
@@ -424,6 +464,17 @@ class MeanAveragePrecision(object):
         self.map = self.calculate_mean_average_precision()
 
     def process_profiles(self, _profile):
+        """
+        Add sample id column to profiles.
+        Parameters:
+        -----------
+        _profile: pandas.DataFrame
+            dataframe of profiles
+        Returns:
+        -------
+        pandas.DataFrame which includes the sample id column
+        """
+
         _feature_df = get_featuredata(_profile)
         _metadata_df = _profile[self.feature]
         width = int(np.log10(len(_profile)))+1
@@ -433,6 +484,13 @@ class MeanAveragePrecision(object):
         return _profile
 
     def compute_correlation(self):
+        """
+        Compute correlation.
+        Returns:
+        -------
+        pandas.DataFrame of correlation values.
+        """
+
         _profile1 = get_featuredata(self.profile1)
         _profile2 = get_featuredata(self.profile2)
         _sample_names_1 = list(self.profile1[self.sample_feature])
@@ -443,6 +501,13 @@ class MeanAveragePrecision(object):
         return _corr_df
 
     def create_truth_matrix(self):
+        """
+        Compute truth matrix.
+        Returns:
+        -------
+        pandas.DataFrame of binary truth values.
+        """
+
         _truth_matrix = self.corr.unstack().reset_index()
         _truth_matrix = _truth_matrix.merge(self.map2, left_on='level_0', right_on=self.sample_feature, how='left').drop([self.sample_feature,0], axis=1)
         _truth_matrix = _truth_matrix.merge(self.map1, left_on='level_1', right_on=self.sample_feature, how='left').drop([self.sample_feature], axis=1)
@@ -453,6 +518,13 @@ class MeanAveragePrecision(object):
         return _truth_matrix
 
     def calculate_average_precision_per_sample(self):
+        """
+        Compute average precision per sample.
+        Returns:
+        -------
+        pandas.DataFrame of average precision values.
+        """
+
         _score = []
         for _sample in self.corr.index:
             _score.append(average_precision_score(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values))
@@ -462,14 +534,39 @@ class MeanAveragePrecision(object):
         return _ap_sample_df
 
     def calculate_average_precision_per_group(self):
+        """
+        Compute average precision per sample group.
+        Returns:
+        -------
+        pandas.DataFrame of average precision values.
+        """
+
         _ap_group_df = self.ap_sample.groupby(self.feature).ap.apply(lambda x: np.mean(x)).reset_index()
         return _ap_group_df
 
     def calculate_mean_average_precision(self):
+        """
+        Compute mean average precision.
+        Returns:
+        -------
+        mean average precision
+        """
+
         return self.ap_group.mean().values[0]
 
 
 def shuffle_profiles(profiles):
+    """
+    Shuffle profiles - both rows and columns.
+    Parameters:
+    -----------
+    profiles: pandas.DataFrame
+        dataframe of profiles
+    Returns:
+    -------
+    pandas.DataFrame of shuffled profiles.
+    """
+
     feature_cols = get_featurecols(profiles)
     metadata_df = get_metadata(profiles)
     feature_df = get_featuredata(profiles)
