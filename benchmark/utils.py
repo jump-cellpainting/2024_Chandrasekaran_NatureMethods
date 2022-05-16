@@ -437,7 +437,7 @@ class MeanAveragePrecision(object):
     """
     Calculate the mean average precision for information retrieval.
     """
-    def __init__(self, profile1, profile2, group_by_feature):
+    def __init__(self, profile1, profile2, group_by_feature, within=False):
         """
         Parameters:
         -----------
@@ -450,6 +450,7 @@ class MeanAveragePrecision(object):
         """
         self.sample_feature = 'Metadata_sample_id'
         self.feature = group_by_feature
+        self.within = within
         self.profile1 = self.process_profiles(profile1)
         self.profile2 = self.process_profiles(profile2)
 
@@ -478,7 +479,7 @@ class MeanAveragePrecision(object):
         _feature_df = get_featuredata(_profile)
         _metadata_df = _profile[self.feature]
         width = int(np.log10(len(_profile)))+1
-        _perturbation_id_df = pd.DataFrame({self.sample_feature : [f'sample_{i:0{width}}' for i in range(len(_metadata_df))]})
+        _perturbation_id_df = pd.DataFrame({self.sample_feature: [f'sample_{i:0{width}}' for i in range(len(_metadata_df))]})
         _metadata_df = pd.concat([_metadata_df, _perturbation_id_df], axis=1)
         _profile = pd.concat([_metadata_df, _feature_df], axis=1)
         return _profile
@@ -497,6 +498,8 @@ class MeanAveragePrecision(object):
         _sample_names_2 = list(self.profile2[self.sample_feature])
         _corr = np.corrcoef(_profile1, _profile2)
         _corr = _corr[0:len(_sample_names_1), len(_sample_names_1):]
+        if self.within:
+            np.fill_diagonal(_corr, 0)
         _corr_df = pd.DataFrame(_corr, columns=_sample_names_2, index=_sample_names_1)
         return _corr_df
 
@@ -511,8 +514,10 @@ class MeanAveragePrecision(object):
         _truth_matrix = self.corr.unstack().reset_index()
         _truth_matrix = _truth_matrix.merge(self.map2, left_on='level_0', right_on=self.sample_feature, how='left').drop([self.sample_feature,0], axis=1)
         _truth_matrix = _truth_matrix.merge(self.map1, left_on='level_1', right_on=self.sample_feature, how='left').drop([self.sample_feature], axis=1)
-        _truth_matrix['value'] = np.where(_truth_matrix[f'{self.feature}_x']==_truth_matrix[f'{self.feature}_y'], 1, 0)
-        _truth_matrix = _truth_matrix.pivot('level_1','level_0','value').reset_index().set_index('level_1')
+        _truth_matrix['value'] = np.where(_truth_matrix[f'{self.feature}_x'] == _truth_matrix[f'{self.feature}_y'], 1, 0)
+        if self.within:
+            _truth_matrix['value'] = np.where(_truth_matrix['level_0'] == _truth_matrix['level_1'], 0, _truth_matrix['value'])
+        _truth_matrix = _truth_matrix.pivot('level_1', 'level_0', 'value').reset_index().set_index('level_1')
         _truth_matrix.index.name = None
         _truth_matrix = _truth_matrix.rename_axis(None, axis=1)
         return _truth_matrix

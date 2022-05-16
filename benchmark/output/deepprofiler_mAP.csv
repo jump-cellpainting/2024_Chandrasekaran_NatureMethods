@@ -1,7 +1,7 @@
 Cell,Description,Perturbation,feature_set_replicates,mAP,time
-U2OS,compound_U2OS_48,compound,DP_True,0.5,long
+U2OS,compound_U2OS_48,compound,DP_True,0.464,long
 U2OS,compound_U2OS_48,compound,DP_Shuffled,0.021,long
-U2OS,crispr_U2OS_144,crispr,DP_True,0.289,long
+U2OS,crispr_U2OS_144,crispr,DP_True,0.24,long
 U2OS,crispr_U2OS_144,crispr,DP_Shuffled,0.021,long
-U2OS,orf_U2OS_96,orf,DP_True,0.321,long
+U2OS,orf_U2OS_96,orf,DP_True,0.217,long
 U2OS,orf_U2OS_96,orf,DP_Shuffled,0.075,long
