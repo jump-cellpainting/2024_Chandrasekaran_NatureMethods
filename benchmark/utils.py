@@ -437,7 +437,7 @@ class MeanAveragePrecision(object):
     """
     Calculate the mean average precision for information retrieval.
     """
-    def __init__(self, profile1, profile2, group_by_feature, within=False):
+    def __init__(self, profile1, profile2, group_by_feature, within=False, rank=False):
         """
         Parameters:
         -----------
@@ -451,6 +451,7 @@ class MeanAveragePrecision(object):
         self.sample_feature = 'Metadata_sample_id'
         self.feature = group_by_feature
         self.within = within
+        self.rank = rank
         self.profile1 = self.process_profiles(profile1)
         self.profile2 = self.process_profiles(profile2)
 
@@ -476,6 +477,7 @@ class MeanAveragePrecision(object):
         pandas.DataFrame which includes the sample id column
         """
 
+        _profile = _profile.reset_index(drop=True)
         _feature_df = get_featuredata(_profile)
         _metadata_df = _profile[self.feature]
         width = int(np.log10(len(_profile)))+1
@@ -501,6 +503,8 @@ class MeanAveragePrecision(object):
         if self.within:
             np.fill_diagonal(_corr, 0)
         _corr_df = pd.DataFrame(_corr, columns=_sample_names_2, index=_sample_names_1)
+        if self.rank:
+            _corr_df = _corr_df.rank(1, method="first")
         return _corr_df
 
     def create_truth_matrix(self):
