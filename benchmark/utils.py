@@ -437,7 +437,7 @@ class MeanAveragePrecision(object):
     """
     Calculate the mean average precision for information retrieval.
     """
-    def __init__(self, profile1, profile2, group_by_feature, within=False, rank=False):
+    def __init__(self, profile1, profile2, group_by_feature, within=False, rank=False, anti_correlation=False):
         """
         Parameters:
         -----------
@@ -447,11 +447,19 @@ class MeanAveragePrecision(object):
             dataframe of profiles
         group_by_feature: str
             Name of the column
+        within: bool, default: False
+            Whether profile1 and profile2 are the same dataframe or not.
+        rank: bool, default: False
+            Whether to use rank of the correlation values or not.
+        anti_correlation: book, default: False
+            Whether both anti-correlation and correlation are used in the calculation
         """
         self.sample_feature = 'Metadata_sample_id'
         self.feature = group_by_feature
         self.within = within
         self.rank = rank
+        self.anti_correlation = anti_correlation
+
         self.profile1 = self.process_profiles(profile1)
         self.profile2 = self.process_profiles(profile2)
 
@@ -500,6 +508,8 @@ class MeanAveragePrecision(object):
         _sample_names_2 = list(self.profile2[self.sample_feature])
         _corr = np.corrcoef(_profile1, _profile2)
         _corr = _corr[0:len(_sample_names_1), len(_sample_names_1):]
+        if self.anti_correlation:
+            _corr = np.abs(_corr)
         if self.within:
             np.fill_diagonal(_corr, 0)
         _corr_df = pd.DataFrame(_corr, columns=_sample_names_2, index=_sample_names_1)
