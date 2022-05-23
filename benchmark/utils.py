@@ -433,11 +433,11 @@ def consensus(profiles_df, group_by_feature):
     return profiles_df
 
 
-class MeanAveragePrecision(object):
+class PrecisionScores(object):
     """
-    Calculate the mean average precision for information retrieval.
+    Calculate the precision scores for information retrieval.
     """
-    def __init__(self, profile1, profile2, group_by_feature, within=False, rank=False, anti_correlation=False):
+    def __init__(self, profile1, profile2, group_by_feature, within=False, rank=False, anti_correlation=False, k=1):
         """
         Parameters:
         -----------
@@ -453,12 +453,15 @@ class MeanAveragePrecision(object):
             Whether to use rank of the correlation values or not.
         anti_correlation: book, default: False
             Whether both anti-correlation and correlation are used in the calculation
+        k: int, default: 1
+            value at which precision is calculated.
         """
         self.sample_feature = 'Metadata_sample_id'
         self.feature = group_by_feature
         self.within = within
         self.rank = rank
         self.anti_correlation = anti_correlation
+        self.k = k
 
         self.profile1 = self.process_profiles(profile1)
         self.profile2 = self.process_profiles(profile2)
@@ -470,8 +473,16 @@ class MeanAveragePrecision(object):
         self.truth_matrix = self.create_truth_matrix()
 
         self.ap_sample = self.calculate_average_precision_per_sample()
-        self.ap_group = self.calculate_average_precision_per_group()
-        self.map = self.calculate_mean_average_precision()
+        self.ap_group = self.calculate_average_precision_score_per_group(self.ap_sample)
+        self.map = self.calculate_mean_average_precision_score(self.ap_group)
+
+        self.pk_sample = self.calculate_average_precision_at_k_per_sample()
+        self.pk_group = self.calculate_average_precision_score_per_group(self.pk_sample)
+        self.mapk = self.calculate_mean_average_precision_score(self.pk_group)
+
+        self.pr_sample = self.calculate_average_precision_at_r_per_sample()
+        self.pr_group = self.calculate_average_precision_score_per_group(self.pr_sample)
+        self.mapr = self.calculate_mean_average_precision_score(self.pr_group)
 
     def process_profiles(self, _profile):
         """
@@ -538,7 +549,7 @@ class MeanAveragePrecision(object):
 
     def calculate_average_precision_per_sample(self):
         """
-        Compute average precision per sample.
+        Compute average precision score per sample.
         Returns:
         -------
         pandas.DataFrame of average precision values.
@@ -552,26 +563,84 @@ class MeanAveragePrecision(object):
         _ap_sample_df['ap'] = _score
         return _ap_sample_df
 
-    def calculate_average_precision_per_group(self):
+    def calculate_average_precision_at_k_per_sample(self):
         """
-        Compute average precision per sample group.
+        Compute average precision at k per sample.
+        Returns:
+        -------
+        pandas.DataFrame of average precision at k values.
+        """
+
+        _score = []
+        for _sample in self.corr.index:
+            _score.append(self.precision_at_k(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values, self.k))
+
+        _pk_sample_df = self.map1.copy()
+        _pk_sample_df['p_k'] = _score
+        return _pk_sample_df
+
+    def calculate_average_precision_at_r_per_sample(self):
+        """
+        Compute average precision at r per sample.
+        Returns:
+        -------
+        pandas.DataFrame of average precision at r values.
+        """
+
+        _score = []
+        for _sample in self.corr.index:
+            _r = int(np.sum(self.truth_matrix.loc[_sample].values))
+            _score.append(self.precision_at_k(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values, _r))
+
+        _pr_sample_df = self.map1.copy()
+        _pr_sample_df['p_r'] = _score
+        return _pr_sample_df
+
+    def calculate_average_precision_score_per_group(self, precision_score):
+        """
+        Compute average precision score per sample group.
         Returns:
         -------
         pandas.DataFrame of average precision values.
         """
 
-        _ap_group_df = self.ap_sample.groupby(self.feature).ap.apply(lambda x: np.mean(x)).reset_index()
-        return _ap_group_df
+        _precision_group_df = precision_score.groupby(self.feature).apply(lambda x: np.mean(x)).reset_index()
+        return _precision_group_df
 
-    def calculate_mean_average_precision(self):
+    @staticmethod
+    def calculate_mean_average_precision_score(precision_score):
         """
-        Compute mean average precision.
+        Compute mean average precision score.
         Returns:
         -------
-        mean average precision
+        mean average precision score.
         """
 
-        return self.ap_group.mean().values[0]
+        return precision_score.mean().values[0]
+
+    @staticmethod
+    def precision_at_k(_true, _pred, _k):
+        """
+        Calculate precision at k
+        Parameters:
+        -----------
+        _true: list or array
+            list of truth labels
+        _pred: list or array
+            list of predictions
+        _k: int
+            value at which precision is computed.
+        Returns:
+        -------
+        precision at k
+        """
+
+        _arg_sort_pred = list(tuple(np.argsort(_pred)[::-1]))
+        _sorted_pred_k = np.asarray(_pred)[_arg_sort_pred][:_k]
+        _sorted_true_k = np.asarray(_true)[_arg_sort_pred][:_k]
+
+        _precision_k = np.sum(_sorted_true_k) / _k
+        return _precision_k
 
 
 def shuffle_profiles(profiles):
