@@ -478,11 +478,11 @@ class PrecisionScores(object):
 
         self.pk_sample = self.calculate_average_precision_at_k_per_sample()
         self.pk_group = self.calculate_average_precision_score_per_group(self.pk_sample)
-        self.mapk = self.calculate_mean_average_precision_score(self.pk_group)
+        self.mpk = self.calculate_mean_average_precision_score(self.pk_group)
 
         self.pr_sample = self.calculate_average_precision_at_r_per_sample()
         self.pr_group = self.calculate_average_precision_score_per_group(self.pr_sample)
-        self.mapr = self.calculate_mean_average_precision_score(self.pr_group)
+        self.mpr = self.calculate_mean_average_precision_score(self.pr_group)
 
     def process_profiles(self, _profile):
         """

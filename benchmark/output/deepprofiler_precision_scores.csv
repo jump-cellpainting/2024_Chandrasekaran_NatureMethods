@@ -1,4 +1,4 @@
-Cell,Description,Perturbation,feature_set_replicates,mAP,mAPk,mAPr,time
+Cell,Description,Perturbation,feature_set_replicates,mAP,mPk,mPr,time
 U2OS,compound_U2OS_48,compound,DP_Real,0.464,0.746,0.433,long
 U2OS,compound_U2OS_48,compound,DP_Permuted,0.004,0.003,0.003,long
 U2OS,crispr_U2OS_144,crispr,DP_Real,0.24,0.62,0.223,long
