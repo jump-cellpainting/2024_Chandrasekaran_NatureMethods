@@ -659,7 +659,7 @@ def shuffle_profiles(profiles):
     metadata_df = get_metadata(profiles)
     feature_df = get_featuredata(profiles)
 
-    feature_df = feature_df.sample(frac=1, axis=1).sample(frac=1).reset_index(drop=True)
+    feature_df = feature_df.sample(frac=1).reset_index(drop=True)
     feature_df.columns = feature_cols
     profiles = pd.concat([metadata_df, feature_df], axis=1)
     return profiles
