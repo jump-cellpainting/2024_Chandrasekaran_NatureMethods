@@ -663,3 +663,34 @@ def shuffle_profiles(profiles):
     feature_df.columns = feature_cols
     profiles = pd.concat([metadata_df, feature_df], axis=1)
     return profiles
+
+
+def precision_at_r_threshold(precision_df, shuffled_precision_df):
+    """
+    Calculate precision@r at various thresholds
+    Parameters:
+    -----------
+    precision_df: pandas.DataFrame
+        dataframe of precision values
+    shuffled_precision_df: pandas.DataFrame
+        dataframe of precision values  for the shuffled profiles
+    Returns:
+    -------
+    pandas.DataFrame of precision@r values at different thresholds.
+    """
+
+    precision_values = precision_df.p_r.values
+    shuffled_precision_values = shuffled_precision_df.p_r.values
+    corrected_values = precision_values - shuffled_precision_values.mean()
+
+    threshold_values = [_/10 for _ in range(1, 10)]
+
+    df = pd.DataFrame()
+
+    for threshold_value in threshold_values:
+        percent_perturbations = (corrected_values > threshold_value).sum()/len(corrected_values)
+        df = df.append({'threshold': threshold_value,
+                        'percent_perturbations': percent_perturbations}, ignore_index=True)
+
+    return df
+
