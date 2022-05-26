@@ -437,7 +437,7 @@ class PrecisionScores(object):
     """
     Calculate the precision scores for information retrieval.
     """
-    def __init__(self, profile1, profile2, group_by_feature, within=False, rank=False, anti_correlation=False, k=1):
+    def __init__(self, profile1, profile2, group_by_feature, within=False, rank=False, anti_correlation=False, k=1, challenge_negcon=False):
         """
         Parameters:
         -----------
@@ -455,6 +455,8 @@ class PrecisionScores(object):
             Whether both anti-correlation and correlation are used in the calculation
         k: int, default: 1
             value at which precision is calculated.
+        challenge_negcon: bool, default:  False
+            Whether to calculate precision scores by challenging negcon.
         """
         self.sample_feature = 'Metadata_sample_id'
         self.feature = group_by_feature
@@ -462,6 +464,7 @@ class PrecisionScores(object):
         self.rank = rank
         self.anti_correlation = anti_correlation
         self.k = k
+        self.challenge_negcon = challenge_negcon
 
         self.profile1 = self.process_profiles(profile1)
         self.profile2 = self.process_profiles(profile2)
@@ -510,7 +513,7 @@ class PrecisionScores(object):
         Compute correlation.
         Returns:
         -------
-        pandas.DataFrame of correlation values.
+        pandas.DataFrame of pairwise correlation values.
         """
 
         _profile1 = get_featuredata(self.profile1)
@@ -526,6 +529,7 @@ class PrecisionScores(object):
         _corr_df = pd.DataFrame(_corr, columns=_sample_names_2, index=_sample_names_1)
         if self.rank:
             _corr_df = _corr_df.rank(1, method="first")
+        _corr_df = self.process_negcon(_corr_df)
         return _corr_df
 
     def create_truth_matrix(self):
@@ -557,10 +561,13 @@ class PrecisionScores(object):
 
         _score = []
         for _sample in self.corr.index:
-            _score.append(average_precision_score(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values))
+            _y_true, _y_pred = self.filter_nan(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values)
+            _score.append(average_precision_score(_y_true, _y_pred))
 
         _ap_sample_df = self.map1.copy()
         _ap_sample_df['ap'] = _score
+        if self.challenge_negcon:
+            _ap_sample_df = _ap_sample_df.query(f'{self.feature}!="DMSO"').reset_index(drop=True)
         return _ap_sample_df
 
     def calculate_average_precision_at_k_per_sample(self):
@@ -573,10 +580,13 @@ class PrecisionScores(object):
 
         _score = []
         for _sample in self.corr.index:
-            _score.append(self.precision_at_k(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values, self.k))
+            _y_true, _y_pred = self.filter_nan(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values)
+            _score.append(self.precision_at_k(_y_true, _y_pred, self.k))
 
         _pk_sample_df = self.map1.copy()
         _pk_sample_df['p_k'] = _score
+        if self.challenge_negcon:
+            _pk_sample_df = _pk_sample_df.query(f'{self.feature}!="DMSO"').reset_index(drop=True)
         return _pk_sample_df
 
     def calculate_average_precision_at_r_per_sample(self):
@@ -589,11 +599,14 @@ class PrecisionScores(object):
 
         _score = []
         for _sample in self.corr.index:
-            _r = int(np.sum(self.truth_matrix.loc[_sample].values))
-            _score.append(self.precision_at_k(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values, _r))
+            _y_true, _y_pred = self.filter_nan(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values)
+            _r = int(np.sum(_y_true))
+            _score.append(self.precision_at_k(_y_true, _y_pred, _r))
 
         _pr_sample_df = self.map1.copy()
         _pr_sample_df['p_r'] = _score
+        if self.challenge_negcon:
+            _pr_sample_df = _pr_sample_df.query(f'{self.feature}!="DMSO"').reset_index(drop=True)
         return _pr_sample_df
 
     def calculate_average_precision_score_per_group(self, precision_score):
@@ -641,6 +654,57 @@ class PrecisionScores(object):
 
         _precision_k = np.sum(_sorted_true_k) / _k
         return _precision_k
+
+    def process_negcon(self, _corr_df):
+        """
+        Keep or remove negcon
+        Parameters:
+        -----------
+        _corr_df: pandas.DataFrame
+            pairwise correlation dataframe
+        Returns:
+        -------
+        pandas.DataFrame of pairwise correlation values
+        """
+        _corr_df = _corr_df.unstack().reset_index()
+        _corr_df['filter'] = 1
+        _corr_df = _corr_df.merge(self.map2, left_on='level_0', right_on=self.sample_feature, how='left').drop([self.sample_feature], axis=1)
+        _corr_df = _corr_df.merge(self.map1, left_on='level_1', right_on=self.sample_feature, how='left').drop([self.sample_feature], axis=1)
+
+        if self.challenge_negcon:
+            _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_x'] != _corr_df[f'{self.feature}_y'], 0, _corr_df['filter'])
+            _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_x'] == "DMSO", 1, _corr_df['filter'])
+            _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_y'] == "DMSO", 1, _corr_df['filter'])
+        else:
+            _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_x'] == "DMSO", 0, _corr_df['filter'])
+            _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_y'] == "DMSO", 0, _corr_df['filter'])
+
+        _corr_df = _corr_df.query('filter==1')
+
+        self.map1 = (
+            _corr_df[['level_1', f'{self.feature}_y']].copy()
+            .rename(columns={'level_1': self.sample_feature, f'{self.feature}_y': self.feature})
+            .drop_duplicates()
+            .sort_values(by=self.sample_feature)
+            .reset_index(drop=True)
+        )
+        self.map2 = (
+            _corr_df[['level_0', f'{self.feature}_x']].copy()
+            .rename(columns={'level_0': self.sample_feature, f'{self.feature}_x': self.feature})
+            .drop_duplicates()
+            .sort_values(by=self.sample_feature)
+            .reset_index(drop=True)
+        )
+
+        _corr_df = _corr_df.pivot('level_1', 'level_0', 0).reset_index().set_index('level_1')
+        _corr_df.index.name = None
+        _corr_df = _corr_df.rename_axis(None, axis=1)
+        return _corr_df
+
+    @staticmethod
+    def filter_nan(_y_true, _y_pred):
+        arg = np.argwhere(~np.isnan(_y_pred))
+        return _y_true[arg].flatten(), _y_pred[arg].flatten()
 
 
 def shuffle_profiles(profiles):
