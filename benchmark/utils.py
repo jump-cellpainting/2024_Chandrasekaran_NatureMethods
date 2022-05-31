@@ -578,6 +578,8 @@ class PrecisionScores(object):
         _ap_sample_df['ap'] = _score
         if self.challenge_negcon:
             _ap_sample_df = _ap_sample_df.query(f'{self.control_type_feature}!="negcon"').drop(columns=[self.control_type_feature]).reset_index(drop=True)
+        else:
+            _ap_sample_df = _ap_sample_df.drop(columns=[self.control_type_feature]).reset_index(drop=True)
         return _ap_sample_df
 
     def calculate_average_precision_at_k_per_sample(self):
@@ -597,6 +599,8 @@ class PrecisionScores(object):
         _pk_sample_df['p_k'] = _score
         if self.challenge_negcon:
             _pk_sample_df = _pk_sample_df.query(f'{self.control_type_feature}!="negcon"').drop(columns=[self.control_type_feature]).reset_index(drop=True)
+        else:
+            _pk_sample_df = _pk_sample_df.drop(columns=[self.control_type_feature]).reset_index(drop=True)
         return _pk_sample_df
 
     def calculate_average_precision_at_r_per_sample(self):
@@ -617,6 +621,8 @@ class PrecisionScores(object):
         _pr_sample_df['p_r'] = _score
         if self.challenge_negcon:
             _pr_sample_df = _pr_sample_df.query(f'{self.control_type_feature}!="negcon"').drop(columns=[self.control_type_feature]).reset_index(drop=True)
+        else:
+            _pr_sample_df = _pr_sample_df.drop(columns=[self.control_type_feature]).reset_index(drop=True)
         return _pr_sample_df
 
     def calculate_average_precision_score_per_group(self, precision_score):
