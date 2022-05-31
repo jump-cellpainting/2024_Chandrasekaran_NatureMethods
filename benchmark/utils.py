@@ -54,6 +54,15 @@ def remove_negcon_empty_wells(df):
     return df
 
 
+def remove_empty_wells(df):
+    """return dataframe of non-empty wells"""
+    df = (
+        df.dropna(subset=['Metadata_broad_sample'])
+        .reset_index(drop=True)
+    )
+    return df
+
+
 def concat_profiles(df1, df2):
     """Concatenate dataframes"""
     if df1.shape[0] == 0:
@@ -459,6 +468,7 @@ class PrecisionScores(object):
             Whether to calculate precision scores by challenging negcon.
         """
         self.sample_feature = 'Metadata_sample_id'
+        self.control_type_feature = 'Metadata_control_type'
         self.feature = group_by_feature
         self.within = within
         self.rank = rank
@@ -469,8 +479,8 @@ class PrecisionScores(object):
         self.profile1 = self.process_profiles(profile1)
         self.profile2 = self.process_profiles(profile2)
 
-        self.map1 = self.profile1[[self.feature, self.sample_feature]].copy()
-        self.map2 = self.profile2[[self.feature, self.sample_feature]].copy()
+        self.map1 = self.profile1[[self.feature, self.sample_feature, self.control_type_feature]].copy()
+        self.map2 = self.profile2[[self.feature, self.sample_feature, self.control_type_feature]].copy()
 
         self.corr = self.compute_correlation()
         self.truth_matrix = self.create_truth_matrix()
@@ -501,7 +511,7 @@ class PrecisionScores(object):
 
         _profile = _profile.reset_index(drop=True)
         _feature_df = get_featuredata(_profile)
-        _metadata_df = _profile[self.feature]
+        _metadata_df = _profile[[self.feature, self.control_type_feature]]
         width = int(np.log10(len(_profile)))+1
         _perturbation_id_df = pd.DataFrame({self.sample_feature: [f'sample_{i:0{width}}' for i in range(len(_metadata_df))]})
         _metadata_df = pd.concat([_metadata_df, _perturbation_id_df], axis=1)
@@ -567,7 +577,7 @@ class PrecisionScores(object):
         _ap_sample_df = self.map1.copy()
         _ap_sample_df['ap'] = _score
         if self.challenge_negcon:
-            _ap_sample_df = _ap_sample_df.query(f'{self.feature}!="DMSO"').reset_index(drop=True)
+            _ap_sample_df = _ap_sample_df.query(f'{self.control_type_feature}!="negcon"').drop(columns=[self.control_type_feature]).reset_index(drop=True)
         return _ap_sample_df
 
     def calculate_average_precision_at_k_per_sample(self):
@@ -586,7 +596,7 @@ class PrecisionScores(object):
         _pk_sample_df = self.map1.copy()
         _pk_sample_df['p_k'] = _score
         if self.challenge_negcon:
-            _pk_sample_df = _pk_sample_df.query(f'{self.feature}!="DMSO"').reset_index(drop=True)
+            _pk_sample_df = _pk_sample_df.query(f'{self.control_type_feature}!="negcon"').drop(columns=[self.control_type_feature]).reset_index(drop=True)
         return _pk_sample_df
 
     def calculate_average_precision_at_r_per_sample(self):
@@ -606,7 +616,7 @@ class PrecisionScores(object):
         _pr_sample_df = self.map1.copy()
         _pr_sample_df['p_r'] = _score
         if self.challenge_negcon:
-            _pr_sample_df = _pr_sample_df.query(f'{self.feature}!="DMSO"').reset_index(drop=True)
+            _pr_sample_df = _pr_sample_df.query(f'{self.control_type_feature}!="negcon"').drop(columns=[self.control_type_feature]).reset_index(drop=True)
         return _pr_sample_df
 
     def calculate_average_precision_score_per_group(self, precision_score):
@@ -673,24 +683,24 @@ class PrecisionScores(object):
 
         if self.challenge_negcon:
             _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_x'] != _corr_df[f'{self.feature}_y'], 0, _corr_df['filter'])
-            _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_x'] == "DMSO", 1, _corr_df['filter'])
-            _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_y'] == "DMSO", 1, _corr_df['filter'])
+            _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_x'] == "negcon", 1, _corr_df['filter'])
+            _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_y'] == "negcon", 1, _corr_df['filter'])
         else:
-            _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_x'] == "DMSO", 0, _corr_df['filter'])
-            _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_y'] == "DMSO", 0, _corr_df['filter'])
+            _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_x'] == "negcon", 0, _corr_df['filter'])
+            _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_y'] == "negcon", 0, _corr_df['filter'])
 
-        _corr_df = _corr_df.query('filter==1')
+        _corr_df = _corr_df.query('filter==1').reset_index(drop=True)
 
         self.map1 = (
-            _corr_df[['level_1', f'{self.feature}_y']].copy()
-            .rename(columns={'level_1': self.sample_feature, f'{self.feature}_y': self.feature})
+            _corr_df[['level_1', f'{self.feature}_y', f'{self.control_type_feature}_y']].copy()
+            .rename(columns={'level_1': self.sample_feature, f'{self.feature}_y': self.feature, f'{self.control_type_feature}_y':self.control_type_feature})
             .drop_duplicates()
             .sort_values(by=self.sample_feature)
             .reset_index(drop=True)
         )
         self.map2 = (
-            _corr_df[['level_0', f'{self.feature}_x']].copy()
-            .rename(columns={'level_0': self.sample_feature, f'{self.feature}_x': self.feature})
+            _corr_df[['level_0', f'{self.feature}_x', f'{self.control_type_feature}_x']].copy()
+            .rename(columns={'level_0': self.sample_feature, f'{self.feature}_x': self.feature, f'{self.control_type_feature}_y':self.control_type_feature})
             .drop_duplicates()
             .sort_values(by=self.sample_feature)
             .reset_index(drop=True)
