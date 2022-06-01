@@ -690,7 +690,7 @@ class PrecisionScores(object):
         if self.challenge_negcon:
             _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_x'] != _corr_df[f'{self.feature}_y'], 0, _corr_df['filter'])
             _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_x'] == "negcon", 1, _corr_df['filter'])
-            _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_y'] == "negcon", 1, _corr_df['filter'])
+            _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_y'] == "negcon", 0, _corr_df['filter'])
         else:
             _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_x'] == "negcon", 0, _corr_df['filter'])
             _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_y'] == "negcon", 0, _corr_df['filter'])
