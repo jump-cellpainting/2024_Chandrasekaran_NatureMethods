@@ -774,25 +774,3 @@ def precision_at_r_threshold(precision_df, shuffled_precision_df):
 
     return df
 
-
-def compute_percent_perturbations(precision_df, shuffled_precision_df):
-    """
-    Calculate the proportion of perturbations with a non-zero precision value
-    Parameters:
-    -----------
-    precision_df: pandas.DataFrame
-        dataframe of precision values
-    shuffled_precision_df: pandas.DataFrame
-        dataframe of precision values  for the shuffled profiles
-    Returns:
-    --------
-    float of percent perturbations value.
-    """
-
-    precision_values = precision_df.p_r.values
-    shuffled_precision_values = shuffled_precision_df.p_r.values
-    corrected_values = precision_values - shuffled_precision_values.mean()
-
-    percent_perturbations = np.sum(corrected_values > 0)/len(corrected_values)
-
-    return percent_perturbations
