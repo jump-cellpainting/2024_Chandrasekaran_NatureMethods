@@ -1,0 +1,4 @@
+Modality,Cell,time,mAP
+compound,U2OS,long,0.461
+crispr,U2OS,long,0.238
+orf,U2OS,long,0.212

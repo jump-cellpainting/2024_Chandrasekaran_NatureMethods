@@ -489,13 +489,13 @@ class PrecisionScores(object):
         self.ap_group = self.calculate_average_precision_score_per_group(self.ap_sample)
         self.map = self.calculate_mean_average_precision_score(self.ap_group)
 
-        self.pk_sample = self.calculate_average_precision_at_k_per_sample()
-        self.pk_group = self.calculate_average_precision_score_per_group(self.pk_sample)
-        self.mpk = self.calculate_mean_average_precision_score(self.pk_group)
-
-        self.pr_sample = self.calculate_average_precision_at_r_per_sample()
-        self.pr_group = self.calculate_average_precision_score_per_group(self.pr_sample)
-        self.mpr = self.calculate_mean_average_precision_score(self.pr_group)
+        # self.pk_sample = self.calculate_average_precision_at_k_per_sample()
+        # self.pk_group = self.calculate_average_precision_score_per_group(self.pk_sample)
+        # self.mpk = self.calculate_mean_average_precision_score(self.pk_group)
+        #
+        # self.pr_sample = self.calculate_average_precision_at_r_per_sample()
+        # self.pr_group = self.calculate_average_precision_score_per_group(self.pr_sample)
+        # self.mpr = self.calculate_mean_average_precision_score(self.pr_group)
 
     def process_profiles(self, _profile):
         """
@@ -580,6 +580,11 @@ class PrecisionScores(object):
             _ap_sample_df = _ap_sample_df.query(f'{self.control_type_feature}!="negcon"').drop(columns=[self.control_type_feature]).reset_index(drop=True)
         else:
             _ap_sample_df = _ap_sample_df.drop(columns=[self.control_type_feature]).reset_index(drop=True)
+
+        # compute corrected average precision
+        null_ap = _y_true.sum()/len(_y_true)
+        _ap_sample_df['ap'] -= null_ap
+
         return _ap_sample_df
 
     def calculate_average_precision_at_k_per_sample(self):
