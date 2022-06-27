@@ -2,14 +2,11 @@ import os
 import glob
 import pandas as pd
 import numpy as np
-import random
 from sklearn.utils.validation import check_is_fitted
 from sklearn.utils import check_array, as_float_array
 from sklearn.base import TransformerMixin, BaseEstimator
 import kneed
 import scipy
-import seaborn as sns
-import matplotlib.pyplot as plt
 from sklearn.metrics import average_precision_score
 
 
@@ -54,6 +51,15 @@ def remove_negcon_empty_wells(df):
     return df
 
 
+def remove_empty_wells(df):
+    """return dataframe of non-empty wells"""
+    df = (
+        df.dropna(subset=['Metadata_broad_sample'])
+        .reset_index(drop=True)
+    )
+    return df
+
+
 def concat_profiles(df1, df2):
     """Concatenate dataframes"""
     if df1.shape[0] == 0:
@@ -63,214 +69,6 @@ def concat_profiles(df1, df2):
         df1 = pd.concat(frames, ignore_index=True, join="inner")
 
     return df1
-
-
-def percent_score(null_dist, corr_dist, how):
-    """
-    Calculates the Percent strong or percent recall scores
-    :param null_dist: Null distribution
-    :param corr_dist: Correlation distribution
-    :param how: "left", "right" or "both" for using the 5th percentile, 95th percentile or both thresholds
-    :return: proportion of correlation distribution beyond the threshold
-    """
-    if how == 'right':
-        perc_95 = np.nanpercentile(null_dist, 95)
-        above_threshold = corr_dist > perc_95
-        return np.mean(above_threshold.astype(float))*100, perc_95
-    if how == 'left':
-        perc_5 = np.nanpercentile(null_dist, 5)
-        below_threshold = corr_dist < perc_5
-        return np.mean(below_threshold.astype(float))*100, perc_5
-    if how == 'both':
-        perc_95 = np.nanpercentile(null_dist, 95)
-        above_threshold = corr_dist > perc_95
-        perc_5 = np.nanpercentile(null_dist, 5)
-        below_threshold = corr_dist < perc_5
-        return (np.mean(above_threshold.astype(float)) + np.mean(below_threshold.astype(float)))*100, perc_95, perc_5
-
-
-def corr_between_replicates(df, group_by_feature):
-    """
-        Correlation between replicates
-        Parameters:
-        -----------
-        df: pd.DataFrame
-        group_by_feature: Feature name to group the data frame by
-        Returns:
-        --------
-        list-like of correlation values
-     """
-    replicate_corr = []
-    replicate_grouped = df.groupby(group_by_feature)
-    for name, group in replicate_grouped:
-        group_features = get_featuredata(group)
-        corr = np.corrcoef(group_features)
-        if len(group_features) == 1:  # If there is only one replicate on a plate
-            replicate_corr.append(np.nan)
-        else:
-            np.fill_diagonal(corr, np.nan)
-            replicate_corr.append(np.nanmedian(corr))  # median replicate correlation
-    return replicate_corr
-
-
-def corr_between_non_replicates(df, n_samples, n_replicates, metadata_compound_name):
-    """
-        Null distribution between random "replicates".
-        Parameters:
-        ------------
-        df: pandas.DataFrame
-        n_samples: int
-        n_replicates: int
-        metadata_compound_name: Compound name feature
-        Returns:
-        --------
-        list-like of correlation values, with a  length of `n_samples`
-    """
-    df.reset_index(drop=True, inplace=True)
-    null_corr = []
-    while len(null_corr) < n_samples:
-        compounds = random.choices([_ for _ in range(len(df))], k=n_replicates)
-        sample = df.loc[compounds].copy()
-        if len(sample[metadata_compound_name].unique()) == n_replicates:
-            sample_features = get_featuredata(sample)
-            corr = np.corrcoef(sample_features)
-            np.fill_diagonal(corr, np.nan)
-            null_corr.append(np.nanmedian(corr))  # median replicate correlation
-    return null_corr
-
-
-def correlation_between_modalities(modality_1_df, modality_2_df, modality_1, modality_2, metadata_common, metadata_perturbation):
-    """
-    Compute the correlation between two different modalities.
-    :param modality_1_df: Profiles of the first modality
-    :param modality_2_df: Profiles of the second modality
-    :param modality_1: "Compound", "ORF" or "CRISPR"
-    :param modality_2: "Compound", "ORF" or "CRISPR"
-    :param metadata_common: feature that identifies perturbation pairs
-    :param metadata_perturbation: perturbation name feature
-    :return: list-like of correlation values
-    """
-    list_common_perturbation_groups = list(np.intersect1d(list(modality_1_df[metadata_common]), list(modality_2_df[metadata_common])))
-
-    merged_df = pd.concat([modality_1_df, modality_2_df], ignore_index=False, join='inner')
-
-    modality_1_df = merged_df.query('Metadata_modality==@modality_1')
-    modality_2_df = merged_df.query('Metadata_modality==@modality_2')
-
-    corr_modalities = []
-
-    for group in list_common_perturbation_groups:
-        modality_1_perturbation_df = modality_1_df.loc[modality_1_df[metadata_common] == group]
-        modality_2_perturbation_df = modality_2_df.loc[modality_2_df[metadata_common] == group]
-
-        for sample_1 in modality_1_perturbation_df[metadata_perturbation].unique():
-            for sample_2 in modality_2_perturbation_df[metadata_perturbation].unique():
-                modality_1_perturbation_sample_df = modality_1_perturbation_df.loc[modality_1_perturbation_df[metadata_perturbation] == sample_1]
-                modality_2_perturbation_sample_df = modality_2_perturbation_df.loc[modality_2_perturbation_df[metadata_perturbation] == sample_2]
-
-                modality_1_perturbation_profiles = get_featuredata(modality_1_perturbation_sample_df)
-                modality_2_perturbation_profiles = get_featuredata(modality_2_perturbation_sample_df)
-
-                corr = np.corrcoef(modality_1_perturbation_profiles, modality_2_perturbation_profiles)
-                corr = corr[0:len(modality_1_perturbation_profiles), len(modality_1_perturbation_profiles):]
-                corr_modalities.append(np.nanmedian(corr))  # median replicate correlation
-
-    return corr_modalities
-
-
-def null_correlation_between_modalities(modality_1_df, modality_2_df, modality_1, modality_2, metadata_common, metadata_perturbation, n_samples):
-    """
-    Compute the correlation between two different modalities.
-    :param modality_1_df: Profiles of the first modality
-    :param modality_2_df: Profiles of the second modality
-    :param modality_1: "Compound", "ORF" or "CRISPR"
-    :param modality_2: "Compound", "ORF" or "CRISPR"
-    :param metadata_common: feature that identifies perturbation pairs
-    :param metadata_perturbation: perturbation name feature
-    :param n_samples: int
-    :return:
-    """
-    list_common_perturbation_groups = list(np.intersect1d(list(modality_1_df[metadata_common]), list(modality_2_df[metadata_common])))
-
-    merged_df = pd.concat([modality_1_df, modality_2_df], ignore_index=False, join='inner')
-
-    modality_1_df = merged_df.query('Metadata_modality==@modality_1')
-    modality_2_df = merged_df.query('Metadata_modality==@modality_2')
-
-    null_modalities = []
-
-    while len(null_modalities) < n_samples:
-        perturbations = random.choices(list_common_perturbation_groups, k=2)
-        modality_1_perturbation_df = modality_1_df.loc[modality_1_df[metadata_common] == perturbations[0]]
-        modality_2_perturbation_df = modality_2_df.loc[modality_2_df[metadata_common] == perturbations[1]]
-
-        for sample_1 in modality_1_perturbation_df[metadata_perturbation].unique():
-            for sample_2 in modality_2_perturbation_df[metadata_perturbation].unique():
-                modality_1_perturbation_sample_df = modality_1_perturbation_df.loc[modality_1_perturbation_df[metadata_perturbation] == sample_1]
-                modality_2_perturbation_sample_df = modality_2_perturbation_df.loc[modality_2_perturbation_df[metadata_perturbation] == sample_2]
-
-                modality_1_perturbation_profiles = get_featuredata(modality_1_perturbation_sample_df)
-                modality_2_perturbation_profiles = get_featuredata(modality_2_perturbation_sample_df)
-
-                corr = np.corrcoef(modality_1_perturbation_profiles, modality_2_perturbation_profiles)
-                corr = corr[0:len(modality_1_perturbation_profiles), len(modality_1_perturbation_profiles):]
-                null_modalities.append(np.nanmedian(corr))  # median replicate correlation
-
-    return null_modalities
-
-
-def null_correlation_between_modalities_list(modality_1_df, modality_2_df, modality_1, modality_2, metadata_common, metadata_perturbation, n_samples):
-    """
-    Compute the correlation between two different modalities.
-    :param modality_1_df: Profiles of the first modality
-    :param modality_2_df: Profiles of the second modality
-    :param modality_1: "Compound", "ORF" or "CRISPR"
-    :param modality_2: "Compound", "ORF" or "CRISPR"
-    :param metadata_common: feature that identifies perturbation pairs
-    :param metadata_perturbation: perturbation name feature
-    :param n_samples: int
-    :return:
-    """
-    list_common_perturbation_groups = list(np.intersect1d(list(modality_1_df[metadata_common]), list(modality_2_df[metadata_common])))
-
-    metadata_common_list = f'{metadata_common}_list'
-
-    merged_df = pd.concat([modality_1_df, modality_2_df], ignore_index=False, join='inner')
-
-    modality_1_df = merged_df.query('Metadata_modality==@modality_1')
-    modality_2_df = merged_df.query('Metadata_modality==@modality_2')
-
-    null_modalities = []
-
-    while len(null_modalities) < n_samples:
-        overlap = True
-        perturbations = random.choices(list_common_perturbation_groups, k=2)
-        modality_1_perturbation_df = modality_1_df.loc[modality_1_df[metadata_common] == perturbations[0]]
-        modality_2_perturbation_df = modality_2_df.loc[modality_2_df[metadata_common] == perturbations[1]]
-
-        if modality_1 == "compound":
-            modality_1_perturbation_list = np.unique(modality_1_perturbation_df.Metadata_gene_list.sum())
-            if not perturbations[1] in modality_1_perturbation_list:
-                overlap = False
-        elif modality_1 == "compound":
-            modality_2_perturbation_list = np.unique(modality_2_perturbation_df.Metadata_gene_list.sum())
-            if not perturbations[0] in modality_2_perturbation_list:
-                overlap = False
-
-        if not overlap:
-            for sample_1 in modality_1_perturbation_df[metadata_perturbation].unique():
-                for sample_2 in modality_2_perturbation_df[metadata_perturbation].unique():
-                    modality_1_perturbation_sample_df = modality_1_perturbation_df.loc[modality_1_perturbation_df[metadata_perturbation] == sample_1]
-                    modality_2_perturbation_sample_df = modality_2_perturbation_df.loc[modality_2_perturbation_df[metadata_perturbation] == sample_2]
-
-                    modality_1_perturbation_profiles = get_featuredata(modality_1_perturbation_sample_df)
-                    modality_2_perturbation_profiles = get_featuredata(modality_2_perturbation_sample_df)
-
-                    corr = np.corrcoef(modality_1_perturbation_profiles, modality_2_perturbation_profiles)
-                    corr = corr[0:len(modality_1_perturbation_profiles), len(modality_1_perturbation_profiles):]
-                    null_modalities.append(np.nanmedian(corr))  # median replicate correlation
-
-    return null_modalities
 
 
 class ZCA_corr(BaseEstimator, TransformerMixin):
@@ -348,62 +146,6 @@ def sphere_plate_zca_corr(plate):
     return combined
 
 
-def distribution_plot(df, output_file, metric):
-    """
-    Generates the correlation distribution plots
-    Parameters:
-    -----------
-    df: pandas.DataFrame
-        dataframe containing the data points of replicate and null correlation distributions, description, Percent score and threshold values.
-    output_file: str
-        name of the output file. The file will be output to the figures/ folder.
-    metric: str
-        Percent Replicating or Percent Matching
-    Returns:
-    -------
-    None
-    """
-
-    if metric == 'Percent Replicating':
-        metric_col = 'Percent_Replicating'
-        null = 'Null_Replicating'
-        null_label = 'non-replicates'
-        signal = 'Replicating'
-        signal_label = 'replicates'
-        x_label = 'Replicate correlation'
-    elif metric == 'Percent Matching':
-        metric_col = 'Percent_Matching'
-        null = 'Null_Matching'
-        null_label = 'non-matching perturbations'
-        signal = 'Matching'
-        signal_label = 'matching perturbations'
-        x_label = 'Correlation between perturbations targeting the same gene'
-
-    n_experiments = len(df)
-
-    plt.rcParams['figure.facecolor'] = 'white'  # Enabling this makes the figure axes and labels visible in PyCharm Dracula theme
-    plt.figure(figsize=[12, n_experiments * 6])
-
-    for i in range(n_experiments):
-        plt.subplot(n_experiments, 1, i + 1)
-        plt.hist(df.loc[i, f'{null}'], label=f'{null_label}', density=True, bins=20, alpha=0.5)
-        plt.hist(df.loc[i, f'{signal}'], label=f'{signal_label}', density=True, bins=20, alpha=0.5)
-        plt.axvline(df.loc[i, 'Value_95'], label='95% threshold')
-        plt.legend(fontsize=20)
-        plt.title(
-            f"{df.loc[i, 'Description']}\n" +
-            f"{metric} = {df.loc[i, f'{metric_col}']}",
-            fontsize=25
-        )
-        plt.ylabel("density", fontsize=25)
-        plt.xlabel(f"{x_label}", fontsize=25)
-        plt.xticks(fontsize=20)
-        plt.yticks(fontsize=20)
-        sns.despine()
-    plt.tight_layout()
-    plt.savefig(f'figures/{output_file}')
-
-
 def consensus(profiles_df, group_by_feature):
     """
     Computes the median consensus profiles.
@@ -433,11 +175,11 @@ def consensus(profiles_df, group_by_feature):
     return profiles_df
 
 
-class MeanAveragePrecision(object):
+class PrecisionScores(object):
     """
-    Calculate the mean average precision for information retrieval.
+    Calculate the precision scores for information retrieval.
     """
-    def __init__(self, profile1, profile2, group_by_feature):
+    def __init__(self, profile1, profile2, group_by_feature, within=False, rank=False, anti_correlation=False, k=1, challenge_negcon=False):
         """
         Parameters:
         -----------
@@ -447,21 +189,38 @@ class MeanAveragePrecision(object):
             dataframe of profiles
         group_by_feature: str
             Name of the column
+        within: bool, default: False
+            Whether profile1 and profile2 are the same dataframe or not.
+        rank: bool, default: False
+            Whether to use rank of the correlation values or not.
+        anti_correlation: book, default: False
+            Whether both anti-correlation and correlation are used in the calculation
+        k: int, default: 1
+            value at which precision is calculated.
+        challenge_negcon: bool, default:  False
+            Whether to calculate precision scores by challenging negcon.
         """
         self.sample_feature = 'Metadata_sample_id'
+        self.control_type_feature = 'Metadata_control_type'
         self.feature = group_by_feature
+        self.within = within
+        self.rank = rank
+        self.anti_correlation = anti_correlation
+        self.k = k
+        self.challenge_negcon = challenge_negcon
+
         self.profile1 = self.process_profiles(profile1)
         self.profile2 = self.process_profiles(profile2)
 
-        self.map1 = self.profile1[[self.feature, self.sample_feature]].copy()
-        self.map2 = self.profile2[[self.feature, self.sample_feature]].copy()
+        self.map1 = self.profile1[[self.feature, self.sample_feature, self.control_type_feature]].copy()
+        self.map2 = self.profile2[[self.feature, self.sample_feature, self.control_type_feature]].copy()
 
         self.corr = self.compute_correlation()
         self.truth_matrix = self.create_truth_matrix()
 
         self.ap_sample = self.calculate_average_precision_per_sample()
-        self.ap_group = self.calculate_average_precision_per_group()
-        self.map = self.calculate_mean_average_precision()
+        self.ap_group = self.calculate_average_precision_score_per_group(self.ap_sample)
+        self.map = self.calculate_mean_average_precision_score(self.ap_group)
 
     def process_profiles(self, _profile):
         """
@@ -475,10 +234,11 @@ class MeanAveragePrecision(object):
         pandas.DataFrame which includes the sample id column
         """
 
+        _profile = _profile.reset_index(drop=True)
         _feature_df = get_featuredata(_profile)
-        _metadata_df = _profile[self.feature]
+        _metadata_df = _profile[[self.feature, self.control_type_feature]]
         width = int(np.log10(len(_profile)))+1
-        _perturbation_id_df = pd.DataFrame({self.sample_feature : [f'sample_{i:0{width}}' for i in range(len(_metadata_df))]})
+        _perturbation_id_df = pd.DataFrame({self.sample_feature: [f'sample_{i:0{width}}' for i in range(len(_metadata_df))]})
         _metadata_df = pd.concat([_metadata_df, _perturbation_id_df], axis=1)
         _profile = pd.concat([_metadata_df, _feature_df], axis=1)
         return _profile
@@ -488,7 +248,7 @@ class MeanAveragePrecision(object):
         Compute correlation.
         Returns:
         -------
-        pandas.DataFrame of correlation values.
+        pandas.DataFrame of pairwise correlation values.
         """
 
         _profile1 = get_featuredata(self.profile1)
@@ -497,7 +257,14 @@ class MeanAveragePrecision(object):
         _sample_names_2 = list(self.profile2[self.sample_feature])
         _corr = np.corrcoef(_profile1, _profile2)
         _corr = _corr[0:len(_sample_names_1), len(_sample_names_1):]
+        if self.anti_correlation:
+            _corr = np.abs(_corr)
+        if self.within:
+            np.fill_diagonal(_corr, 0)
         _corr_df = pd.DataFrame(_corr, columns=_sample_names_2, index=_sample_names_1)
+        if self.rank:
+            _corr_df = _corr_df.rank(1, method="first")
+        _corr_df = self.process_negcon(_corr_df)
         return _corr_df
 
     def create_truth_matrix(self):
@@ -511,15 +278,17 @@ class MeanAveragePrecision(object):
         _truth_matrix = self.corr.unstack().reset_index()
         _truth_matrix = _truth_matrix.merge(self.map2, left_on='level_0', right_on=self.sample_feature, how='left').drop([self.sample_feature,0], axis=1)
         _truth_matrix = _truth_matrix.merge(self.map1, left_on='level_1', right_on=self.sample_feature, how='left').drop([self.sample_feature], axis=1)
-        _truth_matrix['value'] = np.where(_truth_matrix[f'{self.feature}_x']==_truth_matrix[f'{self.feature}_y'], 1, 0)
-        _truth_matrix = _truth_matrix.pivot('level_1','level_0','value').reset_index().set_index('level_1')
+        _truth_matrix['value'] = np.where(_truth_matrix[f'{self.feature}_x'] == _truth_matrix[f'{self.feature}_y'], 1, 0)
+        if self.within:
+            _truth_matrix['value'] = np.where(_truth_matrix['level_0'] == _truth_matrix['level_1'], 0, _truth_matrix['value'])
+        _truth_matrix = _truth_matrix.pivot('level_1', 'level_0', 'value').reset_index().set_index('level_1')
         _truth_matrix.index.name = None
         _truth_matrix = _truth_matrix.rename_axis(None, axis=1)
         return _truth_matrix
 
     def calculate_average_precision_per_sample(self):
         """
-        Compute average precision per sample.
+        Compute average precision score per sample.
         Returns:
         -------
         pandas.DataFrame of average precision values.
@@ -527,51 +296,113 @@ class MeanAveragePrecision(object):
 
         _score = []
         for _sample in self.corr.index:
-            _score.append(average_precision_score(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values))
+            _y_true, _y_pred = self.filter_nan(self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values)
+            _score.append(average_precision_score(_y_true, _y_pred))
 
         _ap_sample_df = self.map1.copy()
         _ap_sample_df['ap'] = _score
+        if self.challenge_negcon:
+            _ap_sample_df = _ap_sample_df.query(f'{self.control_type_feature}!="negcon"').drop(columns=[self.control_type_feature]).reset_index(drop=True)
+        else:
+            _ap_sample_df = _ap_sample_df.drop(columns=[self.control_type_feature]).reset_index(drop=True)
+
+        # compute corrected average precision
+        random_baseline_ap = _y_true.sum()/len(_y_true)
+        _ap_sample_df['ap'] -= random_baseline_ap
+
         return _ap_sample_df
 
-    def calculate_average_precision_per_group(self):
+
+    def calculate_average_precision_score_per_group(self, precision_score):
         """
-        Compute average precision per sample group.
+        Compute average precision score per sample group.
         Returns:
         -------
         pandas.DataFrame of average precision values.
         """
 
-        _ap_group_df = self.ap_sample.groupby(self.feature).ap.apply(lambda x: np.mean(x)).reset_index()
-        return _ap_group_df
+        _precision_group_df = precision_score.groupby(self.feature).apply(lambda x: np.mean(x)).reset_index()
+        return _precision_group_df
 
-    def calculate_mean_average_precision(self):
+    @staticmethod
+    def calculate_mean_average_precision_score(precision_score):
         """
-        Compute mean average precision.
+        Compute mean average precision score.
         Returns:
         -------
-        mean average precision
+        mean average precision score.
         """
 
-        return self.ap_group.mean().values[0]
+        return precision_score.mean().values[0]
 
 
-def shuffle_profiles(profiles):
-    """
-    Shuffle profiles - both rows and columns.
-    Parameters:
-    -----------
-    profiles: pandas.DataFrame
-        dataframe of profiles
-    Returns:
-    -------
-    pandas.DataFrame of shuffled profiles.
-    """
+    def process_negcon(self, _corr_df):
+        """
+        Keep or remove negcon
+        Parameters:
+        -----------
+        _corr_df: pandas.DataFrame
+            pairwise correlation dataframe
+        Returns:
+        -------
+        pandas.DataFrame of pairwise correlation values
+        """
+        _corr_df = _corr_df.unstack().reset_index()
+        _corr_df['filter'] = 1
+        _corr_df = _corr_df.merge(self.map2, left_on='level_0', right_on=self.sample_feature, how='left').drop([self.sample_feature], axis=1)
+        _corr_df = _corr_df.merge(self.map1, left_on='level_1', right_on=self.sample_feature, how='left').drop([self.sample_feature], axis=1)
 
-    feature_cols = get_featurecols(profiles)
-    metadata_df = get_metadata(profiles)
-    feature_df = get_featuredata(profiles)
+        if self.challenge_negcon:
+            _corr_df['filter'] = np.where(_corr_df[f'{self.feature}_x'] != _corr_df[f'{self.feature}_y'], 0, _corr_df['filter'])
+            _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_x'] == "negcon", 1, _corr_df['filter'])
+            _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_y'] == "negcon", 0, _corr_df['filter'])
+        else:
+            _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_x'] == "negcon", 0, _corr_df['filter'])
+            _corr_df['filter'] = np.where(_corr_df[f'{self.control_type_feature}_y'] == "negcon", 0, _corr_df['filter'])
 
-    feature_df = feature_df.sample(frac=1, axis=1).sample(frac=1).reset_index(drop=True)
-    feature_df.columns = feature_cols
-    profiles = pd.concat([metadata_df, feature_df], axis=1)
-    return profiles
+        _corr_df = _corr_df.query('filter==1').reset_index(drop=True)
+
+        self.map1 = (
+            _corr_df[['level_1', f'{self.feature}_y', f'{self.control_type_feature}_y']].copy()
+            .rename(columns={'level_1': self.sample_feature, f'{self.feature}_y': self.feature, f'{self.control_type_feature}_y':self.control_type_feature})
+            .drop_duplicates()
+            .sort_values(by=self.sample_feature)
+            .reset_index(drop=True)
+        )
+        self.map2 = (
+            _corr_df[['level_0', f'{self.feature}_x', f'{self.control_type_feature}_x']].copy()
+            .rename(columns={'level_0': self.sample_feature, f'{self.feature}_x': self.feature, f'{self.control_type_feature}_y':self.control_type_feature})
+            .drop_duplicates()
+            .sort_values(by=self.sample_feature)
+            .reset_index(drop=True)
+        )
+
+        _corr_df = _corr_df.pivot('level_1', 'level_0', 0).reset_index().set_index('level_1')
+        _corr_df.index.name = None
+        _corr_df = _corr_df.rename_axis(None, axis=1)
+        return _corr_df
+
+    @staticmethod
+    def filter_nan(_y_true, _y_pred):
+        arg = np.argwhere(~np.isnan(_y_pred))
+        return _y_true[arg].flatten(), _y_pred[arg].flatten()
+
+
+def time_point(modality, time_point):
+    if modality == "compound":
+        if time_point == 24:
+            time = "short"
+        else:
+            time = "long"
+    elif modality == "orf":
+        if time_point == 48:
+            time = "short"
+        else:
+            time = "long"
+    else:
+        if time_point == 96:
+            time = "short"
+        else:
+            time = "long"
+
+    return time
