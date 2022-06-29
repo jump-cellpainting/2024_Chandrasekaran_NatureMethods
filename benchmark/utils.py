@@ -179,7 +179,7 @@ class PrecisionScores(object):
     """
     Calculate the precision scores for information retrieval.
     """
-    def __init__(self, profile1, profile2, group_by_feature, within=False, rank=False, anti_correlation=False, k=1, challenge_negcon=False):
+    def __init__(self, profile1, profile2, group_by_feature, within=False, rank=False, anti_correlation=False, challenge_negcon=False):
         """
         Parameters:
         -----------
@@ -195,8 +195,6 @@ class PrecisionScores(object):
             Whether to use rank of the correlation values or not.
         anti_correlation: book, default: False
             Whether both anti-correlation and correlation are used in the calculation
-        k: int, default: 1
-            value at which precision is calculated.
         challenge_negcon: bool, default:  False
             Whether to calculate precision scores by challenging negcon.
         """
@@ -206,7 +204,6 @@ class PrecisionScores(object):
         self.within = within
         self.rank = rank
         self.anti_correlation = anti_correlation
-        self.k = k
         self.challenge_negcon = challenge_negcon
 
         self.profile1 = self.process_profiles(profile1)
