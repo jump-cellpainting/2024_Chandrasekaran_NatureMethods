@@ -214,6 +214,7 @@ class PrecisionScores(object):
 
         self.corr = self.compute_correlation()
         self.truth_matrix = self.create_truth_matrix()
+        self.cleanup()
 
         self.ap_sample = self.calculate_average_precision_per_sample()
         self.ap_group = self.calculate_average_precision_score_per_group(self.ap_sample)
@@ -275,7 +276,7 @@ class PrecisionScores(object):
         _truth_matrix = self.corr.unstack().reset_index()
         _truth_matrix = _truth_matrix.merge(self.map2, left_on='level_0', right_on=self.sample_feature, how='left').drop([self.sample_feature,0], axis=1)
         _truth_matrix = _truth_matrix.merge(self.map1, left_on='level_1', right_on=self.sample_feature, how='left').drop([self.sample_feature], axis=1)
-        _truth_matrix['value'] = np.where(_truth_matrix[f'{self.feature}_x'] == _truth_matrix[f'{self.feature}_y'], 1, 0)
+        _truth_matrix['value'] = [len(np.intersect1d(x[0].split('|'), x[1].split('|'))) > 0 for x in zip(_truth_matrix[f'{self.feature}_x'], _truth_matrix[f'{self.feature}_y'])]
         if self.within:
             _truth_matrix['value'] = np.where(_truth_matrix['level_0'] == _truth_matrix['level_1'], 0, _truth_matrix['value'])
         _truth_matrix = _truth_matrix.pivot('level_1', 'level_0', 'value').reset_index().set_index('level_1')
@@ -383,6 +384,16 @@ class PrecisionScores(object):
     def filter_nan(_y_true, _y_pred):
         arg = np.argwhere(~np.isnan(_y_pred))
         return _y_true[arg].flatten(), _y_pred[arg].flatten()
+
+    def cleanup(self):
+        keep = list((self.truth_matrix.sum(axis=1)>0))
+        self.corr['keep'] = keep
+        self.map1['keep'] = keep
+        self.truth_matrix['keep'] = keep
+
+        self.corr = self.corr.loc[self.corr.keep].drop(columns=['keep'])
+        self.map1 = self.map1.loc[self.map1.keep].drop(columns=['keep'])
+        self.truth_matrix = self.truth_matrix.loc[self.truth_matrix.keep].drop(columns=['keep'])
 
 
 def time_point(modality, time_point):
