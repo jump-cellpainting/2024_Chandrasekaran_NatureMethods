@@ -23,7 +23,7 @@ Cell images are available on a S3 bucket. The images can be downloaded using the
 batch=<BATCH NAME>
 aws s3 sync \
   --no-sign-request \
-  s3://cellpainting-gallery/jump-pilot/source_4/images/${batch}/ . 
+  s3://cellpainting-gallery/cpg0000-jump-pilot/source_4/images/${batch}/ . 
 ```
 
 The `<BATCH NAME>` is one of the six batches [mentioned below](#batch-and-plate-metadata).
@@ -35,7 +35,7 @@ suffix=images/2020_11_04_CPJUMP1/images/BR00117010__2020-11-08T18_18_00-Measurem
 
 aws s3 cp \
   --no-sign-request \
-  s3://cellpainting-gallery/jump-pilot/source_4/${suffix} \
+  s3://cellpainting-gallery/cpg0000-jump-pilot/source_4/${suffix} \
   .
 ```
 
@@ -80,7 +80,7 @@ batch = <BATCH NAME>
 aws s3 cp \
   --no-sign-request \
   --recursive \
-  s3://cellpainting-gallery/jump-pilot/source_4/workspace/backend/${batch}/ . 
+  s3://cellpainting-gallery/cpg0000-jump-pilot/source_4/workspace/backend/${batch}/ . 
 ```
 
 where `<BATCH NAME>` is one of the six batches [mentioned above](#batch-and-plate-metadata).
