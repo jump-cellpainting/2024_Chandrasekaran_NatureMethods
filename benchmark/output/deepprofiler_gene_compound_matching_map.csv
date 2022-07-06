@@ -1,0 +1,3 @@
+Modality1,Modality2,Cell,mAP
+compound_long,crispr_long,U2OS,0.002
+compound_long,orf_long,U2OS,0.019
