@@ -1,13 +1,3 @@
 Modality,Cell,time,mAP
-compound,A549,short,0.533
-crispr,A549,long,0.395
-crispr,A549,short,0.374
-orf,A549,long,0.148
-orf,A549,short,0.16
-compound,A549,long,0.704
-compound,U2OS,short,0.55
-crispr,U2OS,long,0.255
-crispr,U2OS,short,0.333
-orf,U2OS,short,0.321
-orf,U2OS,long,0.214
 compound,U2OS,long,0.496
+orf,U2OS,short,0.318

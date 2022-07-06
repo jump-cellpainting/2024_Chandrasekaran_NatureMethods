@@ -8,6 +8,7 @@ from sklearn.base import TransformerMixin, BaseEstimator
 import kneed
 import scipy
 from sklearn.metrics import average_precision_score
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 def load_data(exp, plate, filetype):
@@ -71,79 +72,104 @@ def concat_profiles(df1, df2):
     return df1
 
 
-class ZCA_corr(BaseEstimator, TransformerMixin):
-    def __init__(self, copy=False):
-        self.copy = copy
+def create_replicability_df(replicability_ap_df, replicability_map_df, precision, modality, cell, timepoint):
+    _replicability_ap_df = replicability_ap_df
+    _replicability_map_df = replicability_map_df
 
-    def estimate_regularization(self, eigenvalue):
-        x = [_ for _ in range(len(eigenvalue))]
-        kneedle = kneed.KneeLocator(x, eigenvalue, S=1.0, curve='convex', direction='decreasing')
-        reg = eigenvalue[kneedle.elbow]/10.0
-        return reg # The complex part of the eigenvalue is ignored
+    _modality = modality
+    _cell = cell
+    _timepoint = timepoint
+    _time = time_point(_modality, _timepoint)
 
-    def fit(self, X, y=None):
-        """
-        Compute the mean, sphering and desphering matrices.
-        Parameters
-        ----------
-        X : array-like with shape [n_samples, n_features]
-            The data used to compute the mean, sphering and desphering
-            matrices.
-        """
-        X = check_array(X, accept_sparse=False, copy=self.copy, ensure_2d=True)
-        X = as_float_array(X, copy=self.copy)
-        self.mean_ = X.mean(axis=0)
-        X_ = X - self.mean_
-        cov = np.dot(X_.T, X_) / (X_.shape[0] - 1)
-        V = np.diag(cov)
-        df = pd.DataFrame(X_)
-        corr = np.nan_to_num(df.corr()) # replacing nan with 0 and inf with large values
-        G, T, _ = scipy.linalg.svd(corr)
-        regularization = self.estimate_regularization(T.real)
-        t = np.sqrt(T.clip(regularization))
-        t_inv = np.diag(1.0 / t)
-        v_inv = np.diag(1.0/np.sqrt(V.clip(1e-3)))
-        self.sphere_ = np.dot(np.dot(np.dot(G, t_inv), G.T), v_inv)
-        return self
+    _description = f'{modality}_{_cell}_{_time}'
 
-    def transform(self, X, y=None, copy=None):
-        """
-        Parameters
-        ----------
-        X : array-like with shape [n_samples, n_features]
-            The data to sphere along the features axis.
-        """
-        check_is_fitted(self, "mean_")
-        X = as_float_array(X, copy=self.copy)
-        return np.dot(X - self.mean_, self.sphere_.T)
+    _map_df = pd.DataFrame({'Description': _description,
+                            'Modality': _modality,
+                            'Cell': _cell,
+                            'time': _time,
+                            'timepoint': _timepoint,
+                            'mAP': f'{precision.map:.3f}'}, index=[len(_replicability_map_df)])
+    _replicability_map_df = concat_profiles(_replicability_map_df, _map_df)
+
+    _ap_df = precision.ap_group.copy()
+    _ap_df['Description'] = f'{_description}'
+    _ap_df['Modality'] = f'{_modality}'
+    _ap_df['Cell'] = f'{_cell}'
+    _ap_df['time'] = f'{_time}'
+    _ap_df['timepoint'] = f'{_timepoint}'
+    _replicability_ap_df = concat_profiles(_replicability_ap_df, _ap_df)
+
+    _replicability_map_df['mAP'] = _replicability_map_df['mAP'].astype(float)
+    _replicability_ap_df['ap'] = _replicability_ap_df['ap'].astype(float)
+
+    return _replicability_ap_df, _replicability_map_df
 
 
-def sphere_plate_zca_corr(plate):
-    """
-    sphere each plate to the DMSO negative control values
-    Parameters:
-    -----------
-    plate: pandas.DataFrame
-        dataframe of a single plate's featuredata and metadata
-    Returns:
-    -------
-    pandas.DataFrame of the same shape as `plate`
-    """
-    # sphere featuredata to DMSO sphering matrix
-    spherizer = ZCA_corr()
-    dmso_df = plate.loc[plate.Metadata_control_type=="negcon"]
-    dmso_vals = get_featuredata(dmso_df).to_numpy()
-    all_vals = get_featuredata(plate).to_numpy()
-    spherizer.fit(dmso_vals)
-    sphered_vals = spherizer.transform(all_vals)
-    # concat with metadata columns
-    feature_df = pd.DataFrame(
-        sphered_vals, columns=get_featurecols(plate), index=plate.index
-    )
-    metadata = get_metadata(plate)
-    combined = pd.concat([metadata, feature_df], axis=1)
-    assert combined.shape == plate.shape
-    return combined
+def create_matching_df(matching_ap_df, matching_map_df, precision, modality, cell, timepoint):
+    _matching_ap_df = matching_ap_df
+    _matching_map_df = matching_map_df
+
+    _modality = modality
+    _cell = cell
+    _timepoint = timepoint
+    _time = time_point(_modality, _timepoint)
+
+    _description = f'{modality}_{_cell}_{_time}'
+
+    _map_df = pd.DataFrame({'Description': _description,
+                            'Modality': _modality,
+                            'Cell': _cell,
+                            'time': _time,
+                            'timepoint': _timepoint,
+                            'mAP': f'{precision.map:.3f}'}, index=[len(_matching_map_df)])
+    _matching_map_df = concat_profiles(_matching_map_df, _map_df)
+
+    _ap_df = precision.ap_group.copy()
+    _ap_df['Description'] = f'{_description}'
+    _ap_df['Modality'] = f'{_modality}'
+    _ap_df['Cell'] = f'{_cell}'
+    _ap_df['time'] = f'{_time}'
+    _ap_df['timepoint'] = f'{_timepoint}'
+    _matching_ap_df = concat_profiles(_matching_ap_df, _ap_df)
+
+    _matching_map_df['mAP'] = _matching_map_df['mAP'].astype(float)
+    _matching_ap_df['ap'] = _matching_ap_df['ap'].astype(float)
+
+    return _matching_ap_df, _matching_map_df
+
+
+def create_gene_compound_matching_df(gene_compound_matching_ap_df, gene_compound_matching_map_df, precision, modality_1, modality_2, cell, timepoint1, timepoint2):
+    _gene_compound_matching_ap_df = gene_compound_matching_ap_df
+    _gene_compound_matching_map_df = gene_compound_matching_map_df
+
+    _modality_1 = modality_1
+    _modality_2 = modality_2
+    _cell = cell
+    _timepoint_1 = timepoint1
+    _timepoint_2 = timepoint2
+    _time_1 = time_point(_modality_1, _timepoint_1)
+    _time_2 = time_point(_modality_2, _timepoint_2)
+
+    _description = f'{_modality_1}_{cell}_{_time_1}-{_modality_2}_{cell}_{_time_2}'
+
+    _map_df = pd.DataFrame({'Description': _description,
+                            'Modality1': f'{_modality_1}_{_time_1}',
+                            'Modality2': f'{_modality_2}_{_time_2}',
+                            'Cell': _cell,
+                            'mAP': f'{precision.map:.3f}'}, index=[len(_gene_compound_matching_map_df)])
+    _gene_compound_matching_map_df = concat_profiles(_gene_compound_matching_map_df, _map_df)
+
+    _ap_df = precision.ap_group.copy()
+    _ap_df['Description'] = f'{_description}'
+    _ap_df['Modality1'] = f'{_modality_1}_{_time_1}'
+    _ap_df['Modality2'] = f'{_modality_2}_{_time_2}'
+    _ap_df['Cell'] = f'{_cell}'
+    _gene_compound_matching_ap_df = concat_profiles(_gene_compound_matching_ap_df, _ap_df)
+
+    _gene_compound_matching_map_df['mAP'] = _gene_compound_matching_map_df['mAP'].astype(float)
+    _gene_compound_matching_ap_df['ap'] = _gene_compound_matching_ap_df['ap'].astype(float)
+
+    return _gene_compound_matching_ap_df, _gene_compound_matching_map_df
 
 
 def consensus(profiles_df, group_by_feature):
@@ -179,7 +205,7 @@ class PrecisionScores(object):
     """
     Calculate the precision scores for information retrieval.
     """
-    def __init__(self, profile1, profile2, group_by_feature, within=False, rank=False, anti_correlation=False, challenge_negcon=False):
+    def __init__(self, profile1, profile2, group_by_feature, within=False, anti_correlation=False, challenge_negcon=False):
         """
         Parameters:
         -----------
@@ -191,8 +217,6 @@ class PrecisionScores(object):
             Name of the column
         within: bool, default: False
             Whether profile1 and profile2 are the same dataframe or not.
-        rank: bool, default: False
-            Whether to use rank of the correlation values or not.
         anti_correlation: book, default: False
             Whether both anti-correlation and correlation are used in the calculation
         challenge_negcon: bool, default:  False
@@ -202,7 +226,6 @@ class PrecisionScores(object):
         self.control_type_feature = 'Metadata_control_type'
         self.feature = group_by_feature
         self.within = within
-        self.rank = rank
         self.anti_correlation = anti_correlation
         self.challenge_negcon = challenge_negcon
 
@@ -253,15 +276,12 @@ class PrecisionScores(object):
         _profile2 = get_featuredata(self.profile2)
         _sample_names_1 = list(self.profile1[self.sample_feature])
         _sample_names_2 = list(self.profile2[self.sample_feature])
-        _corr = np.corrcoef(_profile1, _profile2)
-        _corr = _corr[0:len(_sample_names_1), len(_sample_names_1):]
+        _corr = cosine_similarity(_profile1, _profile2)
         if self.anti_correlation:
             _corr = np.abs(_corr)
         if self.within:
-            np.fill_diagonal(_corr, 0)
+            np.fill_diagonal(_corr, np.nan)
         _corr_df = pd.DataFrame(_corr, columns=_sample_names_2, index=_sample_names_1)
-        if self.rank:
-            _corr_df = _corr_df.rank(1, method="first")
         _corr_df = self.process_negcon(_corr_df)
         return _corr_df
 
