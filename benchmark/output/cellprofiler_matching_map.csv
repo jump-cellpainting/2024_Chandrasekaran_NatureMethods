@@ -1,9 +1,9 @@
 Modality,Cell,time,mAP
-compound,A549,short,0.076
+compound,A549,short,0.109
 crispr,A549,long,0.088
 crispr,A549,short,0.062
-compound,A549,long,0.074
-compound,U2OS,short,0.065
+compound,A549,long,0.119
+compound,U2OS,short,0.078
 crispr,U2OS,long,0.076
 crispr,U2OS,short,0.067
-compound,U2OS,long,0.089
+compound,U2OS,long,0.11
