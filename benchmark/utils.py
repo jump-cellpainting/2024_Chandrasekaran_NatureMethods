@@ -216,7 +216,7 @@ class PrecisionScores(object):
         group_by_feature: str
             Name of the feature to group by
         mode: str
-            Whether computing replicability or matching
+            Whether compute replicability or matching
         identity_perturbation_feature: str
             Name of the feature that identifies perturbations
         within: bool, default: False
@@ -479,6 +479,18 @@ class PrecisionScores(object):
 
 
 def time_point(modality, time_point):
+    """
+    Convert time point in hr to long or short time description
+    Parameters:
+    -----------
+    modality: str
+        perturbation modality
+    time_point: int
+        time point in hr
+    Returns:
+    -------
+    str of time description
+    """
     if modality == "compound":
         if time_point == 24:
             time = "short"
