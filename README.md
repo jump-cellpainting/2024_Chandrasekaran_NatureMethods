@@ -13,7 +13,7 @@
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-Features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and the single cell profiles were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). Features were also extracted using [DeepProfiler](https://github.com/cytomining/DeepProfiler) which were annotated and spherized. The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/neurips-cpjump1/tree/main/benchmark). Steps for reproducing the data in this repository are outlined below.
+Image-based features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and assembled as single cell profiles, which were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). Image-based features were also extracted using [DeepProfiler](https://github.com/cytomining/DeepProfiler) which were annotated and [spherized](https://en.wikipedia.org/wiki/Whitening_transformation). The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/2021_Chandrasekaran_submitted/tree/main/benchmark). Steps for reproducing the data in this repository are outlined below.
 
 # Step 1: Download cell images
 
@@ -26,7 +26,7 @@ aws s3 sync \
   s3://cellpainting-gallery/cpg0000-jump-pilot/source_4/images/${batch}/ . 
 ```
 
-The `<BATCH NAME>` is one of the six batches [mentioned below](#batch-and-plate-metadata).
+The `${batch}` is one of the six batches [mentioned below](#batch-and-plate-metadata).
 
 You can test out download for a single file using:
 
@@ -39,14 +39,28 @@ aws s3 cp \
   .
 ```
 
-See this [wiki](https://github.com/carpenterlab/2016_bray_natprot/wiki/What-do-Cell-Painting-features-mean%3F) for sample Cell Painting images and the meaning of (CellProfiler-derived) Cell Painting features. 
-
 Note: If you'd like to just browse the data, it's a lot easier [to do so using a storage browser](https://stackoverflow.com/a/72143198/1094109). 
 
-## Batch and Plate metadata
-There are six batches of data - `2020_11_04_CPJUMP1`, `2020_11_18_CPJUMP1_TimepointDay1`, `2020_11_19_TimepointDay4`, `2020_12_02_CPJUMP1_2WeeksTimePoint`, `2020_12_07_CPJUMP1_4WeeksTimePoint` and `2020_12_08_CPJUMP1_Bleaching`.
+The following are various kinds of image-related or experiment-related metadata.
 
-[experimental-metadata.tsv](benchmark/output/experiment-metadata.tsv) contains all the experimental metadata for each plate in each batch.
+## Batch and Plate metadata
+There are six batches of data - `2020_11_04_CPJUMP1`, `2020_11_18_CPJUMP1_TimepointDay1`, `2020_11_19_TimepointDay4`, `2020_12_02_CPJUMP1_2WeeksTimePoint`, `2020_12_07_CPJUMP1_4WeeksTimePoint` and `2020_12_08_CPJUMP1_Bleaching`. Each batch either contains a single experiment of multiple experiments. Details about all the experimental conditions ia available in the [associated manuscript](#manuscript).
+
+[experimental-metadata.tsv](benchmark/output/experiment-metadata.tsv) contains all the experimental metadata for each plate in each batch. The following is the description of each of the columns in the file
+
+- `Batch` - name of the batch the plate belongs to. Could be one of the six batches.
+- `Plate_Map_Name` - name of the plate layout file associated with the plate. All plate layouts are in `metadata/platemaps`.
+- `Assay_Plate_Barcode` - name of the plate.
+- `Perturbation` - type of perturbation on the plate. Could be one of `compound`, `crispr` or `orf`.
+- `Cell_type` - type of cell. Could be one of `A549` or `U2OS`.
+- `Time` -  amount of time the cells were subjected to a pertubation.
+- `Density` - cell seeding density. 100 is the baseline cell sending density percentage while 80 and 120 are 20% lower and higher cell seeding density, respectively.
+- `Antibiotics` - status of antibiotics added to the cells. Could be one of `Blasticidin`, `Puromycin` or `absent` (no antibiotics added).
+- `Cell_line` - whether or not the cell contain Cas9. Some compound experiments were performed using cells containing Cas9.
+- `Time_delay` - how long after staining the plates were stored, before they were imaged.
+- `Times_imaged` - number of times a plate or a subset of wells on the plate was imaged.
+- `Anomaly` - whether the plate contained experimental anomalies. Most anomalies are related to differences in the amount of dye added to the plate. Though these may impact the profiles, we don't expect a significant effect.
+- `Number_of_images` - number of total images for each plate. The number may be higher than the median because additional fields of view were captured, or lower because only a subset of wells on the plate were imaged.
 
 ## Image metadata
 
@@ -71,9 +85,9 @@ Cell bounding boxes and segmentation masks have not been provided.
 Plate map and Metadata are available in the `metadata/` folder and also from https://github.com/jump-cellpainting/JUMP-Target.
 
 # Step 2: Extract features using CellProfiler and DeepProfiler
-Use the CellProfiler pipelines in `pipelines/2020_11_04_CPJUMP1` and follow the instructions in the [profiling handbook](https://cytomining.github.io/profiling-handbook/) up until chapter 5.3 to generate the well-level aggregated CellProfiler profiles from the cell images. 
+After downloading the images, use the CellProfiler pipelines in `pipelines/2020_11_04_CPJUMP1` and follow the instructions in the [profiling handbook](https://cytomining.github.io/profiling-handbook/) up until chapter 5.3 to generate the well-level aggregated CellProfiler profiles. 
 
-Instead of regenerating the single cell CellProfiler features, they can also be downloaded from the S3 bucket
+Instead of regenerating the CellProfiler features, they can also be downloaded from the S3 bucket
 
 ```bash
 batch = <BATCH NAME>
@@ -83,15 +97,18 @@ aws s3 cp \
   s3://cellpainting-gallery/cpg0000-jump-pilot/source_4/workspace/backend/${batch}/ . 
 ```
 
-where `<BATCH NAME>` is one of the six batches [mentioned above](#batch-and-plate-metadata).
+where `${batch}` is one of the six batches [mentioned above](#batch-and-plate-metadata).
 
-Follow the [README.md](deep_profiles/README.md) to extract features from a
-pretrained neural network using [DeepProfiler](https://github.com/cytomining/DeepProfiler)
+The `.sqlite` files contain single-cell image-based profiles while the `.csv` files contain the well-level aggregated profiles.
+
+See this [wiki](https://github.com/carpenterlab/2016_bray_natprot/wiki/What-do-Cell-Painting-features-mean%3F) for sample Cell Painting images and the meaning of (CellProfiler-derived) Cell Painting features. 
+
+To extract features using a pretrained neural network using [DeepProfiler](https://github.com/cytomining/DeepProfiler), follow the [README.md](deep_profiles/README.md) instructions.
 
 # Step 3: Process the profiles using pycytominer
-Pycytominer adds metadata from `metadata/moa` to the well-level aggregated profiles, normalizes the profiles to the whole plate and to the negative controls, separately and filters out invariant and redundant features.
+After generating the well-level CellProfiler-based features, use Pycytominer to add metadata from `metadata/moa`, normalize the profiles to the whole plate and to the negative controls, separately, and the filter out invariant and redundant features.
 
-To reproduce the profiles, clone this repo, download the files and activate the conda environment, after installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html), with the commands
+To regenerate all the profiles, clone this repo, download the files and activate the conda environment. Before issuing the following commands, Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
 ```bash
 git clone https://github.com/jump-cellpainting/neurips-cpjump1
@@ -120,21 +137,19 @@ This creates the profiles in the `profiles/` folder for all the plates in each b
 | `<plate_ID>_normalized_feature_select_negcon_plate.csv.gz` | Feature selected normalized to negative control profiles |
 
 # Step 4: Run the benchmark script
-The benchmark scripts compute `Percent Replicating` which is a measure of signature strength, `Percent Matching across modalities` which is a measure of how well the chemical and genetic perturbation profiles match. These metrics are calculated using the `Feature selected normalized to negative control profiles` (well-level profiles).
-
-In the case of features extracted using DeepProfiler, the annotated features are spherized and `Percent Replicating` is calculated on these profiles.
+The benchmark scripts compute `Average Precision (AP)` for various retrieval tasks, such as, retrieving replicates against negative controls, retrieving perturbation pairs against non-pairs, and retrieving gene-compound pairs against non-pairs. `AP` was calculated using the `Feature selected normalized to negative control profiles` (well-level profiles).
 
 To run the benchmark script activate the conda environment in `benchmark/`
 
 ```bash
 conda env create --force --file benchmark/environment.yml
-conda activate benchmark
+conda activate analysis
 ```
 
-Then run the jupyter notebooks (`benchmark/0.percent_matching.ipynb` and `benchmark/1.percent_matching_across_modalities.ipynb`) to create the figures in `benchmark/figues/` and the tables in `benchmark/README.md`.
+Then run the jupyter notebooks (`benchmark/1.calculate-map-cp.ipynb`, `benchmark/2.calculate-map-dp.ipynb`, and `benchmark/3.generate-map-figure.ipynb`) to create the figures in `benchmark/figues/`.
 
 # Data Organization
-The following is the description of contents of the relevant folders in this repo.
+The following is the description of relevant files and contents of the relevant folders in this repo.
 
 - `benchmark` - contains the notebooks for reproducing the benchmark scores and figures
 - `config_files` - contains the config files required for processing the profiles with pycytominer
@@ -157,9 +172,9 @@ We have provided our maintenance plan in [maintenance_plan.md](maintenance_plan.
 # Compute resources
 For segmentation and feature extraction by CellProfiler, each plate of images took on average 30 minutes to process, using a fleet of 200 m4.xlarge spot instances (800 vCPUs), which cost approximately $10 per plate.  Aggregation into mean profiles takes 12-18 hours, though can be parallelized onto a single large machine, at the total cost of <$1 per plate. For profile processing with pycytominer, each plate took under two minutes, using a local machine (Intel Core i9 with 16 GB memory)
 
-DeepProfiler took around 8 hours to extract features from ~280.000 images in a
-p3.2xlarge with a single Tesla V100-SXM2 GPU. Note that cell locations were
-previously precomputed with the CellProfiler segmentation pipeline.
+DeepProfiler took around 8 hours to extract features from ~280.000 images in a p3.2xlarge with a single Tesla V100-SXM2 GPU. Note that cell locations were previously precomputed with the CellProfiler segmentation pipeline.
+
+Running the benchmark notebooks took an hour in a local machine (Intel Core i9 with 16 GB memory).
 
 # License
 We use a dual license in this repository.
