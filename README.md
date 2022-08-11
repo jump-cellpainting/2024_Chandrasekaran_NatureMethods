@@ -103,7 +103,7 @@ The `.sqlite` files contain single-cell image-based profiles while the `.csv` fi
 
 See this [wiki](https://github.com/carpenterlab/2016_bray_natprot/wiki/What-do-Cell-Painting-features-mean%3F) for sample Cell Painting images and the meaning of (CellProfiler-derived) Cell Painting features. 
 
-To extract features using a pretrained neural network using [DeepProfiler](https://github.com/cytomining/DeepProfiler), follow the [README.md](deep_profiles/README.md) instructions.
+To extract features using a pretrained neural network using [DeepProfiler](https://github.com/cytomining/DeepProfiler), follow the [README.md](deep_profiles/README.md) instructions, which creates well-level profiles.
 
 # Step 3: Process the profiles using pycytominer
 After generating the well-level CellProfiler-based features, use Pycytominer to add metadata from `metadata/moa`, normalize the profiles to the whole plate and to the negative controls, separately, and the filter out invariant and redundant features.
@@ -135,6 +135,8 @@ This creates the profiles in the `profiles/` folder for all the plates in each b
 | `<plate_ID>_normalized_negcon.csv.gz`                      | MAD robustized to negative control profiles              |
 | `<plate_ID>_normalized_feature_select_plate.csv.gz`        | Feature selected normalized to whole plate profiles      |
 | `<plate_ID>_normalized_feature_select_negcon_plate.csv.gz` | Feature selected normalized to negative control profiles |
+
+Annotated DeepProfiler profiles are spherized using [this notebook](https://github.com/jump-cellpainting/2021_Chandrasekaran_submitted/blob/main/benchmark/old_notebooks/3.spherize_profiles.ipynb). 
 
 # Step 4: Run the benchmark script
 The benchmark scripts compute `Average Precision (AP)` for various retrieval tasks, such as, retrieving replicates against negative controls, retrieving perturbation pairs against non-pairs, and retrieving gene-compound pairs against non-pairs. `AP` was calculated using the `Feature selected normalized to negative control profiles` (well-level profiles).
