@@ -1,0 +1,3 @@
+Modality,Cell,time,mmAP
+compound,U2OS,long,0.061
+crispr,U2OS,long,0.081
