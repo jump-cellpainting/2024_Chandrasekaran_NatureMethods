@@ -511,3 +511,21 @@ def time_point(modality, time_point):
             time = "long"
 
     return time
+
+
+def convert_pvalue(pvalue):
+    """
+    Convert p value format
+    Parameters:
+    -----------
+    pvalue: float
+        p value
+    Returns:
+    -------
+    str of p value
+    """
+    if pvalue < 0.05:
+        pvalue = '<0.05'
+    else:
+        pvalue = f'{pvalue:.2f}'
+    return pvalue
