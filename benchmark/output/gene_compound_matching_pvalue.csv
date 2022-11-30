@@ -1,0 +1,21 @@
+t-test,Feature_set,Modality1,Modality2,Cell,statistic,pvalue
+Compoung-gene matching,CellProfiler,compound_long,crispr_long,A549,5.483975766733937,<0.05
+Compoung-gene matching,CellProfiler,compound_long,crispr_long,U2OS,5.6852147552422485,<0.05
+Compoung-gene matching,DeepProfiler,compound_long,crispr_long,U2OS,4.838223634377486,<0.05
+Compoung-gene matching,DP-CP,compound_long,crispr_long,U2OS,-0.6964649000959305,0.49
+Compoung-gene matching,CellProfiler,compound_long,crispr_short,A549,5.239065679844387,<0.05
+Compoung-gene matching,CellProfiler,compound_long,crispr_short,U2OS,3.6306063806164524,<0.05
+Compoung-gene matching,CellProfiler,compound_long,orf_long,A549,5.007850957135164,<0.05
+Compoung-gene matching,CellProfiler,compound_long,orf_long,U2OS,6.0629612861612765,<0.05
+Compoung-gene matching,DeepProfiler,compound_long,orf_long,U2OS,6.624506975808767,<0.05
+Compoung-gene matching,DP-CP,compound_long,orf_long,U2OS,-0.6402126376161855,0.52
+Compoung-gene matching,CellProfiler,compound_long,orf_short,A549,5.108005239824197,<0.05
+Compoung-gene matching,CellProfiler,compound_long,orf_short,U2OS,6.004447096694511,<0.05
+Compoung-gene matching,CellProfiler,compound_short,crispr_long,A549,4.019045329095512,<0.05
+Compoung-gene matching,CellProfiler,compound_short,crispr_long,U2OS,5.243380083123853,<0.05
+Compoung-gene matching,CellProfiler,compound_short,crispr_short,A549,3.707633226697679,<0.05
+Compoung-gene matching,CellProfiler,compound_short,crispr_short,U2OS,3.664043651661713,<0.05
+Compoung-gene matching,CellProfiler,compound_short,orf_long,A549,6.348466069625795,<0.05
+Compoung-gene matching,CellProfiler,compound_short,orf_long,U2OS,5.797317477798697,<0.05
+Compoung-gene matching,CellProfiler,compound_short,orf_short,A549,7.039221132639532,<0.05
+Compoung-gene matching,CellProfiler,compound_short,orf_short,U2OS,6.271471678587683,<0.05

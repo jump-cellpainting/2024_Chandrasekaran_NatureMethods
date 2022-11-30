@@ -1,0 +1,18 @@
+t-test,Feature_set,Modality1,Cell,Modality2,statistic,pvalue
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_long,A549,crispr_long-orf_long,0.24712478944905053,0.80
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_long,A549,crispr_long-orf_short,-0.029125274940113566,0.98
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_long,A549,crispr_short-orf_long,0.22063663509275813,0.83
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_long,A549,crispr_short-orf_short,-0.0496190898592765,0.96
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_long,U2OS,crispr_long-orf_long,-1.0686383674390516,0.29
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_long,U2OS,crispr_long-orf_short,-1.7494795569576425,0.08
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_long,U2OS,crispr_short-orf_long,-1.8678903519368362,0.06
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_long,U2OS,crispr_short-orf_short,-2.4399220767881444,<0.05
+Compoung-gene matching - CRISPR vs. ORF,DeepProfiler,compound_long,U2OS,crispr_long-orf_long,-1.0686383674390516,0.29
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_short,A549,crispr_long-orf_long,-0.6270429943692432,0.53
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_short,A549,crispr_long-orf_short,-1.1263779348750054,0.26
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_short,A549,crispr_short-orf_long,-0.726924891427641,0.47
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_short,A549,crispr_short-orf_short,-1.2123507064552619,0.23
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_short,U2OS,crispr_long-orf_long,-1.3223391132010431,0.19
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_short,U2OS,crispr_long-orf_short,-0.8183178503634819,0.41
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_short,U2OS,crispr_short-orf_long,-1.5712306563122453,0.12
+Compoung-gene matching - CRISPR vs. ORF,CellProfiler,compound_short,U2OS,crispr_short-orf_short,-1.135074812245202,0.26
