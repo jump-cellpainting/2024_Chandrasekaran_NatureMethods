@@ -72,9 +72,9 @@ def concat_profiles(df1, df2):
     return df1
 
 
-def create_replicability_df(replicability_ap_df, replicability_map_df, precision, modality, cell, timepoint):
-    _replicability_ap_df = replicability_ap_df
+def create_replicability_df(replicability_map_df, replicability_mmap_df, precision, modality, cell, timepoint):
     _replicability_map_df = replicability_map_df
+    _replicability_mmap_df = replicability_mmap_df
 
     _modality = modality
     _cell = cell
@@ -83,31 +83,31 @@ def create_replicability_df(replicability_ap_df, replicability_map_df, precision
 
     _description = f'{modality}_{_cell}_{_time}'
 
-    _map_df = pd.DataFrame({'Description': _description,
+    _mmap_df = pd.DataFrame({'Description': _description,
                             'Modality': _modality,
                             'Cell': _cell,
                             'time': _time,
                             'timepoint': _timepoint,
-                            'mAP': f'{precision.map:.3f}'}, index=[len(_replicability_map_df)])
+                            'mmAP': f'{precision.mmap:.3f}'}, index=[len(_replicability_mmap_df)])
+    _replicability_mmap_df = concat_profiles(_replicability_mmap_df, _mmap_df)
+
+    _map_df = precision.map.copy()
+    _map_df['Description'] = f'{_description}'
+    _map_df['Modality'] = f'{_modality}'
+    _map_df['Cell'] = f'{_cell}'
+    _map_df['time'] = f'{_time}'
+    _map_df['timepoint'] = f'{_timepoint}'
     _replicability_map_df = concat_profiles(_replicability_map_df, _map_df)
 
-    _ap_df = precision.ap_group.copy()
-    _ap_df['Description'] = f'{_description}'
-    _ap_df['Modality'] = f'{_modality}'
-    _ap_df['Cell'] = f'{_cell}'
-    _ap_df['time'] = f'{_time}'
-    _ap_df['timepoint'] = f'{_timepoint}'
-    _replicability_ap_df = concat_profiles(_replicability_ap_df, _ap_df)
-
+    _replicability_mmap_df['mmAP'] = _replicability_mmap_df['mmAP'].astype(float)
     _replicability_map_df['mAP'] = _replicability_map_df['mAP'].astype(float)
-    _replicability_ap_df['ap'] = _replicability_ap_df['ap'].astype(float)
 
-    return _replicability_ap_df, _replicability_map_df
+    return _replicability_map_df, _replicability_mmap_df
 
 
-def create_matching_df(matching_ap_df, matching_map_df, precision, modality, cell, timepoint):
-    _matching_ap_df = matching_ap_df
+def create_matching_df(matching_map_df, matching_mmap_df, precision, modality, cell, timepoint):
     _matching_map_df = matching_map_df
+    _matching_mmap_df = matching_mmap_df
 
     _modality = modality
     _cell = cell
@@ -116,31 +116,31 @@ def create_matching_df(matching_ap_df, matching_map_df, precision, modality, cel
 
     _description = f'{modality}_{_cell}_{_time}'
 
-    _map_df = pd.DataFrame({'Description': _description,
+    _mmap_df = pd.DataFrame({'Description': _description,
                             'Modality': _modality,
                             'Cell': _cell,
                             'time': _time,
                             'timepoint': _timepoint,
-                            'mAP': f'{precision.map:.3f}'}, index=[len(_matching_map_df)])
+                            'mmAP': f'{precision.mmap:.3f}'}, index=[len(_matching_mmap_df)])
+    _matching_mmap_df = concat_profiles(_matching_mmap_df, _mmap_df)
+
+    _map_df = precision.map.copy()
+    _map_df['Description'] = f'{_description}'
+    _map_df['Modality'] = f'{_modality}'
+    _map_df['Cell'] = f'{_cell}'
+    _map_df['time'] = f'{_time}'
+    _map_df['timepoint'] = f'{_timepoint}'
     _matching_map_df = concat_profiles(_matching_map_df, _map_df)
 
-    _ap_df = precision.ap_group.copy()
-    _ap_df['Description'] = f'{_description}'
-    _ap_df['Modality'] = f'{_modality}'
-    _ap_df['Cell'] = f'{_cell}'
-    _ap_df['time'] = f'{_time}'
-    _ap_df['timepoint'] = f'{_timepoint}'
-    _matching_ap_df = concat_profiles(_matching_ap_df, _ap_df)
-
+    _matching_mmap_df['mmAP'] = _matching_mmap_df['mmAP'].astype(float)
     _matching_map_df['mAP'] = _matching_map_df['mAP'].astype(float)
-    _matching_ap_df['ap'] = _matching_ap_df['ap'].astype(float)
 
-    return _matching_ap_df, _matching_map_df
+    return _matching_map_df, _matching_mmap_df
 
 
-def create_gene_compound_matching_df(gene_compound_matching_ap_df, gene_compound_matching_map_df, precision, modality_1, modality_2, cell, timepoint1, timepoint2):
-    _gene_compound_matching_ap_df = gene_compound_matching_ap_df
+def create_gene_compound_matching_df(gene_compound_matching_map_df, gene_compound_matching_mmap_df, precision, modality_1, modality_2, cell, timepoint1, timepoint2):
     _gene_compound_matching_map_df = gene_compound_matching_map_df
+    _gene_compound_matching_mmap_df = gene_compound_matching_mmap_df
 
     _modality_1 = modality_1
     _modality_2 = modality_2
@@ -152,24 +152,24 @@ def create_gene_compound_matching_df(gene_compound_matching_ap_df, gene_compound
 
     _description = f'{_modality_1}_{cell}_{_time_1}-{_modality_2}_{cell}_{_time_2}'
 
-    _map_df = pd.DataFrame({'Description': _description,
+    _mmap_df = pd.DataFrame({'Description': _description,
                             'Modality1': f'{_modality_1}_{_time_1}',
                             'Modality2': f'{_modality_2}_{_time_2}',
                             'Cell': _cell,
-                            'mAP': f'{precision.map:.3f}'}, index=[len(_gene_compound_matching_map_df)])
+                            'mmAP': f'{precision.mmap:.3f}'}, index=[len(_gene_compound_matching_mmap_df)])
+    _gene_compound_matching_mmap_df = concat_profiles(_gene_compound_matching_mmap_df, _mmap_df)
+
+    _map_df = precision.map.copy()
+    _map_df['Description'] = f'{_description}'
+    _map_df['Modality1'] = f'{_modality_1}_{_time_1}'
+    _map_df['Modality2'] = f'{_modality_2}_{_time_2}'
+    _map_df['Cell'] = f'{_cell}'
     _gene_compound_matching_map_df = concat_profiles(_gene_compound_matching_map_df, _map_df)
 
-    _ap_df = precision.ap_group.copy()
-    _ap_df['Description'] = f'{_description}'
-    _ap_df['Modality1'] = f'{_modality_1}_{_time_1}'
-    _ap_df['Modality2'] = f'{_modality_2}_{_time_2}'
-    _ap_df['Cell'] = f'{_cell}'
-    _gene_compound_matching_ap_df = concat_profiles(_gene_compound_matching_ap_df, _ap_df)
-
+    _gene_compound_matching_mmap_df['mmAP'] = _gene_compound_matching_mmap_df['mmAP'].astype(float)
     _gene_compound_matching_map_df['mAP'] = _gene_compound_matching_map_df['mAP'].astype(float)
-    _gene_compound_matching_ap_df['ap'] = _gene_compound_matching_ap_df['ap'].astype(float)
 
-    return _gene_compound_matching_ap_df, _gene_compound_matching_map_df
+    return _gene_compound_matching_map_df, _gene_compound_matching_mmap_df
 
 
 def consensus(profiles_df, group_by_feature):
@@ -249,9 +249,9 @@ class PrecisionScores(object):
         self.truth_matrix = self.create_truth_matrix()
         self.cleanup()
 
-        self.ap_sample = self.calculate_average_precision_per_sample()
-        self.ap_group = self.calculate_average_precision_score_per_group(self.ap_sample)
-        self.map = self.calculate_mean_average_precision_score(self.ap_group)
+        self.ap = self.calculate_average_precision_per_sample()
+        self.map = self.calculate_average_precision_score_per_group(self.ap)
+        self.mmap = self.calculate_mean_average_precision_score(self.map)
 
     def process_profiles(self, _profile):
         """
@@ -355,7 +355,10 @@ class PrecisionScores(object):
         pandas.DataFrame of average precision values.
         """
 
-        _precision_group_df = precision_score.groupby(self.feature).apply(lambda x: np.mean(x)).reset_index()
+        _precision_group_df = (
+            precision_score.groupby(self.feature).apply(lambda x: np.mean(x)).reset_index()
+            .rename(columns={'ap':'mAP'})
+        )
         return _precision_group_df
 
     @staticmethod
@@ -508,3 +511,21 @@ def time_point(modality, time_point):
             time = "long"
 
     return time
+
+
+def convert_pvalue(pvalue):
+    """
+    Convert p value format
+    Parameters:
+    -----------
+    pvalue: float
+        p value
+    Returns:
+    -------
+    str of p value
+    """
+    if pvalue < 0.05:
+        pvalue = '<0.05'
+    else:
+        pvalue = f'{pvalue:.2f}'
+    return pvalue
