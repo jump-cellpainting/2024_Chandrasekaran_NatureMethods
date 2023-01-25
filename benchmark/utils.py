@@ -220,11 +220,11 @@ class PrecisionScores(object):
         identity_perturbation_feature: str
             Name of the feature that identifies perturbations
         within: bool, default: False
-            Whether profile1 and profile2 are the same dataframe or not.
-        anti_correlation: book, default: False
-            Whether both anti-correlation and correlation are used in the calculation
+            Whether profile1 and profile2 are the same dataframe.
+        anti_correlation: bool, default: False
+            Whether both anti-correlation and correlation are used in the calculation.
         against_negcon: bool, default:  False
-            Whether to calculate precision scores by challenging negcon.
+            Whether to calculate precision scores with respect to negcon.
         """
         self.sample_id_feature = 'Metadata_sample_id'
         self.control_type_feature = 'Metadata_control_type'
