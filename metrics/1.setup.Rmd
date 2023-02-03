@@ -109,10 +109,13 @@ profiles %>%
   select(matches("Metadata")) %>% 
   skimr::skim()
 ```
+Duplicate the `Metadata_Plate` column
+See https://community.databricks.com/s/question/0D53f00001aCDd6CAG/parquet-file-to-include-partitioned-column-in-file
 
 ```{r}
 profiles %>%
-  group_by(Metadata_Plate) %>%
+  mutate(Metadata_Plate_ = Metadata_Plate) %>%
+  group_by(Metadata_Plate_) %>%
   arrow::write_dataset("profiles", format = "parquet", hive_style = FALSE)
 ```
 

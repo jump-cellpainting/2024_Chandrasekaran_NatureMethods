@@ -40,6 +40,9 @@ experiment:
         Metadata_reference_or_other:
           reference
     all_same_cols_ref:
+      - Metadata_Perturbation
+      - Metadata_Cell_type
+      - Metadata_Time
       - Metadata_Plate
     all_same_cols_rep:
       - Metadata_Perturbation
@@ -56,6 +59,9 @@ experiment:
     all_same_cols_group: NULL
     any_different_cols_group: NULL
     annotation_cols:
+      - Metadata_Perturbation
+      - Metadata_Cell_type
+      - Metadata_Time
       - Metadata_target_list
       - Metadata_broad_sample
       - Metadata_control_type
