@@ -46,3 +46,10 @@ run_all <- function(config_list) {
 
 c("params_cpjump1_prod_technical.yaml") %>% run_all()
 ```
+
+
+Generate a TOC like this
+
+```r
+rmarkdown::render("6.results_toc.Rmd", params = list(configs = configs, results_root_dir = results_root_dir))
+```
