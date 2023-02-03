@@ -80,21 +80,17 @@ externaL_metadata <-
   )
 ```
 
-```{r}
-profiles <-
-  profiles %>%
-  left_join(externaL_metadata, by = c("Metadata_broad_sample" = "broad_sample"))
-```
 
 ```{r}
 profiles <-
   bind_rows(
-    profiles %>% filter(Metadata_Perturbation == "Compound")  %>%
+    profiles %>% filter(Metadata_Perturbation == "compound")  %>%
       left_join(
         externaL_metadata,
         by = c("Metadata_broad_sample" = "broad_sample")
-      ),
-    profiles %>% filter(Metadata_Perturbation != "Compound") %>% mutate(Metadata_target_list = Metadata_gene)
+      ) %>%
+      rename(Metadata_target_list = target_list),
+    profiles %>% filter(Metadata_Perturbation != "compound") %>% mutate(Metadata_target_list = Metadata_gene)
   )
 ```
 
