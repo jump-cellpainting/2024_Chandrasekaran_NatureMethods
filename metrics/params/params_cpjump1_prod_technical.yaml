@@ -8,6 +8,18 @@ experiment:
     - BR00116992
     - BR00116993
     - BR00116994
+    - BR00116995
+    - BR00117010
+    - BR00117011
+    - BR00117012
+    - BR00117013
+    - BR00117015
+    - BR00117016
+    - BR00117017
+    - BR00117019
+    - BR00117024
+    - BR00117025
+    - BR00117026
   external_metadata:
     file: "/Users/shsingh/work/projects/2019_07_11_JUMP-CP/workspace/software/2021_Chandrasekaran_submitted/benchmark/input/JUMP-Target-1_compound_metadata_additional_annotations.tsv"
     include_cols:
