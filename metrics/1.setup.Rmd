@@ -5,5 +5,83 @@ output: html_notebook
 
 ```{r}
 library(tidyverse)
+library(glue)
+```
+
+
+```{r}
+library(reticulate)
+use_condaenv("analysis")
+```
+
+
+```{python}
+import pandas as pd
+
+feature_to_group_by = "Metadata_broad_sample"
+batch = "2020_11_04_CPJUMP1"
+
+experiment_df = (
+    pd.read_csv('../benchmark/output/experiment-metadata.tsv', sep='\t')
+    .query('Batch==@batch')
+    .query('Density=="100"')
+    .query('Antibiotics=="absent"')
+)
+
+experiment_df.drop(experiment_df[(experiment_df.Perturbation == "compound") & (experiment_df.Cell_line == "Cas9")].index, inplace=True)
+
+target1_metadata = (
+    pd.read_csv('../benchmark/input/JUMP-Target-1_compound_metadata_additional_annotations.tsv', sep='\t', usecols=['broad_sample', 'target_list'])
+    .rename(columns={'broad_sample':'Metadata_broad_sample', 'target_list':'Metadata_target_list'})
+)
+```
+
+
+```{r}
+batch <- py$batch
+```
+
+
+```{r}
+experiment_df <- 
+  py$experiment_df %>%
+  rename(Plate = Assay_Plate_Barcode)
+
+names(experiment_df) <- str_c("Metadata", names(experiment_df), sep = "_")
+```
+
+
+```{r}
+data_level <- "normalized_feature_select_negcon_batch"
+profiles <-
+  experiment_df %>%
+  select(Metadata_Batch, Metadata_Plate) %>%
+  slice_head(n = 2) %>%
+  pmap_df(
+    function(Metadata_Batch, Metadata_Plate) {
+      read_csv(glue("../profiles/{Metadata_Batch}/{Metadata_Plate}/{Metadata_Plate}_{data_level}.csv.gz"), show_col_types = FALSE)
+    }
+  )
+```
+
+
+```{r}
+profiles <- 
+  profiles %>%
+  inner_join(experiment_df, by = c("Metadata_Plate")) %>% 
+  select(matches("Metadata_"), everything())
+```
+
+
+```{r}
+profiles %>% 
+  select(matches("Metadata")) %>% 
+  skimr::skim()
+```
+
+```{r}
+profiles %>%
+  group_by(Metadata_Plate) %>%
+  arrow::write_dataset("profiles", format = "parquet", hive_style = FALSE)
 ```
 
