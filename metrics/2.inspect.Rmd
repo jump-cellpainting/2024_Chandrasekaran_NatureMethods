@@ -119,3 +119,10 @@ level_1_metrics_null_adjusted %>%
   theme_bw()
 ```
 
+```{r rows.print=20}
+level_1_metrics_null_adjusted %>%
+  count(Metadata_Perturbation,
+        Metadata_Cell_type,
+        Metadata_Time)
+```
+
