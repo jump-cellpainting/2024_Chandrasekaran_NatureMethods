@@ -1,0 +1,56 @@
+knit_output_format: github_document
+experiment:
+  data_path: /Users/shsingh/work/projects/2019_07_11_JUMP-CP/workspace/software/2021_Chandrasekaran_submitted/metrics/profiles
+  input_structure: '{data_path}/{{plate}}/part-0.{extension}'
+  extension: parquet
+  plates:
+  - BR00116991
+  - BR00116992
+  - BR00116993
+  - BR00116994
+  external_metadata:
+    file: /Users/shsingh/work/projects/2019_07_11_JUMP-CP/workspace/software/2021_Chandrasekaran_submitted/benchmark/input/JUMP-Target-1_compound_metadata_additional_annotations.tsv
+    include_cols:
+    - Metadata_broad_sample
+    - Metadata_target_list
+    join_cols:
+      Metadata_broad_sample: Metadata_broad_sample
+  add_dummy_metadata_column: no
+  split_by_column: ~
+  significance_threshold: 0.05
+  parallel_workers: 8
+  aggregate_by: ~
+  filter_by: ~
+  reference_set:
+    Metadata_control_type: negcon
+  random_seed: 42
+  background_type: ref
+  shuffle: no
+  shuffle_bad_groups_threshold: ~
+  shuffle_group: ~
+  shuffle_strata: ~
+  shuffle_exclude: ~
+  subsample_fraction: 1
+  subsample_pert_strata: ~
+  subsample_reference_strata: ~
+  similarity_method: cosine
+  sim_params:
+    reference:
+      Metadata_reference_or_other: reference
+    all_same_cols_ref: Metadata_Plate
+    all_same_cols_rep:
+    - Metadata_target_list
+    - Metadata_broad_sample
+    - Metadata_control_type
+    - Metadata_reference_or_other
+    all_same_cols_rep_ref: ~
+    any_different_cols_non_rep: ~
+    all_same_cols_non_rep: ~
+    all_different_cols_non_rep: ~
+    all_same_cols_group: ~
+    any_different_cols_group: ~
+    annotation_cols:
+    - Metadata_target_list
+    - Metadata_broad_sample
+    - Metadata_control_type
+    - Metadata_reference_or_other
