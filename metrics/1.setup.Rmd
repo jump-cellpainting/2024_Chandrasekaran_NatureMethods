@@ -56,7 +56,7 @@ data_level <- "normalized_feature_select_negcon_batch"
 profiles <-
   experiment_df %>%
   select(Metadata_Batch, Metadata_Plate) %>%
-  slice_head(n = 2) %>%
+  slice_head(n = 4) %>%
   pmap_df(
     function(Metadata_Batch, Metadata_Plate) {
       read_csv(glue("../profiles/{Metadata_Batch}/{Metadata_Plate}/{Metadata_Plate}_{data_level}.csv.gz"), show_col_types = FALSE)
@@ -84,4 +84,5 @@ profiles %>%
   group_by(Metadata_Plate) %>%
   arrow::write_dataset("profiles", format = "parquet", hive_style = FALSE)
 ```
+
 
