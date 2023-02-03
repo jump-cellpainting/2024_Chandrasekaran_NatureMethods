@@ -56,7 +56,6 @@ data_level <- "normalized_feature_select_negcon_batch"
 profiles <-
   experiment_df %>%
   select(Metadata_Batch, Metadata_Plate) %>%
-  slice_head(n = 4) %>%
   pmap_df(
     function(Metadata_Batch, Metadata_Plate) {
       read_csv(glue("../profiles/{Metadata_Batch}/{Metadata_Plate}/{Metadata_Plate}_{data_level}.csv.gz"), show_col_types = FALSE)
@@ -70,6 +69,38 @@ profiles <-
   profiles %>%
   inner_join(experiment_df, by = c("Metadata_Plate")) %>% 
   select(matches("Metadata_"), everything())
+```
+
+
+```{r}
+factor_cols <-
+  c(
+    "Metadata_broad_sample",
+    "Metadata_solvent",
+    "Metadata_Plate",
+    "Metadata_Well",
+    "Metadata_InChIKey",
+    "Metadata_pert_iname",
+    "Metadata_pubchem_cid",
+    "Metadata_gene",
+    "Metadata_pert_type",
+    "Metadata_control_type",
+    "Metadata_smiles",
+    "Metadata_target_sequence",
+    "Metadata_negcon_control_type",
+    "Metadata_Batch",
+    "Metadata_Plate_Map_Name",
+    "Metadata_Perturbation",
+    "Metadata_Cell_type",
+    "Metadata_Time",
+    "Metadata_Density",
+    "Metadata_Antibiotics",
+    "Metadata_Cell_line",
+    "Metadata_Time_delay",
+    "Metadata_Anomaly"
+  )
+
+profiles <- profiles %>% mutate(across(all_of(factor_cols), as.factor))
 ```
 
 
