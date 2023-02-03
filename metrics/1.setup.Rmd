@@ -71,6 +71,44 @@ profiles <-
   select(matches("Metadata_"), everything())
 ```
 
+```{r}
+externaL_metadata <-
+  read_tsv(
+    "../benchmark/input/JUMP-Target-1_compound_metadata_additional_annotations.tsv",
+    col_types = cols_only(broad_sample = col_character(),
+                          target_list = col_character(),)
+  )
+```
+
+```{r}
+profiles <-
+  profiles %>%
+  left_join(externaL_metadata, by = c("Metadata_broad_sample" = "broad_sample"))
+```
+
+```{r}
+profiles <-
+  bind_rows(
+    profiles %>% filter(Metadata_Perturbation == "Compound")  %>%
+      left_join(
+        externaL_metadata,
+        by = c("Metadata_broad_sample" = "broad_sample")
+      ),
+    profiles %>% filter(Metadata_Perturbation != "Compound") %>% mutate(Metadata_target_list = Metadata_gene)
+  )
+```
+
+```{r}
+profiles %>%
+  filter(is.na(Metadata_target_list) & is.na(Metadata_control_type)) %>%
+  group_by(Metadata_Perturbation, Metadata_Plate_Map_Name) %>%
+  count()
+```
+```{r}
+profiles <-
+  profiles %>%
+  filter(!(is.na(Metadata_target_list) & is.na(Metadata_control_type)))
+```
 
 ```{r}
 factor_cols <-
@@ -83,6 +121,7 @@ factor_cols <-
     "Metadata_pert_iname",
     "Metadata_pubchem_cid",
     "Metadata_gene",
+    "Metadata_target_list",
     "Metadata_pert_type",
     "Metadata_control_type",
     "Metadata_smiles",
