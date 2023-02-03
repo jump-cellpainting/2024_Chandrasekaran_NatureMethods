@@ -2,3 +2,4 @@ collatedindex.parquet
 collatedsim.parquet
 index.parquet
 profiles.parquet
+metrics_plot_*
