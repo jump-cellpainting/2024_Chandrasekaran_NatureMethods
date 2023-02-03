@@ -77,7 +77,7 @@ level_1_metrics_null_adjusted <-
 ```
 
 
-```{r}
+```{r eval=FALSE}
 level_1_metrics_null_adjusted %>%
   count(Metadata_Perturbation, Metadata_Cell_type, Metadata_Time, Metadata_broad_sample) %>%
   filter(n > 1)
@@ -85,7 +85,15 @@ level_1_metrics_null_adjusted %>%
 
 ```{r}
 level_1_metrics_null_adjusted %>%
-  slice_sample(n = 10)
+  ungroup() %>%
+  slice_sample(n = 10) %>%
+  select(
+    -Metadata_target_list,
+    -Metadata_broad_sample) %>%
+  rename(
+    mAP = sim_retrieval_average_precision_ref_i_mean_i,
+    mAP_pvalue = sim_retrieval_average_precision_ref_i_nlog10pvalue_mean_i
+  )
 ```
 ```{r}
 level_1_metrics_null_adjusted <-
