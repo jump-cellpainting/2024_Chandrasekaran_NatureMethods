@@ -87,9 +87,6 @@ level_1_metrics_null_adjusted %>%
 level_1_metrics_null_adjusted %>%
   ungroup() %>%
   slice_sample(n = 10) %>%
-  select(
-    -Metadata_target_list,
-    -Metadata_broad_sample) %>%
   rename(
     mAP = sim_retrieval_average_precision_ref_i_mean_i,
     mAP_neglog10_pvalue = sim_retrieval_average_precision_ref_i_nlog10pvalue_mean_i
