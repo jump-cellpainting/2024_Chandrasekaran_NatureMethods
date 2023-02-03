@@ -1,0 +1,20 @@
+html_notebook:
+  toc: true
+  toc_depth: 3
+  toc_float: yes
+  number_sections: yes
+  theme: lumen
+  df_print: paged
+html_document:
+  toc: true
+  toc_depth: 3
+  toc_float: yes
+  number_sections: yes
+  theme: lumen
+  df_print: paged
+github_document:
+  toc: true
+  toc_depth: 3
+  number_sections: yes
+  html_preview: false
+  df_print: kable
