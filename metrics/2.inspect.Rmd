@@ -134,5 +134,6 @@ level_1_metrics_null_adjusted %>%
         Metadata_Cell_type,
         Metadata_Time,
         is_significant) %>%
-  pivot_wider(names_from = "is_significant", values_from = "n", names_prefix = "significant_")
+  pivot_wider(names_from = "is_significant", values_from = "n", names_prefix = "significant_") %>%
+  mutate(frac_TRUE = round(significant_TRUE / (significant_TRUE + significant_FALSE), 2))
 ```
