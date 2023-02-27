@@ -792,18 +792,18 @@ def add_text_to_violin_plots(
     if percentile == 5:
         y_value = "fifth_percentile"
         y_percent_value = "percent_fifth_percentile"
-        y_offset = -0.05
+        y_offset = -0.08
     elif percentile == 95:
         y_value = "ninetyfifth_percentile"
         y_percent_value = "percent_ninetyfifth_percentile"
-        y_offset = 0.05
+        y_offset = 0.08
     fig.add_annotation(
         x=locations["text"][color_order.index(df_row[color_column])]["x"],
         y=df_row[y_value] + y_offset,
         text=f"{df_row[y_percent_value]*100:.02f}%",
         showarrow=False,
         font=dict(
-            size=12,
+            size=16,
         ),
         row=row,
         col=col,
