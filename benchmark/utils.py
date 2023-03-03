@@ -422,7 +422,12 @@ class PrecisionScores(object):
             _y_true, _y_pred = self.filter_nan(
                 self.truth_matrix.loc[_sample].values, self.corr.loc[_sample].values
             )
-            _score.append(average_precision_score(_y_true, _y_pred))
+
+            # compute corrected average precision
+            random_baseline_ap = _y_true.sum() / len(_y_true)
+            _score.append(
+                average_precision_score(_y_true, _y_pred) - random_baseline_ap
+            )
 
         _ap_sample_df = self.map1.copy()
         _ap_sample_df["ap"] = _score
@@ -436,10 +441,6 @@ class PrecisionScores(object):
             _ap_sample_df = _ap_sample_df.drop(
                 columns=[self.control_type_feature]
             ).reset_index(drop=True)
-
-        # compute corrected average precision
-        random_baseline_ap = _y_true.sum() / len(_y_true)
-        _ap_sample_df["ap"] -= random_baseline_ap
 
         return _ap_sample_df
 

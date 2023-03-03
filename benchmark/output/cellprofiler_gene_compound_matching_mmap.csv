@@ -12,6 +12,6 @@ compound_short,crispr_short,U2OS,0.028
 compound_short,orf_short,U2OS,0.039
 compound_short,orf_long,U2OS,0.045
 compound_long,crispr_long,U2OS,0.033
-compound_long,crispr_short,U2OS,0.024
+compound_long,crispr_short,U2OS,0.025
 compound_long,orf_short,U2OS,0.051
 compound_long,orf_long,U2OS,0.043
