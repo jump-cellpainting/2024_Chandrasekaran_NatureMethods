@@ -56,5 +56,6 @@ c("params_cpjump1_prod_technical.yaml") %>% run_all()
 Generate a TOC like this
 
 ```r
+configs <- list.files(file.path(results_root_dir, "results"), pattern = "[a-z0-9]{8}")
 rmarkdown::render("6.results_toc.Rmd", params = list(configs = configs, results_root_dir = results_root_dir))
 ```

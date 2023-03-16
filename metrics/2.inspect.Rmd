@@ -65,6 +65,7 @@ significance_threshold
 metric_list <-
   c(
     glue("sim_retrieval_average_precision_{type}_i_mean_i"),
+    glue("sim_retrieval_average_precision_{type}_i_adjusted_mean_i"),
     glue("sim_retrieval_average_precision_{type}_i_nlog10pvalue_mean_i"),
     glue("sim_retrieval_average_precision_{type}_i_nlog10qvalue_mean_i")
   )
@@ -90,6 +91,7 @@ level_1_metrics_null_adjusted %>%
   slice_sample(n = 10) %>%
   rename(
     mAP = sim_retrieval_average_precision_ref_i_mean_i,
+    mAP_adj = sim_retrieval_average_precision_ref_i_adjusted_mean_i,
     mAP_neglog10_pvalue = sim_retrieval_average_precision_ref_i_nlog10pvalue_mean_i,
     mAP_neglog10_qvalue = sim_retrieval_average_precision_ref_i_nlog10qvalue_mean_i
   )
@@ -127,6 +129,7 @@ level_1_metrics_null_adjusted %>%
         Metadata_Cell_type,
         Metadata_Time)
 ```
+Based on `sim_retrieval_average_precision_ref_i_nlog10pvalue_mean_i`
 
 ```{r rows.print=20}
 level_1_metrics_null_adjusted %>%
@@ -139,11 +142,25 @@ level_1_metrics_null_adjusted %>%
   pivot_wider(names_from = "is_significant", values_from = "n", names_prefix = "significant_") %>%
   mutate(frac_TRUE = round(significant_TRUE / (significant_TRUE + significant_FALSE), 2))
 ```
+Based on `sim_retrieval_average_precision_ref_i_nlog10qvalue_mean_i`
 
 ```{r rows.print=20}
 level_1_metrics_null_adjusted %>%
   mutate(is_significant = sim_retrieval_average_precision_ref_i_nlog10qvalue_mean_i > 
            -log10(significance_threshold)) %>%
+  count(Metadata_Perturbation,
+        Metadata_Cell_type,
+        Metadata_Time,
+        is_significant) %>%
+  pivot_wider(names_from = "is_significant", values_from = "n", names_prefix = "significant_") %>%
+  mutate(frac_TRUE = round(significant_TRUE / (significant_TRUE + significant_FALSE), 2))
+```
+
+Based on `sim_retrieval_average_precision_ref_i_adjusted_mean_i`
+
+```{r rows.print=20}
+level_1_metrics_null_adjusted %>%
+  mutate(is_significant = sim_retrieval_average_precision_ref_i_adjusted_mean_i > 0) %>%
   count(Metadata_Perturbation,
         Metadata_Cell_type,
         Metadata_Time,
