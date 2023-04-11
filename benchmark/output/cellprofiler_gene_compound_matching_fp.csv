@@ -1,0 +1,17 @@
+Modality1,Modality2,Cell,fp
+compound_short,crispr_long,A549,0.139
+compound_short,crispr_short,A549,0.081
+compound_short,orf_long,A549,0.0
+compound_short,orf_short,A549,0.042
+compound_long,crispr_long,A549,0.137
+compound_long,crispr_short,A549,0.092
+compound_long,orf_long,A549,0.04
+compound_long,orf_short,A549,0.038
+compound_short,crispr_long,U2OS,0.1
+compound_short,crispr_short,U2OS,0.102
+compound_short,orf_short,U2OS,0.127
+compound_short,orf_long,U2OS,0.146
+compound_long,crispr_long,U2OS,0.121
+compound_long,crispr_short,U2OS,0.087
+compound_long,orf_short,U2OS,0.107
+compound_long,orf_long,U2OS,0.047

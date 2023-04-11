@@ -1,18 +1,17 @@
-t-test,Feature_set,Cell,compound-crispr,compound-orf,statistic,pvalue
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,A549,compound_long-crispr_long,compound_long-orf_long,0.2471247894490522,0.80
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,A549,compound_long-crispr_long,compound_long-orf_short,-0.029125274940111953,0.98
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,A549,compound_long-crispr_short,compound_long-orf_long,0.22063663509275896,0.83
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,A549,compound_long-crispr_short,compound_long-orf_short,-0.04961908985927571,0.96
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,U2OS,compound_long-crispr_long,compound_long-orf_long,-1.0686383674390507,0.29
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,U2OS,compound_long-crispr_long,compound_long-orf_short,-1.749479556957641,0.08
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,U2OS,compound_long-crispr_short,compound_long-orf_long,-1.8678903519368348,0.06
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,U2OS,compound_long-crispr_short,compound_long-orf_short,-2.439922076788143,<0.05
-Compoung-gene matching - CRISPR vs. ORF,DeepProfiler,U2OS,compound_long-crispr_long,compound_long-orf_long,-1.0686383674390507,0.29
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,A549,compound_short-crispr_long,compound_short-orf_long,-0.6270429943692443,0.53
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,A549,compound_short-crispr_long,compound_short-orf_short,-1.126377934875005,0.26
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,A549,compound_short-crispr_short,compound_short-orf_long,-0.7269248914276405,0.47
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,A549,compound_short-crispr_short,compound_short-orf_short,-1.2123507064552599,0.23
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,U2OS,compound_short-crispr_long,compound_short-orf_long,-1.322339113201043,0.19
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,U2OS,compound_short-crispr_long,compound_short-orf_short,-0.8183178503634809,0.41
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,U2OS,compound_short-crispr_short,compound_short-orf_long,-1.5712306563122456,0.12
-Compoung-gene matching - CRISPR vs. ORF,CellProfiler,U2OS,compound_short-crispr_short,compound_short-orf_short,-1.1350748122452015,0.26
+t-test,Cell,compound-crispr,compound-orf,statistic,pvalue
+Compoung-gene matching - CRISPR vs. ORF,A549,compound_long-crispr_long,compound_long-orf_long,8.072414950340807,<0.05
+Compoung-gene matching - CRISPR vs. ORF,A549,compound_long-crispr_long,compound_long-orf_short,7.873228664896966,<0.05
+Compoung-gene matching - CRISPR vs. ORF,A549,compound_long-crispr_short,compound_long-orf_long,8.756406586087895,<0.05
+Compoung-gene matching - CRISPR vs. ORF,A549,compound_long-crispr_short,compound_long-orf_short,8.479622745122176,<0.05
+Compoung-gene matching - CRISPR vs. ORF,U2OS,compound_long-crispr_long,compound_long-orf_long,3.392358163815075,<0.05
+Compoung-gene matching - CRISPR vs. ORF,U2OS,compound_long-crispr_long,compound_long-orf_short,1.176043656393088,0.24
+Compoung-gene matching - CRISPR vs. ORF,U2OS,compound_long-crispr_short,compound_long-orf_long,3.138709198439196,<0.05
+Compoung-gene matching - CRISPR vs. ORF,U2OS,compound_long-crispr_short,compound_long-orf_short,0.8383849724012311,0.40
+Compoung-gene matching - CRISPR vs. ORF,A549,compound_short-crispr_long,compound_short-orf_long,6.83158499121002,<0.05
+Compoung-gene matching - CRISPR vs. ORF,A549,compound_short-crispr_long,compound_short-orf_short,6.080362599495611,<0.05
+Compoung-gene matching - CRISPR vs. ORF,A549,compound_short-crispr_short,compound_short-orf_long,6.990854963594376,<0.05
+Compoung-gene matching - CRISPR vs. ORF,A549,compound_short-crispr_short,compound_short-orf_short,6.1207083486824665,<0.05
+Compoung-gene matching - CRISPR vs. ORF,U2OS,compound_short-crispr_long,compound_short-orf_long,2.75968647186009,<0.05
+Compoung-gene matching - CRISPR vs. ORF,U2OS,compound_short-crispr_long,compound_short-orf_short,1.4815309763007822,0.14
+Compoung-gene matching - CRISPR vs. ORF,U2OS,compound_short-crispr_short,compound_short-orf_long,2.3696842991652374,<0.05
+Compoung-gene matching - CRISPR vs. ORF,U2OS,compound_short-crispr_short,compound_short-orf_short,1.225081815718574,0.22

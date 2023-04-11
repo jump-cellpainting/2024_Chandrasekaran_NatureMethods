@@ -1,4 +1,4 @@
 Modality,Cell,time,mmAP
-compound,U2OS,long,0.532
-crispr,U2OS,long,0.32
-orf,U2OS,long,0.277
+compound,U2OS,long,0.402
+crispr,U2OS,long,0.259
+orf,U2OS,long,0.147
