@@ -1,13 +1,9 @@
-t-test,Feature_set,Modality,Cell,time,statistic,pvalue
-Same perturbation type matching,CellProfiler,compound,A549,long,1.2622363337511453,0.21
-Same perturbation type matching,CellProfiler,compound,A549,short,0.72393205121876,0.47
-Same perturbation type matching,CellProfiler,compound,U2OS,long,4.825199999906025,<0.05
-Same perturbation type matching,DeepProfiler,compound,U2OS,long,-4.737616893386865,<0.05
-Same perturbation type matching,DP-CP,compound,U2OS,long,-7.069735035997821,<0.05
-Same perturbation type matching,CellProfiler,compound,U2OS,short,2.130185585703322,<0.05
-Same perturbation type matching,CellProfiler,crispr,A549,long,-1.297812180142985,0.20
-Same perturbation type matching,CellProfiler,crispr,A549,short,-1.6214491921778844,0.11
-Same perturbation type matching,CellProfiler,crispr,U2OS,long,0.11372148824288042,0.91
-Same perturbation type matching,DeepProfiler,crispr,U2OS,long,-3.6223610937865898,<0.05
-Same perturbation type matching,DP-CP,crispr,U2OS,long,-1.705479843690675,0.09
-Same perturbation type matching,CellProfiler,crispr,U2OS,short,-1.2435338348749119,0.22
+t-test,Modality,Cell,time,statistic,pvalue
+Same perturbation type matching,compound,A549,long,1.2622363337511453,0.21
+Same perturbation type matching,compound,A549,short,0.72393205121876,0.47
+Same perturbation type matching,compound,U2OS,long,4.825199999906025,<0.05
+Same perturbation type matching,compound,U2OS,short,2.130185585703322,<0.05
+Same perturbation type matching,crispr,A549,long,-1.297812180142985,0.20
+Same perturbation type matching,crispr,A549,short,-1.6214491921778844,0.11
+Same perturbation type matching,crispr,U2OS,long,0.11372148824288042,0.91
+Same perturbation type matching,crispr,U2OS,short,-1.2435338348749119,0.22
