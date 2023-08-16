@@ -1,0 +1,4 @@
+Cell,Description,Perturbation,Percent_Replicating,time,feature_set
+U2OS,compound_U2OS_48,compound,68.0,long,DeepProfiler
+U2OS,crispr_U2OS_144,crispr,39.3,long,DeepProfiler
+U2OS,orf_U2OS_96,orf,50.0,long,DeepProfiler
