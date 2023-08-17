@@ -12,6 +12,19 @@ from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 import random
 from copairs.map import aggregate
+from copairs.compute import cosine_indexed
+import copairs.compute_np as backend
+import itertools
+from copairs.matching import Matcher, MatcherMultilabel, dict_to_dframe
+from functools import partial
+from copairs.map import (
+    create_matcher,
+    flatten_str_list,
+    get_rel_k_list,
+    build_rank_list_multi,
+    build_rank_lists,
+    results_to_dframe,
+)
 
 
 def load_data(exp, plate, filetype):
@@ -121,7 +134,14 @@ def create_replicability_df(
 
 
 def create_matching_df(
-    matching_map_df, matching_fr_df, result, pos_sameby, qthreshold, modality, cell, timepoint
+    matching_map_df,
+    matching_fr_df,
+    result,
+    pos_sameby,
+    qthreshold,
+    modality,
+    cell,
+    timepoint,
 ):
     _matching_map_df = matching_map_df
     _matching_fr_df = matching_fr_df
@@ -157,7 +177,9 @@ def create_matching_df(
     _matching_map_df = concat_profiles(_matching_map_df, _map_df)
 
     _matching_fr_df["fr"] = _matching_fr_df["fr"].astype(float)
-    _matching_map_df["mean_average_precision"] = _matching_map_df["mean_average_precision"].astype(float)
+    _matching_map_df["mean_average_precision"] = _matching_map_df[
+        "mean_average_precision"
+    ].astype(float)
 
     return _matching_map_df, _matching_fr_df
 
@@ -215,9 +237,9 @@ def create_gene_compound_matching_df(
     _gene_compound_matching_fr_df["fr"] = _gene_compound_matching_fr_df["fr"].astype(
         float
     )
-    _gene_compound_matching_map_df["mean_average_precision"] = _gene_compound_matching_map_df[
+    _gene_compound_matching_map_df[
         "mean_average_precision"
-    ].astype(float)
+    ] = _gene_compound_matching_map_df["mean_average_precision"].astype(float)
 
     return _gene_compound_matching_map_df, _gene_compound_matching_fr_df
 
@@ -431,3 +453,50 @@ def calculate_fraction_retrieved(agg_result):
         agg_result
     )
     return fraction_retrieved
+
+
+def compute_similarities(pairs, feats, batch_size, anti_match=False):
+    dist_df = pairs[["ix1", "ix2"]].drop_duplicates().copy()
+    dist_df["dist"] = cosine_indexed(feats, dist_df.values, batch_size)
+    if anti_match:
+        dist_df["dist"] = np.abs(dist_df["dist"])
+    return pairs.merge(dist_df, on=["ix1", "ix2"])
+
+def run_pipeline(
+    meta,
+    feats,
+    pos_sameby,
+    pos_diffby,
+    neg_sameby,
+    neg_diffby,
+    null_size,
+    anti_match=False,
+    multilabel_col=None,
+    batch_size=20000,
+) -> pd.DataFrame:
+    # Critical!, otherwise the indexing wont work
+    meta = meta.reset_index(drop=True).copy()
+
+    matcher = create_matcher(
+        meta, pos_sameby, pos_diffby, neg_sameby, neg_diffby, multilabel_col
+    )
+
+    dict_pairs = matcher.get_all_pairs(sameby=pos_sameby, diffby=pos_diffby)
+    pos_pairs = dict_to_dframe(dict_pairs, pos_sameby)
+    dict_pairs = matcher.get_all_pairs(sameby=neg_sameby, diffby=neg_diffby)
+    neg_pairs = set(itertools.chain.from_iterable(dict_pairs.values()))
+    neg_pairs = pd.DataFrame(neg_pairs, columns=["ix1", "ix2"])
+    pos_pairs = compute_similarities(pos_pairs, feats, batch_size, anti_match)
+    neg_pairs = compute_similarities(neg_pairs, feats, batch_size, anti_match)
+    if multilabel_col and multilabel_col in pos_sameby:
+        rel_k_list = build_rank_list_multi(pos_pairs, neg_pairs, multilabel_col)
+    else:
+        rel_k_list = build_rank_lists(pos_pairs, neg_pairs)
+    ap_scores = rel_k_list.apply(backend.compute_ap)
+    ap_scores = np.concatenate(ap_scores.values)
+    null_dists = backend.compute_null_dists(rel_k_list, null_size)
+    p_values = backend.compute_p_values(null_dists, ap_scores, null_size)
+    result = results_to_dframe(
+        meta, rel_k_list.index, p_values, ap_scores, multilabel_col
+    )
+    return result
