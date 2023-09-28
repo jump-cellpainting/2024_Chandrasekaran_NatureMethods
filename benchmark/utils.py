@@ -11,6 +11,20 @@ from sklearn.metrics import average_precision_score
 from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 import random
+from copairs.map import aggregate
+from copairs.compute import cosine_indexed
+import copairs.compute_np as backend
+import itertools
+from copairs.matching import Matcher, MatcherMultilabel, dict_to_dframe
+from functools import partial
+from copairs.map import (
+    create_matcher,
+    flatten_str_list,
+    get_rel_k_list,
+    build_rank_list_multi,
+    build_rank_lists,
+    results_to_dframe,
+)
 
 
 def load_data(exp, plate, filetype):
@@ -69,10 +83,17 @@ def concat_profiles(df1, df2):
 
 
 def create_replicability_df(
-    replicability_map_df, replicability_fp_df, metric, modality, cell, timepoint
+    replicability_map_df,
+    replicability_fr_df,
+    result,
+    pos_sameby,
+    qthreshold,
+    modality,
+    cell,
+    timepoint,
 ):
     _replicability_map_df = replicability_map_df
-    _replicability_fp_df = replicability_fp_df
+    _replicability_fr_df = replicability_fr_df
 
     _modality = modality
     _cell = cell
@@ -81,20 +102,22 @@ def create_replicability_df(
 
     _description = f"{modality}_{_cell}_{_time}"
 
-    _fp_df = pd.DataFrame(
+    _map_df = calculate_mAP(result, pos_sameby, qthreshold)
+    _fr = calculate_fraction_retrieved(_map_df)
+
+    _fr_df = pd.DataFrame(
         {
             "Description": _description,
             "Modality": _modality,
             "Cell": _cell,
             "time": _time,
             "timepoint": _timepoint,
-            "fp": f"{metric.fp:.3f}",
+            "fr": f"{_fr:.3f}",
         },
-        index=[len(_replicability_fp_df)],
+        index=[len(_replicability_fr_df)],
     )
-    _replicability_fp_df = concat_profiles(_replicability_fp_df, _fp_df)
+    _replicability_fr_df = concat_profiles(_replicability_fr_df, _fr_df)
 
-    _map_df = metric.map.copy()
     _map_df["Description"] = f"{_description}"
     _map_df["Modality"] = f"{_modality}"
     _map_df["Cell"] = f"{_cell}"
@@ -102,17 +125,26 @@ def create_replicability_df(
     _map_df["timepoint"] = f"{_timepoint}"
     _replicability_map_df = concat_profiles(_replicability_map_df, _map_df)
 
-    _replicability_fp_df["fp"] = _replicability_fp_df["fp"].astype(float)
-    _replicability_map_df["mAP"] = _replicability_map_df["mAP"].astype(float)
+    _replicability_fr_df["fr"] = _replicability_fr_df["fr"].astype(float)
+    _replicability_map_df["mean_average_precision"] = _replicability_map_df[
+        "mean_average_precision"
+    ].astype(float)
 
-    return _replicability_map_df, _replicability_fp_df
+    return _replicability_map_df, _replicability_fr_df
 
 
 def create_matching_df(
-    matching_map_df, matching_fp_df, metric, modality, cell, timepoint
+    matching_map_df,
+    matching_fr_df,
+    result,
+    pos_sameby,
+    qthreshold,
+    modality,
+    cell,
+    timepoint,
 ):
     _matching_map_df = matching_map_df
-    _matching_fp_df = matching_fp_df
+    _matching_fr_df = matching_fr_df
 
     _modality = modality
     _cell = cell
@@ -121,20 +153,22 @@ def create_matching_df(
 
     _description = f"{modality}_{_cell}_{_time}"
 
-    _fp_df = pd.DataFrame(
+    _map_df = calculate_mAP(result, pos_sameby, qthreshold)
+    _fr = calculate_fraction_retrieved(_map_df)
+
+    _fr_df = pd.DataFrame(
         {
             "Description": _description,
             "Modality": _modality,
             "Cell": _cell,
             "time": _time,
             "timepoint": _timepoint,
-            "fp": f"{metric.fp:.3f}",
+            "fr": f"{_fr:.3f}",
         },
-        index=[len(_matching_fp_df)],
+        index=[len(_matching_fr_df)],
     )
-    _matching_fp_df = concat_profiles(_matching_fp_df, _fp_df)
+    _matching_fr_df = concat_profiles(_matching_fr_df, _fr_df)
 
-    _map_df = metric.map.copy()
     _map_df["Description"] = f"{_description}"
     _map_df["Modality"] = f"{_modality}"
     _map_df["Cell"] = f"{_cell}"
@@ -142,16 +176,20 @@ def create_matching_df(
     _map_df["timepoint"] = f"{_timepoint}"
     _matching_map_df = concat_profiles(_matching_map_df, _map_df)
 
-    _matching_fp_df["fp"] = _matching_fp_df["fp"].astype(float)
-    _matching_map_df["mAP"] = _matching_map_df["mAP"].astype(float)
+    _matching_fr_df["fr"] = _matching_fr_df["fr"].astype(float)
+    _matching_map_df["mean_average_precision"] = _matching_map_df[
+        "mean_average_precision"
+    ].astype(float)
 
-    return _matching_map_df, _matching_fp_df
+    return _matching_map_df, _matching_fr_df
 
 
 def create_gene_compound_matching_df(
     gene_compound_matching_map_df,
-    gene_compound_matching_fp_df,
-    metric,
+    gene_compound_matching_fr_df,
+    result,
+    pos_sameby,
+    qthreshold,
     modality_1,
     modality_2,
     cell,
@@ -159,7 +197,7 @@ def create_gene_compound_matching_df(
     timepoint2,
 ):
     _gene_compound_matching_map_df = gene_compound_matching_map_df
-    _gene_compound_matching_fp_df = gene_compound_matching_fp_df
+    _gene_compound_matching_fr_df = gene_compound_matching_fr_df
 
     _modality_1 = modality_1
     _modality_2 = modality_2
@@ -171,21 +209,23 @@ def create_gene_compound_matching_df(
 
     _description = f"{_modality_1}_{cell}_{_time_1}-{_modality_2}_{cell}_{_time_2}"
 
-    _fp_df = pd.DataFrame(
+    _map_df = calculate_mAP(result, pos_sameby, qthreshold)
+    _fr = calculate_fraction_retrieved(_map_df)
+
+    _fr_df = pd.DataFrame(
         {
             "Description": _description,
             "Modality1": f"{_modality_1}_{_time_1}",
             "Modality2": f"{_modality_2}_{_time_2}",
             "Cell": _cell,
-            "fp": f"{metric.fp:.3f}",
+            "fr": f"{_fr:.3f}",
         },
-        index=[len(_gene_compound_matching_fp_df)],
+        index=[len(_gene_compound_matching_fr_df)],
     )
-    _gene_compound_matching_fp_df = concat_profiles(
-        _gene_compound_matching_fp_df, _fp_df
+    _gene_compound_matching_fr_df = concat_profiles(
+        _gene_compound_matching_fr_df, _fr_df
     )
 
-    _map_df = metric.map.copy()
     _map_df["Description"] = f"{_description}"
     _map_df["Modality1"] = f"{_modality_1}_{_time_1}"
     _map_df["Modality2"] = f"{_modality_2}_{_time_2}"
@@ -194,14 +234,14 @@ def create_gene_compound_matching_df(
         _gene_compound_matching_map_df, _map_df
     )
 
-    _gene_compound_matching_fp_df["fp"] = _gene_compound_matching_fp_df["fp"].astype(
+    _gene_compound_matching_fr_df["fr"] = _gene_compound_matching_fr_df["fr"].astype(
         float
     )
-    _gene_compound_matching_map_df["mAP"] = _gene_compound_matching_map_df[
-        "mAP"
-    ].astype(float)
+    _gene_compound_matching_map_df[
+        "mean_average_precision"
+    ] = _gene_compound_matching_map_df["mean_average_precision"].astype(float)
 
-    return _gene_compound_matching_map_df, _gene_compound_matching_fp_df
+    return _gene_compound_matching_map_df, _gene_compound_matching_fr_df
 
 
 def consensus(profiles_df, group_by_feature):
@@ -228,6 +268,238 @@ def consensus(profiles_df, group_by_feature):
     profiles_df = metadata_df.merge(profiles_df, on=group_by_feature)
 
     return profiles_df
+
+    def cleanup(self):
+        """
+        Remove rows and columns that are all NaN
+        """
+        keep = list((self.truth_matrix.sum(axis=1) > 0))
+        self.corr["keep"] = keep
+        self.map1["keep"] = keep
+        self.truth_matrix["keep"] = keep
+
+        self.corr = self.corr.loc[self.corr.keep].drop(columns=["keep"])
+        self.map1 = self.map1.loc[self.map1.keep].drop(columns=["keep"])
+        self.truth_matrix = self.truth_matrix.loc[self.truth_matrix.keep].drop(
+            columns=["keep"]
+        )
+
+
+def time_point(modality, time_point):
+    """
+    Convert time point in hr to long or short time description
+    Parameters:
+    -----------
+    modality: str
+        perturbation modality
+    time_point: int
+        time point in hr
+    Returns:
+    -------
+    str of time description
+    """
+    if modality == "compound":
+        if time_point == 24:
+            time = "short"
+        else:
+            time = "long"
+    elif modality == "orf":
+        if time_point == 48:
+            time = "short"
+        else:
+            time = "long"
+    else:
+        if time_point == 96:
+            time = "short"
+        else:
+            time = "long"
+
+    return time
+
+
+def convert_pvalue(pvalue):
+    """
+    Convert p value format
+    Parameters:
+    -----------
+    pvalue: float
+        p value
+    Returns:
+    -------
+    str of p value
+    """
+    if pvalue < 0.05:
+        pvalue = "<0.05"
+    else:
+        pvalue = f"{pvalue:.2f}"
+    return pvalue
+
+
+def add_lines_to_violin_plots(
+    fig, df_row, locations, color_order, color_column, percentile, row, col
+):
+    """
+    Add lines to the violin plots
+    Parameters
+    ----------
+    fig: plotly figure
+    df_row: row of the dataframe with the data
+    locations: x locations of the lines
+    color_order: order of the colors in the violin plot
+    color_column: column of the dataframe with the color information
+    percentile: 5 or 95
+    row: row of the figure
+    col: column of the figure
+    Returns
+    -------
+    fig: plotly figure
+    """
+    y_value = ""
+    if percentile == 5:
+        y_value = "fifth_percentile"
+    elif percentile == 95:
+        y_value = "ninetyfifth_percentile"
+    fig.add_shape(
+        type="line",
+        x0=locations["line"][color_order.index(df_row[color_column])]["x0"],
+        y0=df_row[y_value],
+        x1=locations["line"][color_order.index(df_row[color_column])]["x1"],
+        y1=df_row[y_value],
+        line=dict(
+            color="black",
+            width=2,
+            dash="dash",
+        ),
+        row=row,
+        col=col,
+    )
+    return fig
+
+
+def add_text_to_violin_plots(
+    fig, df_row, locations, color_order, color_column, percentile, row, col
+):
+    """
+    Add text to the violin plots
+    Parameters
+    ----------
+    fig: plotly figure
+    df_row: row of the dataframe with the data
+    locations: x locations of the lines
+    color_order: order of the colors in the violin plot
+    color_column: column of the dataframe with the color information
+    percentile: 5 or 95
+    row: row of the figure
+    col: column of the figure
+    Returns
+    -------
+    fig: plotly figure
+    """
+
+    y_value = ""
+    y_percent_value = ""
+    y_offset = 0
+    if percentile == 5:
+        y_value = "fifth_percentile"
+        y_percent_value = "percent_fifth_percentile"
+        y_offset = -0.08
+    elif percentile == 95:
+        y_value = "ninetyfifth_percentile"
+        y_percent_value = "percent_ninetyfifth_percentile"
+        y_offset = 0.08
+    fig.add_annotation(
+        x=locations["text"][color_order.index(df_row[color_column])]["x"],
+        y=df_row[y_value] + y_offset,
+        text=f"{df_row[y_percent_value]*100:.02f}%",
+        showarrow=False,
+        font=dict(
+            size=16,
+        ),
+        row=row,
+        col=col,
+    )
+    return fig
+
+
+def calculate_mAP(result, pos_sameby, threshold):
+    """
+    Calculate the mean average precision
+    Parameters
+    ----------
+    result : pandas.DataFrame of average precision values output by copairs
+    pos_sameby : str of columns that define positives
+    threshold : float of threshold for q-value
+    Returns
+    -------
+    agg_result : pandas.DataFrame of mAP values grouped by pos_sameby columns
+    """
+    agg_result = aggregate(result, pos_sameby, threshold=0.05).rename(
+        columns={"average_precision": "mean_average_precision"}
+    )
+    return agg_result
+
+
+def calculate_fraction_retrieved(agg_result):
+    """
+    Calculate the fraction of labels retrieved
+    Parameters
+    ----------
+    agg_result : pandas.DataFrame of mAP values
+    Returns
+    -------
+    fraction_retrieved : float of fraction positive
+    """
+    fraction_retrieved = len(agg_result.query("above_q_threshold==True")) / len(
+        agg_result
+    )
+    return fraction_retrieved
+
+
+def compute_similarities(pairs, feats, batch_size, anti_match=False):
+    dist_df = pairs[["ix1", "ix2"]].drop_duplicates().copy()
+    dist_df["dist"] = cosine_indexed(feats, dist_df.values, batch_size)
+    if anti_match:
+        dist_df["dist"] = np.abs(dist_df["dist"])
+    return pairs.merge(dist_df, on=["ix1", "ix2"])
+
+def run_pipeline(
+    meta,
+    feats,
+    pos_sameby,
+    pos_diffby,
+    neg_sameby,
+    neg_diffby,
+    null_size,
+    anti_match=False,
+    multilabel_col=None,
+    batch_size=20000,
+) -> pd.DataFrame:
+    # Critical!, otherwise the indexing wont work
+    meta = meta.reset_index(drop=True).copy()
+
+    matcher = create_matcher(
+        meta, pos_sameby, pos_diffby, neg_sameby, neg_diffby, multilabel_col
+    )
+
+    dict_pairs = matcher.get_all_pairs(sameby=pos_sameby, diffby=pos_diffby)
+    pos_pairs = dict_to_dframe(dict_pairs, pos_sameby)
+    dict_pairs = matcher.get_all_pairs(sameby=neg_sameby, diffby=neg_diffby)
+    neg_pairs = set(itertools.chain.from_iterable(dict_pairs.values()))
+    neg_pairs = pd.DataFrame(neg_pairs, columns=["ix1", "ix2"])
+    pos_pairs = compute_similarities(pos_pairs, feats, batch_size, anti_match)
+    neg_pairs = compute_similarities(neg_pairs, feats, batch_size, anti_match)
+    if multilabel_col and multilabel_col in pos_sameby:
+        rel_k_list = build_rank_list_multi(pos_pairs, neg_pairs, multilabel_col)
+    else:
+        rel_k_list = build_rank_lists(pos_pairs, neg_pairs)
+    ap_scores = rel_k_list.apply(backend.compute_ap)
+    ap_scores = np.concatenate(ap_scores.values)
+    null_dists = backend.compute_null_dists(rel_k_list, null_size)
+    p_values = backend.compute_p_values(null_dists, ap_scores, null_size)
+    result = results_to_dframe(
+        meta, rel_k_list.index, p_values, ap_scores, multilabel_col
+    )
+    return result
 
 
 class PrecisionScores(object):
@@ -676,416 +948,3 @@ class PrecisionScores(object):
         self.truth_matrix = self.truth_matrix.loc[self.truth_matrix.keep].drop(
             columns=["keep"]
         )
-
-
-def time_point(modality, time_point):
-    """
-    Convert time point in hr to long or short time description
-    Parameters:
-    -----------
-    modality: str
-        perturbation modality
-    time_point: int
-        time point in hr
-    Returns:
-    -------
-    str of time description
-    """
-    if modality == "compound":
-        if time_point == 24:
-            time = "short"
-        else:
-            time = "long"
-    elif modality == "orf":
-        if time_point == 48:
-            time = "short"
-        else:
-            time = "long"
-    else:
-        if time_point == 96:
-            time = "short"
-        else:
-            time = "long"
-
-    return time
-
-
-def convert_pvalue(pvalue):
-    """
-    Convert p value format
-    Parameters:
-    -----------
-    pvalue: float
-        p value
-    Returns:
-    -------
-    str of p value
-    """
-    if pvalue < 0.05:
-        pvalue = "<0.05"
-    else:
-        pvalue = f"{pvalue:.2f}"
-    return pvalue
-
-
-def add_lines_to_violin_plots(
-    fig, df_row, locations, color_order, color_column, percentile, row, col
-):
-    """
-    Add lines to the violin plots
-    Parameters
-    ----------
-    fig: plotly figure
-    df_row: row of the dataframe with the data
-    locations: x locations of the lines
-    color_order: order of the colors in the violin plot
-    color_column: column of the dataframe with the color information
-    percentile: 5 or 95
-    row: row of the figure
-    col: column of the figure
-    Returns
-    -------
-    fig: plotly figure
-    """
-    y_value = ""
-    if percentile == 5:
-        y_value = "fifth_percentile"
-    elif percentile == 95:
-        y_value = "ninetyfifth_percentile"
-    fig.add_shape(
-        type="line",
-        x0=locations["line"][color_order.index(df_row[color_column])]["x0"],
-        y0=df_row[y_value],
-        x1=locations["line"][color_order.index(df_row[color_column])]["x1"],
-        y1=df_row[y_value],
-        line=dict(
-            color="black",
-            width=2,
-            dash="dash",
-        ),
-        row=row,
-        col=col,
-    )
-    return fig
-
-
-def add_text_to_violin_plots(
-    fig, df_row, locations, color_order, color_column, percentile, row, col
-):
-    """
-    Add text to the violin plots
-    Parameters
-    ----------
-    fig: plotly figure
-    df_row: row of the dataframe with the data
-    locations: x locations of the lines
-    color_order: order of the colors in the violin plot
-    color_column: column of the dataframe with the color information
-    percentile: 5 or 95
-    row: row of the figure
-    col: column of the figure
-    Returns
-    -------
-    fig: plotly figure
-    """
-
-    y_value = ""
-    y_percent_value = ""
-    y_offset = 0
-    if percentile == 5:
-        y_value = "fifth_percentile"
-        y_percent_value = "percent_fifth_percentile"
-        y_offset = -0.08
-    elif percentile == 95:
-        y_value = "ninetyfifth_percentile"
-        y_percent_value = "percent_ninetyfifth_percentile"
-        y_offset = 0.08
-    fig.add_annotation(
-        x=locations["text"][color_order.index(df_row[color_column])]["x"],
-        y=df_row[y_value] + y_offset,
-        text=f"{df_row[y_percent_value]*100:.02f}%",
-        showarrow=False,
-        font=dict(
-            size=16,
-        ),
-        row=row,
-        col=col,
-    )
-    return fig
-
-
-class AveragePrecision(object):
-    """
-    Calculate average precision
-    Parameters:
-    -----------
-    profile: pandas.DataFrame of profiles
-    match_dict: dictionary with information about matching profiles
-    reference_dict: dictionary with information about reference profiles
-    n_reference: number of reference profiles
-    random_baseline_ap: pandas.DataFrame with average precision of random baseline
-    anti_match: boolean, if True, calculate anti-match average precision
-    """
-
-    def __init__(
-        self,
-        profile,
-        match_dict,
-        reference_dict,
-        n_reference,
-        random_baseline_ap,
-        anti_match=False,
-    ):
-        self.profile = profile
-        self.match_dict = match_dict
-        self.reference_dict = reference_dict
-        self.n_reference = n_reference
-        self.random_baseline_ap = random_baseline_ap
-        self.anti_match = anti_match
-
-        self.ap = self.calculate_average_precision()
-        self.map = self.calculate_mean_AP(self.ap)
-        self.fp = self.calculate_fraction_positive(self.map)
-
-    def calculate_average_precision(self):
-        """
-        Calculate average precision
-        Returns:
-        -------
-        ap_df: dataframe with average precision values
-        """
-        _ap_df = pd.DataFrame(
-            columns=self.match_dict["matching"]
-            + ["n_matches", "n_reference", "ap", "correction", "ap_corrected"]
-        )
-        # Filter out profiles
-        if "filter" in self.match_dict:
-            profile_matching = self.filter_profiles(self.profile, self.match_dict)
-        else:
-            profile_matching = self.profile.copy()
-
-        if "filter" in self.reference_dict:
-            profile_reference = self.filter_profiles(self.profile, self.reference_dict)
-        else:
-            profile_reference = self.profile.copy()
-
-        for group_index, group in tqdm(
-            profile_matching.groupby(self.match_dict["matching"])
-        ):
-            for index, row in group.iterrows():
-                _ap_dict = {}
-                profile_matching_remaining = group.drop(index)
-
-                # Remove matches that match columns of the query
-                if "non_matching" in self.match_dict:
-                    profile_matching_remaining = self.remove_non_matching_profiles(
-                        row, profile_matching_remaining, self.match_dict
-                    )
-
-                # Keep those reference profiles that match columns of the query
-                if "matching" in self.reference_dict:
-                    query_string = " and ".join(
-                        [f"{_}==@row['{_}']" for _ in self.reference_dict["matching"]]
-                    )
-                    if not query_string == "":
-                        profile_reference_remaining = profile_reference.query(
-                            query_string
-                        ).reset_index(drop=True)
-                else:
-                    profile_reference_remaining = profile_reference.copy()
-
-                # Remove those reference profiles that do not match columns of the query
-                if "non_matching" in self.reference_dict:
-                    profile_reference_remaining = self.remove_non_matching_profiles(
-                        row, profile_reference_remaining, self.reference_dict
-                    )
-
-                # subsample reference
-                k = min(self.n_reference, len(profile_reference_remaining))
-                profile_reference_remaining = profile_reference_remaining.sample(
-                    k
-                ).reset_index(drop=True)
-
-                # Combine dataframes
-                profile_combined = pd.concat(
-                    [profile_matching_remaining, profile_reference_remaining], axis=0
-                ).reset_index(drop=True)
-
-                # Extract features
-                query_perturbation_features = row[
-                    ~self.profile.columns.str.startswith("Metadata")
-                ]
-                profile_combined_features = get_featuredata(profile_combined)
-
-                # Compute cosine similarity
-                y_true = [1] * len(profile_matching_remaining) + [0] * len(
-                    profile_reference_remaining
-                )
-
-                if np.sum(y_true) == 0:
-                    continue
-                else:
-                    y_pred = cosine_similarity(
-                        query_perturbation_features.values.reshape(1, -1),
-                        profile_combined_features,
-                    )[0]
-
-                    if self.anti_match:
-                        y_pred = np.abs(y_pred)
-
-                    score = average_precision_score(y_true, y_pred)
-
-                # Correct ap using the random baseline ap
-
-                n_matches = np.sum(y_true)
-                n_reference = k
-
-                if (
-                    self.random_baseline_ap.query(
-                        "n_matches == '@n_matches' and n_reference == '@n_reference'"
-                    ).empty
-                    == True
-                    and n_matches != 0
-                ):
-                    self.compute_random_baseline(n_matches, n_reference)
-
-                    correction = self.random_baseline_ap.query(
-                        "n_matches == @n_matches and n_reference == @n_reference"
-                    )["ap"].quantile(0.95)
-
-                else:
-                    correction = 0
-
-                for match in self.match_dict["matching"]:
-                    _ap_dict[match] = row[match]
-                _ap_dict["n_matches"] = int(n_matches)
-                _ap_dict["n_reference"] = int(n_reference)
-                _ap_dict["ap"] = score
-                _ap_dict["correction"] = correction
-                _ap_dict["ap_corrected"] = score - correction
-                _ap_df = pd.concat(
-                    [_ap_df, pd.DataFrame(_ap_dict, index=[0])],
-                    axis=0,
-                    ignore_index=True,
-                )
-
-        return _ap_df
-
-    def compute_random_baseline(self, n_matches, n_reference):
-        """
-        Compute the random baseline for the average precision score
-        Parameters
-        ----------
-        n_matches: int
-            Number of matches
-        n_reference: int
-            Number of reference profiles
-        """
-        if (
-            self.random_baseline_ap.query(
-                "n_matches == @n_matches and n_reference == @n_reference"
-            ).empty
-            == True
-        ):
-            ranked_list = [i for i in range(n_matches + n_reference)]
-            truth_values = [1 for i in range(n_matches)] + [
-                0 for i in range(n_reference)
-            ]
-
-            for _ in range(10000):  # number of random permutations
-                random.shuffle(ranked_list)
-                random.shuffle(truth_values)
-
-                self.random_baseline_ap = pd.concat(
-                    [
-                        self.random_baseline_ap,
-                        pd.DataFrame(
-                            {
-                                "ap": average_precision_score(
-                                    truth_values, ranked_list
-                                ),
-                                "n_matches": [n_matches],
-                                "n_reference": [n_reference],
-                            },
-                            index=[0],
-                        ),
-                    ],
-                    ignore_index=True,
-                )
-
-    @staticmethod
-    def filter_profiles(_profiles, _dict):
-        """
-        Filter profiles based on the filter dictionary
-        Parameters
-        ----------
-        _profiles : pandas.DataFrame of profiles
-        _dict : dictionary with filter columns
-        Returns
-        -------
-        _profiles : pandas.DataFrame of filtered profiles
-        """
-        query_string = " and ".join(
-            [
-                " and ".join([f"{k}!={vi}" for vi in v])
-                for k, v in _dict["filter"].items()
-            ]
-        )
-        if not query_string == "":
-            _profiles = _profiles.query(query_string).reset_index(drop=True)
-        return _profiles
-
-    @staticmethod
-    def remove_non_matching_profiles(_query_profile, _profiles, _dict):
-        """
-        Remove profiles that match the query profile in the non_matching columns
-        Parameters
-        ----------
-        _query_profile : pandas.Series of query profile
-        _profiles : pandas.DataFrame of profiles
-        _dict : dictionary with non_matching columns
-        Returns
-        -------
-        _profiles : pandas.DataFrame of filtered profiles
-        """
-        for _ in _dict["non_matching"]:
-            matching_col = [_query_profile[_] for i in range(len(_profiles))]
-            _profiles = _profiles.loc[
-                [
-                    len(np.intersect1d(x[0].split("|"), x[1].split("|"))) == 0
-                    for x in zip(_profiles[_], matching_col)
-                ]
-            ]
-        return _profiles
-
-    def calculate_mean_AP(self, _ap):
-        """
-        Calculate the mean average precision
-        Parameters
-        ----------
-        _ap : pandas.DataFrame of average precision values
-        Returns
-        -------
-        _map_df : pandas.DataFrame of mAP values gropued by matching columns
-        """
-        _map_df = (
-            _ap.groupby(self.match_dict["matching"])
-            .ap_corrected.mean()
-            .reset_index()
-            .rename(columns={"ap_corrected": "mAP"})
-        )
-        return _map_df
-
-    @staticmethod
-    def calculate_fraction_positive(_map_df):
-        """
-        Calculate the fraction of positive matches
-        Parameters
-        ----------
-        _map_df : pandas.DataFrame of mAP values
-        Returns
-        -------
-        _fp : float of fraction positive
-        """
-        _fp = len(_map_df.query("mAP>0")) / len(_map_df)
-        return _fp

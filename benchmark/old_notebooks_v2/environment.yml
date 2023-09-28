@@ -1,0 +1,22 @@
+name: analysis
+channels:
+- conda-forge
+dependencies:
+- conda-forge::python=3.10.6
+- conda-forge::pandas=1.5.1
+- conda-forge::numpy=1.23.4
+- conda-forge::pathlib=1.0.1
+- conda-forge::jupyter=1.0.0
+- conda-forge::ipykernel=6.17.1
+- conda-forge::tabulate=0.9.0
+- conda-forge::seaborn=0.12.1
+- conda-forge::matplotlib=3.6.2
+- conda-forge::plotly=5.11.0
+- conda-forge::python-kaleido=0.2.1
+- conda-forge::scipy=1.9.3
+- conda-forge::kneed=0.7.0
+- conda-forge::umap-learn=0.5.3
+- conda-forge::tqdm=4.64.1
+- pip
+- pip:
+  - git+https://github.com/cytomining/copairs@880f22a551bd897896d148a0b07baa99d981c6a9

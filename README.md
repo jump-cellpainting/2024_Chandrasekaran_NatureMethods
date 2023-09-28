@@ -111,8 +111,8 @@ After generating the well-level CellProfiler-based features, use Pycytominer to 
 To regenerate all the profiles, clone this repo, download the files and activate the conda environment. Before issuing the following commands, Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
 ```bash
-git clone https://github.com/jump-cellpainting/neurips-cpjump1
-cd neurips-cpjump1
+git clone https://github.com/jump-cellpainting/2023_Chandrasekaran_submitted
+cd 2023_Chandrasekaran_submitted
 git lfs pull
 git submodule update --init --recursive
 conda env create --force --file environment.yml

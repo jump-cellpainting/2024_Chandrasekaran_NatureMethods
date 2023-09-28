@@ -1,0 +1,9 @@
+Modality,Cell,time,fr
+compound,A549,short,0.208
+crispr,A549,long,0.537
+crispr,A549,short,0.526
+compound,A549,long,0.169
+compound,U2OS,short,0.05
+crispr,U2OS,long,0.683
+crispr,U2OS,short,0.511
+compound,U2OS,long,0.246
