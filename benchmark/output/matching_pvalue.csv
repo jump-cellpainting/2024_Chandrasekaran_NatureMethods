@@ -1,9 +1,9 @@
 t-test,Modality,Cell,time,statistic,pvalue
 Same perturbation type matching,compound,A549,long,11.580160643957202,<0.05
-Same perturbation type matching,compound,A549,short,10.607380948165622,<0.05
+Same perturbation type matching,compound,A549,short,10.630276323176478,<0.05
 Same perturbation type matching,compound,U2OS,long,12.898561220154749,<0.05
 Same perturbation type matching,compound,U2OS,short,12.047018401930611,<0.05
-Same perturbation type matching,crispr,A549,long,nan,nan
-Same perturbation type matching,crispr,A549,short,nan,nan
-Same perturbation type matching,crispr,U2OS,long,nan,nan
-Same perturbation type matching,crispr,U2OS,short,nan,nan
+Same perturbation type matching,crispr,A549,long,4.592449849844776,<0.05
+Same perturbation type matching,crispr,A549,short,4.225211115468664,<0.05
+Same perturbation type matching,crispr,U2OS,long,4.643321053938373,<0.05
+Same perturbation type matching,crispr,U2OS,short,4.143402173084275,<0.05
