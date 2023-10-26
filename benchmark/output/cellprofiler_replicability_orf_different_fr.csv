@@ -1,0 +1,5 @@
+Description,Modality,Cell,time,timepoint,fr
+orf_A549_long,orf,A549,long,96,0.019
+orf_A549_short,orf,A549,short,48,0.025
+orf_U2OS_short,orf,U2OS,short,48,0.237
+orf_U2OS_long,orf,U2OS,long,96,0.113
