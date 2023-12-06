@@ -1,6 +1,6 @@
 Description,Modality1,Modality2,Cell,fr
 compound_A549_short-crispr_A549_long,compound_short,crispr_long,A549,0.008
-compound_A549_short-crispr_A549_short,compound_short,crispr_short,A549,0.008
+compound_A549_short-crispr_A549_short,compound_short,crispr_short,A549,0.015
 compound_A549_short-orf_A549_long,compound_short,orf_long,A549,0.0
 compound_A549_short-orf_A549_short,compound_short,orf_short,A549,0.0
 compound_A549_long-crispr_A549_long,compound_long,crispr_long,A549,0.007
