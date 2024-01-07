@@ -17,6 +17,8 @@ dependencies:
 - conda-forge::kneed=0.7.0
 - conda-forge::umap-learn=0.5.3
 - conda-forge::tqdm=4.64.1
+- conda-forge::tifffile=2023.12.9
+- conda-forge::scikit-image=0.22.0
 - pip
 - pip:
   - git+https://github.com/cytomining/copairs@880f22a551bd897896d148a0b07baa99d981c6a9
