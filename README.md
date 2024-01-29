@@ -101,7 +101,7 @@ where `${batch}` is one of the six batches [mentioned above](#batch-and-plate-me
 
 The `.sqlite` files contain single-cell image-based profiles while the `.csv` files contain the well-level aggregated profiles.
 
-See this [wiki](https://github.com/carpenterlab/2016_bray_natprot/wiki/What-do-Cell-Painting-features-mean%3F) for sample Cell Painting images and the meaning of (CellProfiler-derived) Cell Painting features. 
+See this [blog post](https://carpenter-singh-lab.broadinstitute.org/blog/help-interpreting-image-based-profiles) for the meaning of (CellProfiler-derived) Cell Painting features. Samples Cell Painting images can be found in the `example_images` folder.
 
 To extract features using a pretrained neural network using [DeepProfiler](https://github.com/cytomining/DeepProfiler), follow the [README.md](deep_profiles/README.md) instructions, which creates well-level profiles.
 
