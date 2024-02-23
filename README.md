@@ -13,7 +13,7 @@
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-Image-based features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and assembled as single cell profiles, which were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). Image-based features were also extracted using [DeepProfiler](https://github.com/cytomining/DeepProfiler) which were annotated and [spherized](https://en.wikipedia.org/wiki/Whitening_transformation). The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/2023_Chandrasekaran_submitted/tree/main/benchmark). Steps for reproducing the data in this repository are outlined below.
+Image-based features from the cell images were extracted using [CellProfiler](https://cellprofiler.org/) and assembled as single cell profiles, which were aggregated, annotated, normalized and feature selected using [pycytominer](https://github.com/cytomining/pycytominer). Image-based features were also extracted using [DeepProfiler](https://github.com/cytomining/DeepProfiler) which were annotated and [spherized](https://en.wikipedia.org/wiki/Whitening_transformation). The resulting profiles were analyzed using the [notebooks in this repo](https://github.com/jump-cellpainting/2024_Chandrasekaran_NatureMethods/tree/main/benchmark). Steps for reproducing the data in this repository are outlined below.
 
 # Step 1: Download cell images
 
@@ -111,8 +111,8 @@ After generating the well-level CellProfiler-based features, use Pycytominer to 
 To regenerate all the profiles, clone this repo, download the files and activate the conda environment. Before issuing the following commands, Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
 ```bash
-git clone https://github.com/jump-cellpainting/2023_Chandrasekaran_submitted
-cd 2023_Chandrasekaran_submitted
+git clone https://github.com/jump-cellpainting/2024_Chandrasekaran_NatureMethods
+cd 2024_Chandrasekaran_NatureMethods
 git lfs pull
 git submodule update --init --recursive
 conda env create --force --file environment.yml
@@ -136,7 +136,7 @@ This creates the profiles in the `profiles/` folder for all the plates in each b
 | `<plate_ID>_normalized_feature_select_plate.csv.gz`        | Feature selected normalized to whole plate profiles      |
 | `<plate_ID>_normalized_feature_select_negcon_plate.csv.gz` | Feature selected normalized to negative control profiles |
 
-Annotated DeepProfiler profiles are spherized using [this notebook](https://github.com/jump-cellpainting/2023_Chandrasekaran_submitted/blob/main/benchmark/old_notebooks/3.spherize_profiles.ipynb). 
+Annotated DeepProfiler profiles are spherized using [this notebook](https://github.com/jump-cellpainting/2024_Chandrasekaran_NatureMethods/blob/main/benchmark/old_notebooks/3.spherize_profiles.ipynb). 
 
 # Step 4: Run the benchmark script
 The benchmark scripts compute `Average Precision (AP)` for various retrieval tasks, such as, retrieving replicates against negative controls, retrieving perturbation pairs against non-pairs, and retrieving gene-compound pairs against non-pairs. `AP` was calculated using the `Feature selected normalized to negative control profiles` (well-level profiles).
